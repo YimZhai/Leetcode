@@ -69,4 +69,83 @@ public int fib(int N) {
     }
     return f[N];
 }
+```  
+
+### 88. Merge Sorted Array
+1. 使用三个指针，m - 1, n - 1, m + n - 1，从右往左更新
+```java
+public void merge(int[] nums1, int m, int[] nums2, int n) {
+    int i = m - 1;
+    int j = n - 1;
+    int k = m + n - 1;
+    while (i >= 0 && j >= 0) {
+        if (nums1[i] < nums2[j]) {
+            nums1[k] = nums2[j];
+            j--;
+            k--;
+        } else {
+            nums1[k] = nums1[i];
+            i--;
+            k--;
+        }
+    }
+    while (j >= 0) {
+        nums1[k] = nums2[j];
+        k--;
+        j--;
+    }
+}
+```  
+
+### 283. Move Zeroes
+1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
+```java
+public void moveZeroes(int[] nums) {
+    int l = 0;
+    int r = 0;
+    while (r < nums.length) {
+        if (nums[r] != 0) {
+            int tmp = nums[r];
+            nums[r] = nums[l];
+            nums[l] = tmp;
+            l++;
+        }
+        r++;
+    }
+}
+```  
+
+### 167. Two Sum || - Input array is sorted
+1. 双指针，一左一右
+```java
+public int[] twoSum(int[] numbers, int target) {
+    if (numbers.length < 2) {
+        return new int[2];
+    }
+    int left = 0;
+    int right = numbers.length - 1;
+    while (left < right) {
+        int sum = numbers[left] + numbers[right];
+        if (sum == target) {
+            return new int[] {left + 1, right + 1};
+        } else if (sum > target) {
+            right--;
+        } else {
+            left++;
+        }
+    }
+    return new int[2];
+}
+```  
+
+### 268. Missing Number
+1. 求和相减，为了防止overflow，减的操作提前执行。
+```java
+public int missingNumber(int[] nums) {
+    int res = 0;
+    for (int i = 0; i < nums.length; i++) {
+        res += i - nums[i] + 1; // the number after the missing one will have zero
+    }
+    return res;
+}
 ```
