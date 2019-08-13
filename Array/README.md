@@ -139,7 +139,7 @@ public int[] twoSum(int[] numbers, int target) {
 ```  
 
 ### 268. Missing Number
-1. 求和相减，为了防止overflow，减的操作提前执行。
+1. 求和相减, 为了防止overflow, 减的操作提前执行。
 ```java
 public int missingNumber(int[] nums) {
     int res = 0;
@@ -148,4 +148,49 @@ public int missingNumber(int[] nums) {
     }
     return res;
 }
-```
+```  
+
+### 26. Remove Duplicates from Sorted Array
+1. Two Pointer, 如果右值不等于左值，左值右移一位，更新左值
+```java
+public int removeDuplicates(int[] nums) {
+    int l = 0;
+    for (int r = 1; r < nums.length; r++) {
+        if (nums[r] != nums[l]) {
+            l++;
+            nums[l] = nums[r];
+        }
+    }
+    return l + 1;
+}
+```  
+
+### 977. Squares of Sorted Array
+1. O(nLogn), 遍历数组，求平方，再sort
+2. O(n), Two Pointer, 一左一右
+```java
+public int[] sortedSquares(int[] A) {
+    int[] res = new int[A.length];
+    if (A.length == 0) {
+        return res;
+    }
+
+    int l = 0;
+    int r = A.length - 1;
+    int p = res.length - 1;
+    while (l <= r) {
+        int i = A[l] * A[l];
+        int j = A[r] * A[r];
+        if (i > j) {
+            res[p] = i;
+            p--;
+            l++;
+        } else {
+            res[p] = j;
+            p--;
+            r--;
+        }
+    }
+    return res;
+}
+```  
