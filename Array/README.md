@@ -193,4 +193,139 @@ public int[] sortedSquares(int[] A) {
     }
     return res;
 }
+```
+
+## Medium
+### 15. Three Sum
+1. Brute Force, three level for loop O(n^3)
+2. Sort数组，第一个数One Pass，二三用双指针
+```java
+public List<List<Integer>> threeSum(int[] nums) {
+    List<List<Integer>> res = new ArrayList<>();
+    if (nums.length < 3) {
+        return res;
+    }
+    
+    Arrays.sort(nums);
+    for (int i = 0; i < nums.length - 2; i++) {
+        if (i > 0 && nums[i] == nums[i - 1]) {
+            continue;
+        }
+        
+        int l = i + 1;
+        int r = nums.length - 1;
+        while (l < r) {
+            int sum = nums[i] + nums[l] + nums[r];
+            if (sum == 0) {
+                res.add(Arrays.asList(nums[i], nums[l], nums[r]));
+                l++;
+                r--;
+                while (l < r && nums[l] == nums[l - 1]) {
+                    l++;
+                }
+            } else if (sum > 0) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+    }
+    return res;
+}
 ```  
+
+### 56. Merge Intervals
+1. Sort Interval的最小值, 使用interval[0]记录区域，判断下一个区域的起点和当前区域的终点，  
+重合则更新当前区域终点，否则更新当前区域两端，使用comparator提高效率
+```java
+public int[][] merge(int[][] intervals) {
+    if (intervals == null || intervals.length == 0) {
+        return intervals;
+    }
+    List<int[]> res = new ArrayList<int[]>();
+    Arrays.sort(intervals, new IntervalsComparator());
+    int[] curInterval = intervals[0];
+    res.add(curInterval);
+    for (int[] interval : intervals) {
+        if (curInterval[1] >= interval[0]) {
+            curInterval[1] = Math.max(interval[1], curInterval[1]);
+        } else {
+            curInterval = interval;
+            res.add(curInterval);
+        }
+    }
+    return res.toArray(new int[res.size()][2]);
+}
+
+private class IntervalsComparator implements Comparator<int[]> {
+    public int compare(int[] a, int[] b) {
+        return a[0] - b[0];
+    }
+}
+```
+
+### 33. Search in Rotated Sorted Array
+1. Binary Search, 判断中心点在哪个区间, 判断是否在线性的区间内
+```java
+public int search(int[] nums, int target) {
+    int len = nums.length, left = 0, right = len - 1;
+    if (left > right)
+        return -1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target)
+            return mid;
+        if (nums[left] <= nums[mid]) {
+            if (nums[left] <= target && target < nums[mid])
+                right = mid - 1;
+            else
+                left = mid + 1;
+        } else {
+            if (nums[mid] < target && target <= nums[right])
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+    }
+    return -1;
+}
+```  
+
+### 283. Product of Array Except Self
+1. O(n) time, O(1) space, left -> right计算每个点左边的数的乘积,  
+right -> left计算每个点右边数的乘积。
+```java
+public int[] productExceptSelf(int[] nums) {
+    int[] res = new int[nums.length];
+    res[0] = 1;
+    for (int i = 1; i < nums.length; i++) {
+        res[i] = nums[i - 1] * res[i - 1];
+    }
+    int r = 1;
+    for (int i = nums.length - 1; i >= 0; i--) {
+        res[i] = res[i] * r;
+        r *= nums[i];
+    }
+    return res;
+}
+```  
+
+### 11. Container With Most Water
+1. 双指针, 一左一右, 两个指针的值比大小，更新指针
+```java
+public int maxArea(int[] height) {
+    int l = 0;
+    int r = height.length - 1;
+    int max = 0;
+    while (l < r) {
+        max = Math.max(max, (r - l)*(Math.min(height[l], height[r])));
+        if (height[l] > height[r]) {
+            r--;
+        } else {
+            l++;
+        }
+    }
+    return max;
+}
+```  
+
