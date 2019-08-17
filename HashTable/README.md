@@ -153,3 +153,71 @@ public int subarraySum(int[] nums, int k) {
 }
 ```  
 
+### 380. Insert Delete GetRandom O(1)
+1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置
+```java
+class RandomizedSet {
+    ArrayList<Integer> nums;
+    HashMap<Integer, Integer> locs;
+    java.util.Random rand = new java.util.Random();
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        nums = new ArrayList<Integer>();
+        locs = new HashMap<Integer, Integer>();
+    }
+
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        boolean contain = locs.containsKey(val);
+        if (contain) return false;
+        locs.put( val, nums.size());
+        nums.add(val);
+        return true;
+    }
+
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        boolean contain = locs.containsKey(val);
+        if (!contain) return false;
+        int loc = locs.get(val);
+        if (loc < nums.size() - 1) { // not the last one, swap
+            int lastone = nums.get(nums.size() - 1);
+            nums.set(loc, lastone);
+            locs.put(lastone, loc);
+        }
+        locs.remove(val);
+        nums.remove(nums.size() - 1);
+        return true;
+    }
+
+    /** Get a random element from the set. */
+    public int getRandom() {
+        return nums.get( rand.nextInt(nums.size()) );
+    }
+}
+```  
+
+### 609. Find Duplicate File in System
+1. HashMap，括号内的作为key，value是List<String>
+```java
+public List<List<String>> findDuplicate(String[] paths) {
+    Map<String, List<String>> map = new HashMap<>();
+    for (String path : paths) {
+        String[] parts = path.split(" ");
+        for (int i = 1; i < parts.length; i++) {
+            int k = parts[i].indexOf("(");
+            String content = parts[i].substring(k, parts[i].length() - 1);
+            map.putIfAbsent(content, new LinkedList<>());
+            map.get(content).add(parts[0] + "/" + parts[i].substring(0, k));
+        }
+    }
+    List<List<String>> r = new LinkedList<>();
+    for (List<String> list : map.values())
+        if (list.size() > 1)
+            r.add(list);
+    return r;
+}
+```  
+
+
