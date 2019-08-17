@@ -329,3 +329,123 @@ public int maxArea(int[] height) {
 }
 ```  
 
+### 289. Game of Life
+1. O(1) space and O(mn) time, copy数组，根据copy计算每个点新值，更新原始board
+```java
+public void gameOfLife(int[][] board) {
+
+    int[] neighbors = {0, 1, -1};
+    int rows = board.length;
+    int cols = board[0].length;
+
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++) {
+            int liveNeighbors = 0;
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+
+                    if (!(neighbors[i] == 0 && neighbors[j] == 0)) {
+                        int r = (row + neighbors[i]);
+                        int c = (col + neighbors[j]);
+                        if ((r < rows && r >= 0) && (c < cols && c >= 0) && (Math.abs(board[r][c]) == 1)) {
+                            liveNeighbors += 1;
+                        }
+                    }
+                }
+            }
+
+            if ((board[row][col] == 1) && (liveNeighbors < 2 || liveNeighbors > 3)) {
+                board[row][col] = -1; // Was live, now dead
+            }
+            if (board[row][col] == 0 && liveNeighbors == 3) {
+                board[row][col] = 2; // Was dead, now live
+            }
+        }
+    }
+
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++) {
+            if (board[row][col] > 0) {
+                board[row][col] = 1;
+            } else {
+                board[row][col] = 0;
+            }
+        }
+    }
+}
+```  
+
+### 31. Next Permutation
+1. 找到下一个全排列，首先找到第一个下降点，从下降序列中找到刚好大于下降点的点，交换两个点，将后面的序列reverse
+```java
+public void nextPermutation(int[] nums) {
+    int i = nums.length - 2;
+    while (i >= 0 && nums[i + 1] <= nums[i]) { // find the first decreasing index
+        i--;
+    }
+
+    if (i >= 0) {
+        int j = nums.length - 1;
+        while (j >= 0 && nums[j] <= nums[i]) { // find the index just greater than nums[i]
+            j--;
+        }
+        swap(nums, i, j);
+    }
+    reverse(nums, i + 1);
+}
+
+private void swap(int[] nums, int i, int j) {
+    int tmp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = tmp;
+}
+
+private void reverse(int[] nums, int start) {
+    int i = start;
+    int j = nums.length - 1;
+    while (i < j) {
+        swap(nums, i, j);
+        i++;
+        j--;
+    }
+}
+```  
+
+### 54. Spiral Matrix
+1. Layer by Layer
+![define layer](54_spiralmatrix.png)
+```java
+public List<Integer> spiralOrder(int[][] matrix) {
+    List<Integer> list = new ArrayList<>();
+    if (matrix.length == 0) {
+        return list;
+    }
+
+    int r1 = 0;
+    int r2 = matrix.length - 1;
+    int c1 = 0;
+    int c2 = matrix[0].length - 1;
+    while (r1 <= r2 && c1 <= c2) {
+        for (int c = c1; c <= c2; c++) {
+            list.add(matrix[r1][c]);
+        }
+        for (int r = r1 + 1; r <= r2; r++) {
+            list.add(matrix[r][c2]);
+        }
+        if (r1 < r2 && c1 < c2) {
+            for (int c = c2 - 1; c > c1; c--) {
+                list.add(matrix[r2][c]);
+            }
+            for (int r = r2; r > r1; r--) {
+                list.add(matrix[r][c1]);
+            }
+        }
+        r1++;
+        r2--;
+        c1++;
+        c2--;
+    }
+    return list;
+}
+```  
