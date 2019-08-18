@@ -449,3 +449,70 @@ public List<Integer> spiralOrder(int[][] matrix) {
     return list;
 }
 ```  
+
+## Hard
+### 4. Median of Two Sorted Array
+1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值  
+[解释](https://blog.csdn.net/hk2291976/article/details/51107778)
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    int n = nums1.length;
+    int m = nums2.length;
+    if (n > m) {
+        return findMedianSortedArrays(nums2, nums1); // make sure n is smaller
+    }
+
+    int l1, l2, r1, r2, c1, c2, lo;
+    l1 = l2 = r1 = r2 = c1 = c2 = lo = 0;
+    int hi = 2 * n;
+    while (lo <= hi) {
+        c1 = (lo + hi) / 2;
+        c2 = m + n - c1;
+        l1 = (c1 == 0) ? Integer.MIN_VALUE : nums1[(c1 - 1) / 2];
+        r1 = (c1 == 2 * n) ? Integer.MAX_VALUE : nums1[c1 / 2];
+        l2 = (c2 == 0) ? Integer.MIN_VALUE : nums2[(c2 - 1) / 2];
+        r2 = (c2 == 2 * m) ? Integer.MAX_VALUE : nums2[c2 / 2];
+
+        if (l1 > r2) {
+            hi = c1 - 1;
+        } else if (l2 > r1) {
+            lo = c1 + 1;
+        } else {
+            break;
+        }
+    }
+    return (Math.max(l1, l2) + Math.min(r1, r2)) / 2.0;
+}
+```  
+
+### 42. Trapping Rain Water
+1. Two Pointer. 
+```java
+public int trap(int[] height) {
+    if (height.length < 3) {
+        return 0;
+    }
+
+    int vol = 0;
+    int l = 0;
+    int r = height.length - 1;
+    while (l < r && height[l] <= height[l + 1]) l++;
+    while (l < r && height[r] <= height[r - 1]) r--;
+
+    while (l < r) {
+        int left = height[l];
+        int right = height[r];
+
+        if (left <= right) {
+            while (l < r && left >= height[++l]) {
+                vol += left - height[l];
+            }
+        } else {
+            while (l < r && right >= height[--r]) {
+                vol += right - height[r];
+            }
+        }
+    }
+    return vol;
+}
+```
