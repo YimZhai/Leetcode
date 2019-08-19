@@ -220,4 +220,113 @@ public List<List<String>> findDuplicate(String[] paths) {
 }
 ```  
 
+## Hard
+### 76. Minimum Window Substring
+1.预扫描目标字符串 t，哈希表存储出现的字符及其个数
+2.遍历 源字符串s，遇到 t 中字符，其哈希值减一，直到当前子串包含了所有 t 中的字符，记录该子串，并更新最小子串。
+3.收缩该子串，首指针右移
+    3.1忽略不在 t 中的字符。
+    3.2当子串中出现某字符次数多于 t 中该字符的个数，也可忽略该字符。比如 找到某子串 AACD ，t = ACD，则第一个A也可忽略。
+    3.3直到右移至 该子串缺失某字符。如 ACD -> CD, count--, 跳出循环
+4.重复2，直到遍历到s尾
+```java
+public String minWindow(String s, String t) {
+    if (t.length() > s.length()) {
+        return "";
+    }
+    
+    Map<Character, Integer> map = new HashMap<>();
+    for (char c : t.toCharArray()) {
+        map.put(c, map.getOrDefault(c, 0) + 1);
+    }
+    
+    int count = 0; // 记录匹配到的字符个数，count == t.length()表示全部找到
+    int minStart = 0;
+    int minLen = s.length() + 1;
+    int start = 0;
+    for (int end = 0; end < s.length(); end++) { // 缩减字符串长度
+        char key = s.charAt(end);
+        if (map.containsKey(key)) {
+            map.put(key, map.get(key) - 1);
+            if (map.get(key) >= 0) {
+                count++;
+            }
+            while(count == t.length()) {
+                if (end - start + 1 < minLen) {
+                    minStart = start;
+                    minLen = end - start + 1;
+                }
+                char keyy = s.charAt(start);
+                if (map.containsKey(keyy)) { // 首指针在目标字符串中，还原该值
+                    map.put(keyy, map.get(keyy) + 1);
+                    if (map.get(keyy) > 0) {
+                        count--;
+                    }
+                }
+                start++;
+            }
+        }
+    }
+    if (minLen > s.length()) {
+        return "";
+    }
+    return s.substring(minStart, minStart + minLen);
+}
+```
 
+### 336. Palindrome Pairs
+1. Brute Force, 两两配对，正反concatenation, 判断是否是回文O(n^2)
+2. 见注释
+```java
+public List<List<Integer>> palindromePairs(String[] words) {
+    if (words == null || words.length < 2) {
+        return new ArrayList<>();
+    }
+
+    List<List<Integer>> lists = new ArrayList<>();
+    Map<String, Integer> map = new HashMap<>();
+    // 将单词和下标放入map
+    for (int i = 0; i < words.length; i++) {
+        map.put(words[i], i);
+    }
+
+    // 将单词进行切割
+    for (int i = 0; i < words.length; i++) {
+        // j <= words[i].length主要是为了防止["a",""]空单词的出现
+        for (int j = 0; j <= words[i].length(); j++) {
+            String left = words[i].substring(0, j);
+            String right = words[i].substring(j);
+            // 分别判断左右两边是否是回文
+            if (isPalindrome(left)) {
+                // 判断是否存在另一部分的逆序字符串
+                String rightReverse = new StringBuilder(right).reverse().toString();
+                if(map.containsKey(rightReverse) && map.get(rightReverse) != i) {
+                    lists.add(Arrays.asList(map.get(rightReverse), i));
+                }
+            }
+
+            if (isPalindrome(right)) {
+                String leftReverse = new StringBuilder(left).reverse().toString();
+                // 防止重复判断，left已经处理了空值的情况
+                if(map.containsKey(leftReverse) && map.get(leftReverse) != i && right.length() != 0) {
+                    lists.add(Arrays.asList(i, map.get(leftReverse)));
+                }
+            }
+        }
+    }
+    return lists;
+}
+
+private boolean isPalindrome(String str) {
+    int left = 0;
+    int right = str.length() - 1;
+    while (left < right) {
+        if (str.charAt(left) != str.charAt(right)) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```  

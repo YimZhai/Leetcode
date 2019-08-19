@@ -81,3 +81,46 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     return head.next;
 }
 ```  
+
+## Hard
+### 23. Merge K Sorted List
+1. Divide and Conquer, 比如合并6个链表，那么按照分治法，我们首先分别合并0和3，1和4，2和5.  这样下一次只需合并3个链表，我们再合并1和3，最后和2合并就可以了
+```java
+public ListNode mergeKLists(ListNode[] lists) {
+    if (lists == null || lists.length == 0) {
+        return null;
+    }
+    int n = lists.length;
+    while (n > 1) {
+        int k = (n + 1) / 2;
+        for (int i = 0; i < n / 2; i++) {
+            lists[i] = mergeTwoLists(lists[i], lists[i + k]);
+        }
+        n = k;
+    }
+    return lists[0];
+}
+
+private ListNode mergeTwoLists(ListNode n1, ListNode n2) {
+    ListNode head = new ListNode(-1);
+    ListNode curr = head;
+    while (n1 != null && n2 != null) {
+        if (n1.val > n2.val) {
+            curr.next = n2;
+            n2 = n2.next;
+        } else {
+            curr.next = n1;
+            n1 = n1.next;
+        }
+        curr = curr.next;
+    }
+    // 如果n1或者n2还有剩余的点
+    if (n1 != null) {
+        curr.next = n1;
+    }
+    if (n2 != null) {
+        curr.next = n2;
+    }
+    return head.next;
+}
+```
