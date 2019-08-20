@@ -75,6 +75,27 @@ public int reverse(int x) {
 }
 ```  
 
+### 415. Add Strings
+用StringBuilder，从末位开始向前叠加，使用carry记录进位
+```java
+public String addStrings(String num1, String num2) {
+    int i = num1.length() - 1;
+    int j = num2.length() - 1;
+    int carry = 0;
+    char[] num1Array = num1.toCharArray();
+    char[] num2Array = num2.toCharArray();
+    StringBuilder sb = new StringBuilder();
+    while (i >= 0 || j >= 0 || carry == 1) {
+        int a = i >= 0 ? (num1Array[i--] - '0') : 0;
+        int b = j >= 0 ? (num2Array[j--] - '0') : 0;
+        int sum = a + b + carry;
+        sb.insert(0, sum % 10);
+        carry = sum / 10;
+    }
+    return sb.toString();
+}
+```  
+
 ### 5. Longest Palindrome Substring
 1. Brute Force O(n^3)
 2. 从中心向两端扩展，奇偶分开考虑, (s, i, i), (s, i, i + 1), 找到新的len更新longest，计算出start位置
