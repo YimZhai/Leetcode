@@ -73,6 +73,105 @@ public int reverse(int x) {
     }
     return (int)res;
 }
+```
+
+### 344. Reverse String
+Two Pointer, left, right
+```java
+public void reverseString(char[] s) {
+    int l = 0;
+    int r = s.length - 1;
+    while (l < r) {
+        char tmp = s[l];
+        s[l] = s[r];
+        s[r] = tmp;
+        l++;
+        r--;
+    }
+}
+``` 
+
+### 13. Roman to Integer
+```java
+public int romanToInt(String s) {
+    char[] chs = s.toCharArray();
+    Map<Character, Integer> map = new HashMap<>();
+    map.put('I', 1);
+    map.put('V', 5);
+    map.put('X', 10);
+    map.put('L', 50);
+    map.put('C', 100);
+    map.put('D', 500);
+    map.put('M', 1000);
+    int sum = 0;
+    for (int i = 0; i < chs.length; i++) {
+        if (i == (chs.length - 1)) {
+            sum += map.get(chs[i]);
+            continue;
+        }
+        if (map.get(chs[i]) < map.get(chs[i+1])) {
+            sum -= map.get(chs[i]);
+        } else {
+            sum += map.get(chs[i]);
+        }
+    }
+    return sum;
+}
+```  
+
+### 202. Happy Number
+1. Floyed Cycle Detection, O(1) space
+```java
+private int calSum(int n) {
+    int sum = 0, tmp;
+    while (n != 0) {
+        tmp = n % 10;
+        sum += tmp * tmp;
+        n /= 10;
+    }
+    return sum;
+}
+
+public boolean isHappy(int n) {
+    int slow, fast;
+    slow = fast = n;
+    while (slow > 1) {
+        slow = calSum(slow);
+        if (slow == 1) {
+            return true;
+        }
+        fast = calSum(fast);
+        fast = calSum(fast);
+        if (fast == 1) {
+            return true;
+        }
+        if (slow == fast) { // loop detected
+            return false;
+        }
+    }
+    return true;
+}
+```  
+2. HashSet, 如果新的计算结果不能加到set中，则返回false，只有在计算结果为1时返回true
+```java
+public boolean isHappy(int n) {
+    Set<Integer> set = new HashSet<>();
+    int tmp, sum;
+    while (set.add(n)) {
+        sum = 0;
+        while (n > 0) {
+            tmp = n % 10;
+            sum += tmp * tmp;
+            n /= 10;
+        }
+        if (sum == 1) {
+            return true;
+        } else {
+            n = sum;
+        }
+    }
+    return false;
+}
 ```  
 
 ### 415. Add Strings
@@ -161,5 +260,64 @@ public void backtracking(List<String> list, String str,
     if (right < left) {
         backtracking(list, str + ")", left, right + 1, n);
     }
+}
+```  
+
+### 17. Letter Combination of a Phone Number
+1. Single queue BFS
+public List<String> letterCombinations(String digits) {
+    LinkedList<String> list = new LinkedList<>();
+    if (digits.isEmpty()) {
+        return list;
+    }
+
+    String[] buttons = {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    list.add("");
+    char[] dc = digits.toCharArray();
+
+    for (int i = 0; i < dc.length; i++) {
+        char[] letters = buttons[dc[i] - '0'].toCharArray();
+        while (list.peek().length() == i) { // Make sure it's on the same level
+            String row = list.poll();
+            for (char letter : letters) {
+                list.add(row + letter);
+            }
+        }
+     }
+    return list;
+}
+```  
+
+### 273. Integer to English Word
+Intuitive
+```java
+public String numberToWords(int num) {
+    if (num == 0) {
+        return "Zero";
+    }
+    
+    return helper(num);
+}
+
+public String helper(int num) {
+    String[] words = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
+    "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+    StringBuilder res = new StringBuilder();
+    
+    if (num >= 1000000000) {
+        res.append(helper(num / 1000000000)).append(" Billion ").append(helper(num % 1000000000));
+    } else if (num >= 1000000) {
+        res.append(helper(num / 1000000)).append(" Million ").append(helper(num % 1000000));
+    } else if (num >= 1000) {
+        res.append(helper(num / 1000)).append(" Thousand ").append(helper(num % 1000));
+    } else if (num >= 100) {
+        res.append(helper(num / 100)).append(" Hundred ").append(helper(num % 100));
+    } else if (num >= 20) {
+        res.append(words[(num - 20) / 10 + 20]).append(" ").append(helper(num % 10));
+    } else {
+        res.append(words[num]);
+    }
+    return res.toString().trim();
 }
 ```  
