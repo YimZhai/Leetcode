@@ -320,4 +320,205 @@ public String helper(int num) {
     }
     return res.toString().trim();
 }
+```   
+
+### 227. Basic Calculator II
+使用stack, 将每次计算出的数存在stack中
+```java
+public int calculate(String s) {
+    int len = s.length();
+    if (s == null || len == 0) {
+        return 0;
+    }
+
+    Stack<Integer> stack = new Stack<>();
+    int num = 0; // 记录每一个数字
+    char sign = '+'; // 默认符号为+
+    for (int i = 0; i < len; i++) {
+        if (Character.isDigit(s.charAt(i))) {
+            num = num * 10 + (s.charAt(i) - '0');
+        }
+        if (!Character.isDigit(s.charAt(i)) && (s.charAt(i) != ' ') || (i == len - 1)) {
+            switch(sign) {
+                case '-':
+                    stack.push(-num);
+                    break;
+                case '+':
+                    stack.push(num);
+                    break;
+                case '*':
+                    stack.push(stack.pop() * num);
+                    break;
+                case '/':
+                    stack.push(stack.pop() / num);
+                    break;
+            }
+            sign = s.charAt(i);
+            num = 0;
+        }
+    }
+    int res = 0;
+    for (int i : stack) {
+        res += i;
+    }
+    return res;
+}
+```  
+
+### 8. String to Integer (atoi)
+```java
+public int myAtoi(String str) {
+    int index = 0, sign = 1, total = 0;
+    //1. Empty string
+    if(str.length() == 0) {
+        return 0;
+    }
+
+    //2. Remove Spaces
+    while(index < str.length() && str.charAt(index) == ' ') {
+        index ++;
+    }
+
+    // handle " "
+    if (index == str.length()) {
+        return 0;
+    }
+    //3. Handle signs
+    if(str.charAt(index) == '+' || str.charAt(index) == '-'){
+        sign = str.charAt(index) == '+' ? 1 : -1;
+        index ++;
+    }
+
+    //4. Convert number and avoid overflow
+    while (index < str.length()) {
+        int digit = str.charAt(index) - '0';
+        if (digit < 0 || digit > 9) {
+            break;
+        }
+
+        //check if total will be overflow after 10 times and add digit
+        if (Integer.MAX_VALUE/10 < total || Integer.MAX_VALUE/10 == total
+            && Integer.MAX_VALUE %10 < digit) {
+            return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        total = 10 * total + digit;
+        index ++;
+    }
+    return total * sign;
+}
+```  
+
+## Hard  
+### 10. Regular Expression Matching
+1. Funny solution
+```java
+public boolean isMatch(String s, String p) {
+    return s.matches(p);
+}
+```  
+2. 1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
+2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
+3, If p.charAt(j) == '*': 
+here are two sub conditions:
+       1   if p.charAt(j-1) != s.charAt(i) : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
+       2   if p.charAt(i-1) == s.charAt(i) or p.charAt(i-1) == '.':
+        dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
+        or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
+        or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
+```java
+public boolean isMatch(String s, String p) {
+    if(s == null || p == null) {
+        return false;
+    }
+    boolean[][] state = new boolean[s.length() + 1][p.length() + 1];
+    state[0][0] = true;
+    // no need to initialize state[i][0] as false
+    // initialize state[0][j]
+    for (int j = 1; j < state[0].length; j++) {
+        if (p.charAt(j - 1) == '*') {
+            if (state[0][j - 1] || (j > 1 && state[0][j - 2])) {
+                state[0][j] = true;
+            }
+        }
+    }
+    for (int i = 1; i < state.length; i++) {
+        for (int j = 1; j < state[0].length; j++) {
+            if (s.charAt(i - 1) == p.charAt(j - 1) || p.charAt(j - 1) == '.') {
+                state[i][j] = state[i - 1][j - 1];
+            }
+            if (p.charAt(j - 1) == '*') {
+                if (s.charAt(i - 1) != p.charAt(j - 2) && p.charAt(j - 2) != '.') {
+                    state[i][j] = state[i][j - 2];
+                } else {
+                    state[i][j] = state[i - 1][j] || state[i][j - 1] || state[i][j - 2];
+                }
+            }
+        }
+    }
+    return state[s.length()][p.length()];
+}
+```   
+
+### 68. Text Justification
+```java
+//首先要做的就是确定每一行能放下的单词数，这个不难，就是比较n个单词的长度和加上n - 1个空格的长度跟给定的长度L来比较即可
+//找到了一行能放下的单词个数，然后计算出这一行存在的空格的个数，是用给定的长度L减去这一行所有单词的长度和。
+//得到了空格的个数之后，就要在每个单词后面插入这些空格，这里有两种情况，比如某一行有两个单词"to" 和 "a"，给定长度L为6
+//如果这行不是最后一行，那么应该输出"to   a"，如果是最后一行，则应该输出 "to a  "，所以这里需要分情况讨论，最后一行的处理方法和其他行之间略有不同。
+//最后一个难点就是，如果一行有三个单词，这时候中间有两个空，如果空格数不是2的倍数，那么左边的空间里要比右边的空间里多加入一个空格，那么我们只需要用总的空格数除以空间个数
+//能除尽最好，说明能平均分配，除不尽的话就多加个空格放在左边的空间里"
+public List<String> fullJustify(String[] words, int maxWidth) {
+    List<String> lines = new ArrayList<String>();
+    int index = 0;
+    while (index < words.length) {
+        //count：该行所有单词累计总长度
+        int count = words[index].length();
+        //last:该行最后一个词的index
+        int last = index + 1;
+        while (last < words.length) {
+            //out of bound
+            if (words[last].length() + count + 1 > maxWidth) break;
+            //plus one for the space, if its a perfect fit it will fit
+            count += 1 + words[last].length();
+            last++;
+        }
+        StringBuilder builder = new StringBuilder();
+        //append该行第一个单词
+        builder.append(words[index]);
+        //这一行除去第一个已经append的单词，共剩下几个词语：diff 个：从index到last-1
+        int diff = last - index - 1;
+       // if last line or number of words in the line is 1, left-justified
+        //最后一行：每个单词中间一个空格， 剩余补上空白
+        if (last == words.length || diff == 0) {
+            for (int i = index+1; i < last; i++) {
+                builder.append(" ");
+                builder.append(words[i]);
+            }
+            for (int i = builder.length(); i < maxWidth; i++) {
+                builder.append(" ");
+            }
+        } else {
+            //不是最后一行：middle justified
+            //这一行总space的个数：（长度-累计单词总长度）
+            //每个单词后面space的个数：（长度-累计单词总长度）/单词个数
+            // r为需要平均分配到中间的空格总数
+            int spaces = (maxWidth - count) / diff;
+            int r = (maxWidth - count) % diff;
+            for (int i = index+1; i < last; i++) {
+                for(int k=spaces; k > 0; k--) {
+                    builder.append(" ");
+                }
+                if(r > 0) {
+                    builder.append(" ");
+                    r--;
+                }
+                builder.append(" ");
+                builder.append(words[i]);
+            }
+        }
+        lines.add(builder.toString());
+        index = last;
+    }
+    return lines;
+}
 ```  
