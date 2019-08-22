@@ -123,4 +123,44 @@ private ListNode mergeTwoLists(ListNode n1, ListNode n2) {
     }
     return head.next;
 }
-```
+```  
+
+### 234. Palindrome Linked List
+1. O(n) space, convert linked list to array, then solve it 
+2. O(1) space, convert second half of the list
+```java
+public boolean isPalindrome(ListNode head) {
+    ListNode fast = head;
+    ListNode slow = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    // odd nodes
+    if (fast != null) {
+        slow = slow.next;
+    }
+
+    slow = reverse(slow);
+    fast = head;
+    while (slow != null) {
+        if (slow.val != fast.val) {
+            return false;
+        }
+        slow = slow.next;
+        fast = fast.next;
+    }
+    return true;
+}
+
+public ListNode reverse(ListNode head) {
+    ListNode prev = null;
+    while (head != null) {
+        ListNode next = head.next;
+        head.next = prev;
+        prev = head;
+        head = next;
+    }
+    return prev;
+}
+```  

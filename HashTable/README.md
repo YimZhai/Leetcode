@@ -330,3 +330,37 @@ private boolean isPalindrome(String str) {
     return true;
 }
 ```  
+
+### 981. Time Based key-value Store
+使用一个map来存储 key - (timestamp - value)
+```java
+class TimeMap {
+
+    Map<String, Map> map; // key - (timestamp - value)
+    /** Initialize your data structure here. */
+    public TimeMap() {
+        map = new HashMap<>();
+    }
+
+    public void set(String key, String value, int timestamp) {
+        Map<Integer, String> tmp = map.getOrDefault(key, new HashMap<>());
+        tmp.put(timestamp, value);
+        map.put(key, tmp);
+    }
+
+    public String get(String key, int timestamp) {
+        if (!map.containsKey(key)) {
+            return "";
+        } else {
+            Map<Integer, String> tmp = map.get(key);
+            for (int i = timestamp; i >= 0; i--) { // 寻找pre_timestmap <= timestamp
+                if (tmp.containsKey(i)) {
+                    return tmp.get(i);
+                }
+            }
+            return "";
+        }
+    }
+}
+```  
+

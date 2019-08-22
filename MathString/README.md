@@ -522,3 +522,50 @@ public List<String> fullJustify(String[] words, int maxWidth) {
     return lines;
 }
 ```  
+
+### 50. Pow(x,n)
+用二分法，注意int越界情况
+```java
+public double myPow(double x, int n) {
+    double ans;
+    if (n < 0) {
+        x = 1 / x;
+        n = -(n + 1); // 处理int越界情况
+        ans = 1.0 * x;
+    } else {
+        ans = 1.0;
+    }
+    
+    double tmp = x;
+    while (n != 0) {
+        if (n % 2 == 1) {
+            ans *= tmp;
+        }
+        tmp *= tmp;
+        n /= 2;
+    }
+
+    return ans;
+}
+```  
+
+### 125. Valid Palindrome
+1. 去除空格和符号, 转为小写字母
+2. 两端双指针
+```java
+public boolean isPalindrome(String s) {
+    String input = s.replaceAll("\\p{Punct}", "").replaceAll(" ", "").toLowerCase();
+    char[] charArr = input.toCharArray();
+    int i = 0;
+    int j = charArr.length - 1;
+    while (i <= j) {
+        if (charArr[i] == charArr[j]) {
+            i++;
+            j--;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+```  

@@ -515,4 +515,36 @@ public int trap(int[] height) {
     }
     return vol;
 }
-```
+```  
+
+### 528. Random Pick With Weight
+比如若权重数组为 [1, 3, 2] 的话，那么累加和数组为 [1, 4, 6]，整个的权重和为6，我们 rand() % 6，可以随机出范围 [0, 5] 内的数,  
+随机到 0 则为第一个点，随机到 1，2，3 则为第二个点，随机到 4，5则为第三个点,  所以我们随机出一个数字x后，然后再累加和数组中查找第一个大于随机数x的数字，使用二分查找法可以找到第一个大于随机数x的数字的坐标，即为所求
+```java
+int[] sum;
+Random random;
+
+public Solution(int[] w) {
+    this.random = new Random();
+    for (int i = 1; i < w.length; i++) {
+        w[i] += w[i - 1];
+    }
+    this.sum = w;
+}
+public int pickIndex() {
+    int pick = random.nextInt(sum[sum.length - 1]) + 1;
+    int left = 0;
+    int right = sum.length - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (pick == sum[mid]) {
+            return mid;
+        } else if (pick > sum[mid]) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return left;
+}
+```  
