@@ -48,6 +48,30 @@ public List<String> subdomainVisits(String[] cpdomains) {
 }
 ```  
 
+### 349. Intersection of Two Arrays
+分别遍历两个数组，用set记录元素，第二次遍历，set存在则加入结果
+```java
+public int[] intersection(int[] nums1, int[] nums2) {
+    Set<Integer> set = new HashSet<>();
+    List<Integer> list = new ArrayList<>();
+    for (int num : nums1) {
+        set.add(num);
+    }
+
+    for (int num : nums2) {
+        if (set.contains(num)) {
+            set.remove(num);
+            list.add(num);
+        }
+    }
+    int[] res = new int[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+        res[i] = list.get(i);
+    }
+    return res;
+}
+```  
+
 ## Medium
 ### 3. Longest Substring Without Repeating Characters
 1. 双指针， 一前一后，如果后不在set里，添加进去，更新后，更新len，否则，删除前，更新前
