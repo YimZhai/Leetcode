@@ -1476,6 +1476,44 @@ public int calculate(String s) {
 }
 ```  
 
+### 224. Basic Calculator
+使用stack存放sign和中间结果
+```java
+public int calculate(String s) {
+    int len = s.length();
+    if (s == null || len == 0) {
+        return 0;
+    }
+    Stack<Integer> stack = new Stack<>();
+    int res = 0;
+    int sign = 1;
+    for (int i = 0; i < len; i++) {
+        if (Character.isDigit(s.charAt(i))) { // 找到数字
+            int sum = s.charAt(i) - '0';
+            while (i + 1 < len && Character.isDigit(s.charAt(i + 1))) {
+                sum = sum * 10 + s.charAt(i + 1) - '0';
+                i++;
+            }
+            res += sum * sign; // 计算出中间结果
+        } else if (s.charAt(i) == '+') {
+            sign = 1;
+        }
+        else if (s.charAt(i) == '-') {
+            sign = -1;
+        }
+        else if (s.charAt(i) == '(') { // 中间结果、符号放入栈，重置两个变量
+            stack.push(res);
+            stack.push(sign);
+            res = 0;
+            sign = 1;
+        } else if (s.charAt(i) == ')') {
+            res = res * stack.pop() + stack.pop();
+        }
+    }
+    return res;
+}
+```  
+
 ### 8. String to Integer (atoi)
 ```java
 public int myAtoi(String str) {
@@ -2024,3 +2062,163 @@ public class NestedIterator implements Iterator<Integer> {
     }
 }
 ```  
+
+### 103. Binary Tree Zigzag Level Order Traversal
+在树的层级遍历基础上，添加一个方向变量，每遍历完一层调转方向
+```java
+public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+    List<List<Integer>> lists = new ArrayList<>();
+    if (root == null) {
+        return lists;
+    }
+
+    Queue<TreeNode> q = new LinkedList<>();
+    q.offer(root);
+    boolean direct = true;
+    while (!q.isEmpty()) {
+        int len = q.size();
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            TreeNode node = q.poll();
+            if (direct) {
+                list.add(node.val);
+            } else {
+                list.add(0, node.val);
+            }
+
+            if (node.left != null) {
+                q.offer(node.left);
+            }
+            if (node.right != null) {
+                q.offer(node.right);
+            }
+        }
+        direct = !direct;
+        lists.add(list);
+    }
+    return lists;
+}
+```  
+
+### 692. Top K Frequent Word
+HashMap和PriorityQueue, HashMap用来记录每个词和这个词出现的次数，在insert到pq的时候，按照单词出现的次数insert  
+如果次数相同，则按照字母顺序.
+```java
+public List<String> topKFrequent(String[] words, int k) {
+    List<String> res = new LinkedList<>();
+    Map<String, Integer> map = new HashMap<>();
+    for (String word : words) {
+        map.put(word, map.getOrDefault(word, 0) + 1);
+    }
+    
+    PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
+        (a, b) -> a.getValue() == b.getValue() ? 
+         b.getKey().compareTo(a.getKey()) : a.getValue() - b.getValue()
+    );
+    
+    // insert into pq
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        pq.offer(entry);
+        if (pq.size() > k) {
+            pq.poll();
+        }
+    }
+    
+    while (!pq.isEmpty()) {
+        res.add(0, pq.poll().getKey()); // pq.poll() always return the smallest.
+    }
+    return res;
+}
+```  
+
+### 347. Top K Frequent Elements
+思路同上，更换数据类型
+```java
+public List<Integer> topKFrequent(int[] nums, int k) {
+    List<Integer> res = new LinkedList<>();
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int num : nums) {
+        map.put(num, map.getOrDefault(num, 0) + 1);
+    }
+
+    PriorityQueue<Map.Entry<Integer, Integer>> pq = new PriorityQueue<>(
+        (a, b) -> a.getValue() - b.getValue()
+    );
+
+    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+        pq.offer(entry);
+        if (pq.size() > k) {
+            pq.poll();
+        }
+    }
+
+    while (!pq.isEmpty()) {
+        res.add(0, pq.poll().getKey());
+    }
+    return res;
+}
+```  
+2. Bucket Sort
+建立一个数组，List<Integer>[]，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些  
+```java
+public List<Integer> topKFrequent(int[] nums, int k) {
+    List<Integer>[] bucket = new List[nums.length + 1];
+    Map<Integer, Integer> map = new HashMap<>();
+    List<Integer> res = new LinkedList<>();
+    for (int num : nums) {
+        map.put(num, map.getOrDefault(num, 0) + 1);
+    }
+    // 遍历keySet()
+    for (int key : map.keySet()) {
+        int cnt = map.get(key);
+        if (bucket[cnt] == null) {
+            bucket[cnt] = new ArrayList<>();
+        }
+        bucket[cnt].add(key);
+    }
+    // 遍历bucket
+    for (int i = bucket.length - 1; i >= 0 && res.size() < k; i--) {
+        if (bucket[i] != null) {
+            res.addAll(bucket[i]);
+        }
+    }
+    return res;
+}
+```  
+
+### 295. Find Median from Data Stream
+使用两个pq，small定义为max heap，large定义为min heap，addNum为O(logn), findMedian()为O(1)
+```java
+class MedianFinder {
+
+    PriorityQueue<Integer> small;
+    PriorityQueue<Integer> large;
+    boolean even = true;
+    /** initialize your data structure here. */
+    public MedianFinder() {
+        small = new PriorityQueue<>((a, b) -> a - b); // max heap
+        large = new PriorityQueue<>((a, b) -> b - a); // min heap
+    }
+
+    public void addNum(int num) {
+        if (even) { // 永远把奇数情况下的中间值放在small中
+            large.offer(num);
+            small.offer(large.poll());
+        } else {
+            small.offer(num);
+            large.offer(small.poll());
+        }
+        even = !even;
+    }
+
+    public double findMedian() {
+        if (even) {
+            return (large.peek() + small.peek()) / 2.0; // use 2.0
+        } else {
+            return small.peek();
+        }
+    }
+}
+```  
+
+
