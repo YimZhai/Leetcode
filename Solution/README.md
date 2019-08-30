@@ -625,6 +625,30 @@ public int[] intersection(int[] nums1, int[] nums2) {
 }
 ```  
 
+### 350. Intersection of Two Arrays II
+原理同上，使用map代替set，如果map的值不为0，则重复值也继续添加
+```java
+public int[] intersect(int[] nums1, int[] nums2) {
+    List<Integer> list = new ArrayList<>();
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int num : nums1) {
+        map.put(num, map.getOrDefault(num, 0) + 1);
+    }
+
+    for (int num : nums2) {
+        if (map.containsKey(num) && map.get(num) > 0) {
+            map.put(num, map.get(num) - 1);
+            list.add(num);
+        }
+    }
+    int[] res = new int[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+        res[i] = list.get(i);
+    }
+    return res;
+}
+```
+
 ## Medium
 ### 3. Longest Substring Without Repeating Characters
 1. 双指针， 一前一后，如果后不在set里，添加进去，更新后，更新len，否则，删除前，更新前
@@ -667,6 +691,46 @@ public int lengthOfLongestSubstring(String s) {
         map.put(s.charAt(j), j + 1);
     }
     return len;
+}
+```  
+
+### 242. Valid Anagram
+将字符串转为字符数组，然后逐一比较
+```java
+public boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) {
+        return false;
+    }
+
+    char[] chs = s.toCharArray();
+    char[] cht = t.toCharArray();
+    Arrays.sort(chs);
+    Arrays.sort(cht);
+    for (int i = 0; i < chs.length; i++) {
+        if (chs[i] != cht[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+```  
+None Sorting solution
+```java
+public boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) return false;
+    int[] cnt = new int[26];
+    for (char c : s.toCharArray()) {
+        cnt[c - 'a']++;
+    }
+    for (char c : t.toCharArray()) {
+        cnt[c - 'a']--;
+    }
+    for (int i : cnt) {
+        if (i != 0) {
+            return false;
+        }
+    }
+    return true;
 }
 ```  
 
@@ -2216,6 +2280,182 @@ class MedianFinder {
             return (large.peek() + small.peek()) / 2.0; // use 2.0
         } else {
             return small.peek();
+        }
+    }
+}
+```  
+
+### 75. Sort Colors
+1. Two passes, use hashmap记录每个颜色出现的次数，overwrite原来的数组, counting sort
+```java
+public void sortColors(int[] nums) {
+    int[] colors = new int[3];
+    for (int num : nums) {
+        colors[num]++;
+    }
+
+    int index = 0;
+    for (int i = 0; i < colors.length; i++) {
+        for (int j = 0; j < colors[i]; j++) {
+            nums[index] = i;
+            index++;
+        }
+    }
+}
+```  
+2. One pass, quicksort 3 way partition.
+- 定义red指针指向开头位置，blue指针指向末尾位置。  
+- 从头开始遍历原数组，如果遇到0，则交换该值和red指针指向的值，并将red指针后移一位。若遇到2，则交换该值和blue指针指向的值，并将blue指针前移一位。若遇到1，则继续遍历。  
+```java
+public void sortColors(int[] nums) {
+    int start = 0;
+    int end = nums.length - 1;
+    int i = 0;
+    while (i <= end) {
+        if (nums[i] == 0) { // make sure i is in front of start, in case [0,0,0,0,0...]
+            swap(nums, i, start);
+            start++;
+            i++;
+        } else if (nums[i] == 2) {
+            swap(nums, i, end);
+            end--;
+        } else {
+            i++;
+        }
+    }
+}
+
+public void swap(int[] nums, int i, int j) {
+    int tmp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = tmp;
+}
+```  
+
+### 148. Sort List
+Merge Sort, Recursion version, O(nlgn), O(n) space.
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        // use repeated doubling
+        ListNode slow = head;
+        ListNode fast = head;
+        ListNode pre = head;
+        while (fast != null && fast.next != null) { // in case of even or odd
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        pre.next = null; // 建立停止点，就是下一次递归时，sortList(head) 的停止点。
+        return merge(sortList(head), sortList(slow));
+    }
+
+    public ListNode merge(ListNode slow, ListNode fast) {
+        ListNode dummy = new ListNode(-1);
+        ListNode curr = dummy;
+        while (slow != null && fast != null) {
+            if (slow.val < fast.val) {
+                curr.next = slow;
+                slow = slow.next;
+            } else {
+                curr.next = fast;
+                fast = fast.next;
+            }
+            curr = curr.next;
+        }
+        if (slow != null) {
+            curr.next = slow;
+        }
+        if (fast != null) {
+            curr.next = fast;
+        }
+        return dummy.next;
+    }
+}
+```  
+
+### 315. Count of Smaller Numbers After Itself
+1. Brute Force, O(n^2), 每个点遍历一遍后面所有节点，统计个数
+```java
+public List<Integer> countSmaller(int[] nums) {
+    if (nums.length == 0) {
+        return new ArrayList<Integer>();
+    }
+    Integer[] cnts = new Integer[nums.length];
+    for (int i = 0; i < cnts.length; i++) {
+        int cnt = 0;
+        for (int j = i + 1; j < cnts.length; j++) {
+            if (nums[j] < nums[i]) {
+                cnt++;
+            }
+        }
+        cnts[i] = cnt;
+    }
+    cnts[cnts.length - 1] = 0;
+    return Arrays.asList(cnts);
+}
+```  
+2. Merge Sort, O(nlgn), 保留原数组，根据原数组的大小sort他们的index
+```java
+class Solution {
+    int[] count;
+    public List<Integer> countSmaller(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        int[] indexes = new int[nums.length];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i;
+        }
+        count = new int[nums.length];
+        mergeSort(nums, indexes, 0, nums.length - 1);
+        for (int i = 0; i < count.length; i++) {
+            res.add(count[i]);
+        }
+        return res;
+    }
+    
+    public void mergeSort(int[] nums, int[] indexes, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        
+        int mid = (left + right) / 2;
+        mergeSort(nums, indexes, left, mid);
+        mergeSort(nums, indexes, mid + 1, right);
+        merge(nums, indexes, left, mid, right);
+    }
+    
+    public void merge(int[] nums, int[] indexes, int left, int mid, int right) {
+        int[] tmp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+        // 右半sort部分小于左半部分的数字的count
+        int rightCnt = 0;
+        while (i <= mid && j <= right) {
+            // indexes排序，根据nums[index]的大小
+            if (nums[indexes[i]] > nums[indexes[j]]) { // 如果右边小,右边的cnt++
+                tmp[k] = indexes[j];
+                rightCnt++;
+                j++;
+            } else { // 如果左边小右边大，更新左边的count值
+                tmp[k] = indexes[i];
+                count[indexes[i]] += rightCnt;
+                i++;
+            }
+            k++;
+        }
+        while (i <= mid) {
+            tmp[k] = indexes[i];
+            count[indexes[i]] += rightCnt;
+            i++;
+            k++;
+        }
+        while (j <= right) {
+            tmp[k++] = indexes[j++];
+        }
+        for (int p = 0; p < tmp.length; p++) {
+            indexes[p + left] = tmp[p];
         }
     }
 }
