@@ -2461,4 +2461,198 @@ class Solution {
 }
 ```  
 
+### 767. Reorganize String
+```java
+public String reorganizeString(String S) {
+    // Count occurance of each character
+    int[] hash = new int[26];
+    for (char c : S.toCharArray()) {
+        hash[c - 'a']++;
+    }
 
+    int len = S.length();
+    int max = 0;
+    int letter = 0;
+    // find the letter with the largest appearance
+    for (int i = 0; i < hash.length; i++) {
+        if (hash[i] > max) {
+            max = hash[i];
+            letter = i;
+        }
+    }
+    if (max > (len + 1) / 2) {
+        return "";
+    }
+    // put letter into even indexes.
+    char[] res = new char[len];
+    int index = 0;
+    while (hash[letter] > 0) {
+        res[index] = (char)(letter + 'a');
+        index += 2;
+        hash[letter]--;
+    }
+    // put the rest into res
+    for (int i = 0; i < hash.length; i++) {
+        while (hash[i] > 0) {
+            if (index >= len) {
+                index = 1;
+            }
+            res[index] = (char)(i + 'a');
+            index += 2;
+            hash[i]--;
+        }
+    }
+    return new String(res);
+}
+```  
+
+# BFS & DFS
+1. DFS用到了递归的形式，使用栈的结构，FILO
+2. BFS的状态选取用了队列的形式，FIFO
+### 199. Binary Tree Right Side View
+BFS,树的层级遍历，每层开始遍历的时候从最右边开始，同时将每一层遍历到的第一个节点加入结果
+```java
+public List<Integer> rightSideView(TreeNode root) {
+    List<Integer> res = new ArrayList<>();
+    if (root == null) {
+        return res;
+    }
+
+    Queue<TreeNode> q = new LinkedList<>();
+    q.offer(root);
+    while (!q.isEmpty()) {
+        int size = q.size();
+        for (int i = 0; i < size; i++) {
+            TreeNode node = q.poll();
+            if (i == 0) {
+                res.add(node.val);
+            }
+            if (node.right != null) {
+                q.offer(node.right);
+            }
+            if (node.left != null) {
+                q.offer(node.left);
+            }
+        }
+    }
+    return res;
+}
+```  
+
+### 200. Number of Islands
+1. BFS，遍历所有点，遇到'1'的时候，将与1相邻的所有1全部标为0
+```java
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid.length == 0) {
+            return 0;
+        }
+        int cnt = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    bfs(grid, i, j);
+                    cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
+
+    public void bfs(char[][] grid, int i, int j) {
+        grid[i][j] = '0';
+        int m = grid.length;
+        int n = grid[0].length;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{i, j});
+        while (!q.isEmpty()) {
+            int[] point = q.poll();
+            int x = point[0];
+            int y = point[1];
+            if (x < m - 1 && grid[x + 1][y] == '1') {
+                q.offer(new int[]{x + 1, y});
+                grid[x + 1][y] = '0';
+            }
+            if (x > 0 && grid[x - 1][y] == '1') {
+                q.offer(new int[]{x - 1, y});
+                grid[x - 1][y] = '0';
+            }
+            if (y < n - 1 && grid[x][y + 1] == '1') {
+                q.offer(new int[]{x, y + 1});
+                grid[x][y + 1] = '0';
+            }
+            if (y > 0 && grid[x][y - 1] == '1') {
+                q.offer(new int[]{x, y - 1});
+                grid[x][y - 1] = '0';
+            }
+        }
+    }
+}
+```  
+2. DFS, 思路同上, 只贴dfs()部分
+```java
+public void dfs(char[][] grid, int i, int j) {
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1') {
+        return;
+    }
+    grid[i][j] = '0';
+    dfs(grid, i + 1, j);
+    dfs(grid, i - 1, j);
+    dfs(grid, i, j + 1);
+    dfs(grid, i, j - 1);
+}
+```  
+
+### 127. Word Ladder
+1. Bidirectional Searching, 用两个set，从两端开始搜索
+```java
+public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+    Set<String> dict = new HashSet(wordList);
+    if (!dict.contains(endWord)) { // 不包含endWord，直接返回0
+        return 0;
+    }
+
+    Set<String> beginSet = new HashSet<>();
+    Set<String> endSet = new HashSet<>();
+    beginSet.add(beginWord);
+    endSet.add(endWord);
+
+    int len = 1; // 路径长度
+    Set<String> visited = new HashSet<>();
+    visited.add(beginWord);
+    visited.add(endWord);
+
+    while (!beginSet.isEmpty() && !endSet.isEmpty()) {
+        if (beginSet.size() > endSet.size()) { // 确保beginSet是更短的那一条路
+            Set<String> set = beginSet;
+            beginSet = endSet;
+            endSet = set;
+        }
+
+        Set<String> tmp = new HashSet<>(); // 从beginWord开始到下一层所有节点可能
+        for (String word : beginSet) {
+            char[] chs = word.toCharArray();
+            for (int i = 0; i < chs.length; i++) { // 遍历字母表，生成新的单词
+                for (char c = 'a'; c <= 'z'; c++) {
+                    char old = chs[i];
+                    chs[i] = c;
+                    String newWord = String.valueOf(chs);
+
+                    if (endSet.contains(newWord)) { // endSet包含单词，说明找了一条路径
+                        return len + 1;
+                    }
+
+                    if (dict.contains(newWord) && !visited.contains(newWord)) { // 避免重复遍历
+                        tmp.add(newWord);
+                        visited.add(newWord);
+                    }
+                    chs[i] = old; // 还原单词
+                }
+            }
+        }
+        beginSet = tmp; // 更新下一层需要遍历的单词
+        len++;
+    }
+    return 0;
+}
+```  
