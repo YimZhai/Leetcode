@@ -197,6 +197,90 @@ public int[] sortedSquares(int[] A) {
 ```
 
 ## Medium
+### 912. Sort an Array
+Array排序用quick sort, LinkedList排序用merge sort
+1. Merge Sort
+```java
+class Solution {
+    public int[] sortArray(int[] nums) {
+        mSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    public void mSort(int[] nums, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int mid = (left + right) / 2;
+        mSort(nums, left, mid);
+        mSort(nums, mid + 1, right);
+        merge(nums, left, mid, right);
+    }
+
+    public void merge(int[] nums, int left, int mid, int right) {
+        int i = left;
+        int j = mid + 1;
+        int[] tmp = new int[right - left + 1];
+        int index = 0;
+        while (i <= mid && j <= right) {
+            if (nums[i] < nums[j]) {
+                tmp[index++] = nums[i++];
+            } else {
+                tmp[index++] = nums[j++];
+            }
+        }
+        while (i <= mid) {
+            tmp[index++] = nums[i++];
+        }
+        while (j <= right) {
+            tmp[index++] = nums[j++];
+        }
+        for (int k = 0; k < tmp.length; k++) {
+            nums[left + k] = tmp[k];
+        }
+    }
+}
+```  
+2. Quick Sort
+```java
+class Solution {
+    public int[] sortArray(int[] nums) {
+        qSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    public void qSort(int[] nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+
+        // 选择pivot点，nums[start], nums[mid], nums[random]
+        int pivot = nums[start];
+        int left = start;
+        int right = end;
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                left++;
+            }
+            while (left <= right && nums[right] > pivot) {
+                right--;
+            }
+
+            if (left <= right) {
+                int tmp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = tmp;
+                left++;
+                right--;
+            }
+        }
+        qSort(nums, start, right);
+        qSort(nums, left, end);
+    }
+}
+```  
+
 ### 15. Three Sum
 1. Brute Force, three level for loop O(n^3)
 2. Sort数组，第一个数One Pass，二三用双指针
@@ -1783,6 +1867,39 @@ public boolean isPalindrome(String s) {
 }
 ```  
 
+### 680. Valid Palindrome II
+思路同上，双指针从两端向中间移动，遇到不同的时候分情况考虑，判断左边跳一位和右边挑一位后是否还是回文
+```java
+class Solution {
+    public boolean validPalindrome(String s) {
+        char[] chs = s.toCharArray();
+        int left = 0;
+        int right = chs.length - 1;
+        boolean jump = true;
+        while (left < right) {
+            if (chs[left] == chs[right]) {
+                left++;
+                right--;
+            } else {
+                return isPalindrome(chs, left + 1, right) || isPalindrome(chs, left, right - 1);
+            }
+        }
+        return true;
+    }
+
+    public boolean isPalindrome(char[] chs, int left, int right) {
+        while (left < right) {
+            if (chs[left] != chs[right]) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+```  
+
 # Two Pointer & Binary Search
 ### 34. Find First and Last Position of Element in Sorted Array
 分两步，首先找到first, 然后找到last
@@ -2656,3 +2773,141 @@ public int ladderLength(String beginWord, String endWord, List<String> wordList)
     return 0;
 }
 ```  
+
+### 332. Reconstruct Itinerary
+Eulerian Path, 有向图寻找欧拉路径, 解决欧拉路径的算法，Hierholzer.  
+```java
+path = []
+DFS(u):
+    While (u存在未被访问的边e(u,v))
+        mark边e(u,v)为访问
+        DFS(v)
+    End
+    path.pushLeft(u)
+```
+``` java
+class Solution {
+    Map<String, PriorityQueue<String>> flights; // edge start -> edge end
+    LinkedList<String> path;
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        flights = new HashMap<>();
+        path = new LinkedList<>();
+        for (int i = 0; i < tickets.size(); i++) { // 遍历所有边
+            flights.putIfAbsent(tickets.get(i).get(0), new PriorityQueue<>());
+            flights.get(tickets.get(i).get(0)).add(tickets.get(i).get(1));
+        }
+
+        dfs("JFK");
+        return path;
+    }
+
+    public void dfs(String departure) {
+        PriorityQueue<String> arrivals = flights.get(departure); // pq为升序排列，每次取到的都是lexical 小的结果
+        while (arrivals != null && !arrivals.isEmpty()) { // Hierholzer算法
+            dfs(arrivals.poll());
+        }
+        path.addFirst(departure);
+    }
+}
+```  
+
+### 547. Friend Circle
+```java
+class Solution {
+    public int findCircleNum(int[][] M) {
+        int circle = 0;
+        boolean[] visited = new boolean[M.length]; // 下标对应学生
+        for (int i = 0; i < M.length; i++) { // 遍历所有学生
+            if (!visited[i]) { // A学生还没有加入circle
+                dfs(M, visited, i);
+                circle++;
+            }
+        }
+        return circle;
+    }
+
+    public void dfs(int[][] m, boolean[] visited, int i) {
+        for (int j = 0; j < m.length; j++) { // 遍历A学生的朋友关系
+            if (m[i][j] == 1 && !visited[j]) { // 如果A和B有朋友关系, 并且B没在circle里，如果在会死循环
+                visited[j] = true; // B加入到circle
+                dfs(m, visited, j); // 遍历B的除去A的朋友
+            }
+        }
+    }
+}
+```  
+
+### 339. Nested List Weight Sum
+1. Recursion 
+```java
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        return dfs(nestedList, 1);
+    }
+
+    public int dfs(List<NestedInteger> list, int depth) {
+        int sum = 0;
+        for (NestedInteger n : list) {
+            if (n.isInteger()) {
+                sum += depth * n.getInteger();
+            } else {
+                sum += dfs(n.getList(), depth + 1);
+            }
+        }
+        return sum;
+    }
+}
+```  
+2. Iteration
+```java
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        int sum = 0;
+        int depth = 1;
+
+        Queue<NestedInteger> q = new LinkedList<>(nestedList);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                NestedInteger n = q.poll();
+                if (n.isInteger()) {
+                    sum += depth * n.getInteger();
+                } else {
+                    q.addAll(n.getList());
+                }
+            }
+            depth++;
+        }
+        return sum;
+    }
+}
+```  
+
+### 364. Nested List Weight Sum II
+1. BFS
+```java
+public int depthSumInverse(List<NestedInteger> nestedList) {
+    int sum = 0;
+    int res = 0;
+    Deque<NestedInteger> dq = new ArrayDeque<>();
+    for (NestedInteger n : nestedList) {
+        dq.offerLast(n);
+    }
+
+    while (!dq.isEmpty()) {
+        int size = dq.size();
+        for (int i = 0; i < size; i++) {
+            NestedInteger n = dq.pollFirst();
+            if (n.isInteger()) {
+                sum += n.getInteger(); // 上一层的结果还在sum中，再加一次的时候相当于重复加了第一层
+            } else {
+                dq.addAll(n.getList());
+            }
+        }
+        res += sum;
+    }
+    return res;
+}
+```  
+
