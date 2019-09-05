@@ -1,7 +1,10 @@
 # Array
+
 ### 1. Two Sum
+
 1. Brute Force, two level for loop.
 2. One Pass Hash
+
 ```java
 public int[] twoSum(int[] nums, int target) {
     Map<Integer, Integer> map = new HashMap<>();
@@ -15,8 +18,11 @@ public int[] twoSum(int[] nums, int target) {
     return new int[] {};
 }
 ```  
+
 ### 53. Maximum Subarray
+
 1. 如果sum小于0， 不管下一个数是正是负，肯定会比这个数加上sum的值大
+
 ```java
 public int maxSubArray(int[] nums) {
     int sum = Integer.MIN_VALUE;
@@ -2313,7 +2319,9 @@ public List<String> topKFrequent(String[] words, int k) {
 ```  
 
 ### 347. Top K Frequent Elements
+
 思路同上，更换数据类型
+
 ```java
 public List<Integer> topKFrequent(int[] nums, int k) {
     List<Integer> res = new LinkedList<>();
@@ -2339,8 +2347,10 @@ public List<Integer> topKFrequent(int[] nums, int k) {
     return res;
 }
 ```  
-2. Bucket Sort
+
+1. Bucket Sort
 建立一个数组，List<Integer>[]，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些  
+
 ```java
 public List<Integer> topKFrequent(int[] nums, int k) {
     List<Integer>[] bucket = new List[nums.length + 1];
@@ -2368,7 +2378,9 @@ public List<Integer> topKFrequent(int[] nums, int k) {
 ```  
 
 ### 295. Find Median from Data Stream
+
 使用两个pq，small定义为max heap，large定义为min heap，addNum为O(logn), findMedian()为O(1)
+
 ```java
 class MedianFinder {
 
@@ -2403,7 +2415,9 @@ class MedianFinder {
 ```  
 
 ### 75. Sort Colors
+
 1. Two passes, use hashmap记录每个颜色出现的次数，overwrite原来的数组, counting sort
+
 ```java
 public void sortColors(int[] nums) {
     int[] colors = new int[3];
@@ -2420,9 +2434,12 @@ public void sortColors(int[] nums) {
     }
 }
 ```  
-2. One pass, quicksort 3 way partition.
+
+1. One pass, quicksort 3 way partition.
+
 - 定义red指针指向开头位置，blue指针指向末尾位置。  
 - 从头开始遍历原数组，如果遇到0，则交换该值和red指针指向的值，并将red指针后移一位。若遇到2，则交换该值和blue指针指向的值，并将blue指针前移一位。若遇到1，则继续遍历。  
+
 ```java
 public void sortColors(int[] nums) {
     int start = 0;
@@ -2450,7 +2467,9 @@ public void swap(int[] nums, int i, int j) {
 ```  
 
 ### 148. Sort List
+
 Merge Sort, Recursion version, O(nlgn), O(n) space.
+
 ```java
 class Solution {
     public ListNode sortList(ListNode head) {
@@ -2493,7 +2512,9 @@ class Solution {
 ```  
 
 ### 315. Count of Smaller Numbers After Itself
+
 1. Brute Force, O(n^2), 每个点遍历一遍后面所有节点，统计个数
+
 ```java
 public List<Integer> countSmaller(int[] nums) {
     if (nums.length == 0) {
@@ -2513,7 +2534,9 @@ public List<Integer> countSmaller(int[] nums) {
     return Arrays.asList(cnts);
 }
 ```  
-2. Merge Sort, O(nlgn), 保留原数组，根据原数组的大小sort他们的index
+
+1. Merge Sort, O(nlgn), 保留原数组，根据原数组的大小sort他们的index
+
 ```java
 class Solution {
     int[] count;
@@ -2530,18 +2553,18 @@ class Solution {
         }
         return res;
     }
-    
+
     public void mergeSort(int[] nums, int[] indexes, int left, int right) {
         if (left >= right) {
             return;
         }
-        
+
         int mid = (left + right) / 2;
         mergeSort(nums, indexes, left, mid);
         mergeSort(nums, indexes, mid + 1, right);
         merge(nums, indexes, left, mid, right);
     }
-    
+
     public void merge(int[] nums, int[] indexes, int left, int mid, int right) {
         int[] tmp = new int[right - left + 1];
         int i = left;
@@ -2579,6 +2602,7 @@ class Solution {
 ```  
 
 ### 767. Reorganize String
+
 ```java
 public String reorganizeString(String S) {
     // Count occurance of each character
@@ -2623,11 +2647,13 @@ public String reorganizeString(String S) {
 }
 ```  
 
-# BFS & DFS
 1. DFS用到了递归的形式，使用栈的结构，FILO
 2. BFS的状态选取用了队列的形式，FIFO
+
 ### 199. Binary Tree Right Side View
+
 BFS,树的层级遍历，每层开始遍历的时候从最右边开始，同时将每一层遍历到的第一个节点加入结果
+
 ```java
 public List<Integer> rightSideView(TreeNode root) {
     List<Integer> res = new ArrayList<>();
@@ -2657,7 +2683,9 @@ public List<Integer> rightSideView(TreeNode root) {
 ```  
 
 ### 200. Number of Islands
+
 1. BFS，遍历所有点，遇到'1'的时候，将与1相邻的所有1全部标为0
+
 ```java
 class Solution {
     public int numIslands(char[][] grid) {
@@ -2706,7 +2734,9 @@ class Solution {
     }
 }
 ```  
-2. DFS, 思路同上, 只贴dfs()部分
+
+1. DFS, 思路同上, 只贴dfs()部分
+
 ```java
 public void dfs(char[][] grid, int i, int j) {
     if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1') {
@@ -2911,3 +2941,316 @@ public int depthSumInverse(List<NestedInteger> nestedList) {
 }
 ```  
 
+## Random
+
+### 146. LRU Cache
+
+思路，使用hashmap存储值，使用double linked list存储LRU
+
+```java
+class LRUCache {
+
+    // Double Linkedlist Node inner class
+    class DLinkedNode {
+        int key;
+        int value;
+        DLinkedNode pre;
+        DLinkedNode next;
+    }
+
+    // Always add the new node right after head;
+    private void addNode(DLinkedNode node) {
+        node.next = head.next;
+        node.pre = head;
+
+        head.next.pre = node;
+        head.next = node;
+    }
+
+    // Remove an existing node from the linked list.
+    private void removeNode(DLinkedNode node) {
+        node.pre.next = node.next;
+        node.next.pre = node.pre;
+    }
+
+    // Move certain node in between to the head.
+    private void moveToHead(DLinkedNode node) {
+        this.removeNode(node);
+        this.addNode(node);
+    }
+
+    // Pop the current tail
+    private DLinkedNode popTail() {
+        DLinkedNode res = tail.pre;
+        this.removeNode(res);
+        return res;
+    }
+
+    // Variables
+    private Map<Integer, DLinkedNode> cache = new HashMap<>();
+    private int count;
+    private int capacity;
+    private DLinkedNode head;
+    private DLinkedNode tail;
+
+    public LRUCache(int capacity) {
+        this.count = 0;
+        this.capacity = capacity;
+
+        // Establish double linked list
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+
+        head.pre = null;
+        head.next = tail;
+
+        tail.next = null;
+        tail.pre = head;
+    }
+
+    public int get(int key) {
+        DLinkedNode node = this.cache.get(key);
+        if (node == null) { // Key doesn't exist
+            return -1;
+        }
+        this.moveToHead(node); // update list
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        DLinkedNode node = this.cache.get(key);
+
+        if (node == null) { // key doesn't exist
+            // add new node
+            DLinkedNode newNode = new DLinkedNode();
+            newNode.key = key;
+            newNode.value = value;
+            this.addNode(newNode);
+            this.cache.put(key, newNode);
+            count++;
+            // if cache pass capacity
+            if (count > capacity) {
+                DLinkedNode tail = this.popTail();
+                this.cache.remove(tail.key);
+                count--;
+            }
+        } else { // key exist
+            // update value
+            node.value = value;
+            this.moveToHead(node);
+        }
+    }
+}
+```  
+
+### 79. Word Search
+
+思路： DFS，遍历board，找到和word第一个字母相同时开始dfs。
+
+```java
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        if (word == null || word.length() == 0 || board.length == 0) {
+            return true;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == word.charAt(0) && dfs(board, word, visited, i, j, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(char[][] board, String word, boolean[][] visited, 
+                        int i, int j, int idx) {
+        // the last character match
+        if (idx == word.length()) {
+            return true;
+        }
+        // index out of bound, character doesn't match or been visited
+        if (i < 0 || i >= board.length 
+            || j < 0 || j >= board[i].length
+            || board[i][j] != word.charAt(idx)
+            || visited[i][j]) {
+            return false;
+        }
+        visited[i][j] = true;
+        // dfs all four directions
+        if (dfs(board, word, visited, i + 1, j, idx + 1) 
+           || dfs(board, word, visited, i - 1, j, idx + 1)
+           || dfs(board, word, visited, i, j + 1, idx + 1)
+           || dfs(board, word, visited, i, j - 1, idx + 1)) {
+            return true;
+        }
+        // backtracking, reset visited point
+        visited[i][j] = false;
+        return false;
+    }
+}
+```  
+
+### 46. Permutation
+
+三个思路解决，backtracking
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        permute(nums, lists, new ArrayList<>(), new boolean[nums.length]);
+        return lists;
+    }
+    private void permute(int[] nums, List<List<Integer>> lists,
+                         List<Integer> list, boolean[] used) {
+        // recursion exit
+        if (list.size() == nums.length) {
+            lists.add(new ArrayList(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            list.add(nums[i]);
+            used[i] = true;
+            permute(nums, lists, list, used);
+            used[i] = false;
+            list.remove(list.size() - 1); // remove the last digit
+        }
+    }
+}
+```
+
+交换法
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        permute(nums, 0, lists); // 从下标0开始组合
+        return lists;
+    }
+
+    private void permute(int[] nums, int begin, List<List<Integer>> lists) {
+        if (begin == nums.length) {
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < nums.length; i++) {
+                list.add(nums[i]);
+            }
+            lists.add(list);
+            return;
+        }
+
+        for (int i = begin; i < nums.length; i++) {
+            swap(nums, i, begin);
+            permute(nums, begin + 1, lists);
+            swap(nums, i, begin);
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+}
+```
+
+### 91. Decode Ways *
+
+DP
+
+```java
+public int numDecodings(String s) {
+    if (s == null || s.length() == 0) {
+        return 0;
+    }
+
+    if (s.charAt(0) == '0') {
+        return 0;
+    }
+
+    int[] dp = new int[s.length() + 1];
+    dp[0] = 1;
+    dp[1] = 1;
+    int tmp;
+    for (int i = 2; i <= s.length(); i++) {
+        //检查当前字符是不是'0'
+        tmp = Integer.parseInt(s.substring(i - 1, i));
+        if (tmp != 0) {
+            dp[i] = dp[i - 1];
+        }
+        // 检查当前字符和前一个字符组合在一起是否在1-26之间
+        if (s.charAt(i - 2) != '0') {
+            tmp = Integer.parseInt(s.substring(i - 2, i));
+            if (tmp > 0 && tmp <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+
+    }
+    return dp[s.length()];
+}
+```
+
+### 716. Max Stack
+
+```java
+class MaxStack {
+
+    Stack<Integer> stack;
+    Stack<Integer> maxStack;
+    /** initialize your data structure here. */
+    public MaxStack() {
+        stack = new Stack<>();
+        maxStack = new Stack<>();
+    }
+
+    public void push(int x) {
+        pushHelper(x);
+    }
+
+    public void pushHelper(int x) {
+        int tempMax = maxStack.isEmpty() ? Integer.MIN_VALUE : maxStack.peek();
+        if (x > tempMax) {
+            tempMax = x;
+        }
+        stack.push(x);
+        maxStack.push(tempMax);
+    }
+
+    public int pop() {
+        maxStack.pop();
+        return stack.pop();
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int peekMax() {
+        return maxStack.peek();
+    }
+
+    public int popMax() {
+        int max = maxStack.peek();
+        Stack<Integer> temp = new Stack<>();
+
+        while (stack.peek() != max) {
+            temp.push(stack.pop());
+            maxStack.pop();
+        }
+        stack.pop();
+        maxStack.pop();
+        while (!temp.isEmpty()) {
+            int x = temp.pop();
+            pushHelper(x);
+        }
+        return max;
+    }
+}
+```
