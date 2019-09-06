@@ -3240,17 +3240,88 @@ class MaxStack {
         int max = maxStack.peek();
         Stack<Integer> temp = new Stack<>();
 
+        // // make sure to pop all the element in the maxStack which equals to max
         while (stack.peek() != max) {
-            temp.push(stack.pop());
+            temp.push(stack.pop()); // store smaller item inside the stack temporarly
             maxStack.pop();
         }
         stack.pop();
         maxStack.pop();
-        while (!temp.isEmpty()) {
+        while (!temp.isEmpty()) { // push temp stack element back into stack
             int x = temp.pop();
             pushHelper(x);
         }
         return max;
     }
+}
+```
+
+### 393. UTF8 Validation
+
+知识点 Bit Manipulation [UTF8](https://www.fileformat.info/info/unicode/utf8.htm)
+
+```java
+public boolean validUtf8(int[] data) {
+    int cnt = 0;
+    for (int d : data) {
+        if (cnt == 0) {
+            if (d >> 5 == 0b110) { // 2 byte
+                cnt = 1;
+            } else if (d >> 4 == 0b1110) { // 3 byte 
+                cnt = 2;
+            } else if (d >> 3 == 0b11110) { // 4 byte
+                cnt = 3;
+            } else if (d >> 7 != 0) { // 1 byte and not start with 0
+                return false;
+            }
+        } else {
+            if (d >> 6 != 0b10) { // check remaining byte
+                return false;
+            }
+            cnt--;
+        }
+    }
+    return cnt == 0; // only return true when no byte remaining.
+}
+```  
+
+### 138. Copy List With Random Pointer
+
+O(n) Space, HashMap
+
+```java
+```
+
+O(1) space
+
+```java
+public Node copyRandomList(Node head) {
+    if (head == null) return head;
+    // 1 -> 2 -> 3-> 4
+    Node pre = head;
+    while (pre != null) { // 1->1->2->2->3->3->4->4
+        Node clone = new Node(pre.val);
+        clone.next = pre.next;
+        pre.next = clone;
+        pre = clone.next;
+    }
+    // Update random
+    pre = head;
+    while (pre != null) {
+        pre.next.random = (pre.random == null) ? null : pre.random.next;
+        pre = pre.next.next;
+    }
+    // seperate list
+    pre = head;
+    Node copyHead = head.next;
+    Node copy = copyHead;
+    while (copy != null) {
+        pre.next = pre.next.next; // don't modify original list
+        pre = pre.next;
+
+        copy.next = (copy.next == null) ? null : copy.next.next;
+        copy = copy.next;
+    }
+    return copyHead;
 }
 ```
