@@ -3290,6 +3290,23 @@ public boolean validUtf8(int[] data) {
 O(n) Space, HashMap
 
 ```java
+public Node copyRandomList(Node head) {
+    Map<Node, Node> map = new HashMap<>();
+    // store copy of each node
+    Node node = head;
+    while (node != null) {
+        map.put(node, new Node(node.val));
+        node = node.next;
+    }
+    // assign to new node
+    node = head;
+    while (node != null) {
+        map.get(node).next = map.get(node.next);
+        map.get(node).random = map.get(node.random);
+        node = node.next;
+    }
+    return map.get(head);
+}
 ```
 
 O(1) space
@@ -3325,3 +3342,114 @@ public Node copyRandomList(Node head) {
     return copyHead;
 }
 ```
+
+### 193. Valid Phone Numbers
+
+Bash，任意xxx-开头或者(xxx) 开头
+
+```bash
+grep -P '^(\d{3}-|\(\d{3}\) )\d{3}-\d{4}$' file.txt
+```
+
+### 139. Word Break
+
+BFS solution O(n^2)
+
+```java
+public boolean wordBreak(String s, List<String> wordDict) {
+    Set<String> dict = new HashSet(wordDict);
+    if (dict.contains(s)) {
+        return true;
+    }
+
+    Queue<Integer> q = new LinkedList<>(); // index queue
+    q.offer(0);
+    Set<Integer> visited = new HashSet<Integer>();
+    visited.add(0);
+    while (!q.isEmpty()) {
+        int idx = q.poll();
+        for (int i = idx + 1; i <= s.length(); i++) {
+            if (visited.contains(i)) {
+                continue;
+            }
+            if (dict.contains(s.substring(idx, i))) {
+                if (i == s.length()) {
+                    return true;
+                }
+                q.offer(i);
+                visited.add(i);
+            }
+        }
+    }
+    return false;
+}
+```  
+
+DP solution O(n^2) time and O(n) space
+
+```java
+public boolean wordBreak(String s, List<String> wordDict) {
+    Set<String> dict = new HashSet(wordDict);
+    boolean[] dp = new boolean[s.length() + 1];
+    dp[0] = true;
+    for (int i = 1; i <= s.length(); i++) {
+        for (int j = 0; j < i; j++) {
+            if (dp[j] && dict.contains(s.substring(j, i))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[s.length()];
+}
+```  
+
+### 12. Integer to Roman
+
+没有什么特别注意的
+
+```java
+public String intToRoman(int num) {
+    if (num < 1 || num > 3999) {
+        return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    String[] romans = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+    int i = 0;
+    while (num > 0) {
+        while (num >= values[i]) {
+            sb.append(romans[i]);
+            num -= values[i];
+        }
+        i++;
+    }
+    return String.valueOf(sb);
+}
+```  
+
+### 322. Coin Change
+
+DP solution, think in bottom-up manner. Suppose we have already computed all the minimum counts up to sum, what would be the minimum count for sum+1?
+
+```java
+public int coinChange(int[] coins, int amount) {
+    if (amount == 0) return 0;
+    int[] dp = new int[amount + 1];
+    int sum = 1;
+    while (sum <= amount) {
+        int min = -1;
+        for (int coin : coins) { // 寻找可以组合成amount的组合
+            if (sum >= coin && dp[sum - coin] != -1) { // amount还有剩余并且剩余的可以组合起来(!= -1)
+                int tmp = dp[sum - coin] + 1; // 所需硬币数量+1
+                if (min < 0 || tmp < min) { // 只有在min还未更新或者tmp<min下才更新min
+                    min = tmp;
+                }
+            }
+        }
+        dp[sum] = min; // 更新sum所需的最少硬币
+        sum++;
+    }
+    return dp[amount];
+}
+```  
