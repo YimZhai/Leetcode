@@ -3453,3 +3453,113 @@ public int coinChange(int[] coins, int amount) {
     return dp[amount];
 }
 ```  
+
+### 6. ZigZag Conversion
+
+定义一个flag控制方向，定义一个数组存值，最终遍历两边字符串，O(n) time, O(n) space
+
+```java
+public String convert(String s, int numRows) {
+    if (s == null || s.length() == 0) return "";
+    if (numRows == 1) return s;
+    char[] chs = s.toCharArray();
+    List<Character>[] zig = new ArrayList[numRows];
+    int idx = 0;
+    boolean flag = true;
+    for (int i = 0; i < s.length(); i++) {
+        if (zig[idx] == null) {
+            zig[idx] = new ArrayList<>();
+        }
+        zig[idx].add(chs[i]);
+        if (flag) {
+            idx++;
+        } else {
+            idx--;
+        }
+        if (idx == 0 || idx == numRows - 1) {
+            flag = !flag;
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < numRows; i++) {
+        if (zig[i] == null) continue;
+        for (char c : zig[i]) {
+            sb.append(c);
+        }
+    }
+    return String.valueOf(sb);
+}
+```  
+
+另一种办法，效率高一些
+
+```java
+public String convert(String s, int numRows) {
+    char[] chs = s.toCharArray();
+    int len = chs.length;
+    // declare StringBuffer array
+    StringBuilder[] sb = new StringBuilder[numRows];
+    // initialize array
+    for (int i = 0; i < numRows; i++) {
+        sb[i] = new StringBuilder();
+    }
+    int idx = 0;
+    while (idx < len) {
+        for (int i = 0; i < numRows && idx < len; i++) { // top down
+            sb[i].append(chs[idx++]);
+        }
+        for (int i = numRows - 2; i >= 1 && idx < len; i--) { // bottom up
+            sb[i].append(chs[idx++]);
+        }
+    }
+    for (int i = 1; i < numRows; i++) {
+        sb[0].append(sb[i]);
+    }
+    return sb[0].toString();
+}
+```  
+
+### 387. First Unique Character in a String
+
+HashMap存储每个字母出现的次数，遍历两边，寻找第一个符合要求的字母
+
+```java
+public int firstUniqChar(String s) {
+    Map<Character, Integer> map = new HashMap<>();
+    for (char c : s.toCharArray()) {
+        map.put(c, map.getOrDefault(c, 0) + 1);
+    }
+    for (int i = 0; i < s.length(); i++) {
+        if (map.get(s.charAt(i)) == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+```  
+
+### 221. Maximal Square
+
+dp[i][j] 代表在以i, j这一格为右下角的正方形边长。如果这一格的值也是1，那这个正方形的边长就是他的上面，左手边，和斜上的值的最小边长 +1。因为如果有一边短了缺了，都构成不了正方形。
+
+```java
+public int maximalSquare(char[][] matrix) {
+    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+        return 0;
+    }
+    int res = 0;
+    int n = matrix.length;
+    int m = matrix[0].length;
+    // dp[i][j] represent right lower of the square the length of the square
+    int[][] dp = new int[n + 1][m + 1];
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (matrix[i - 1][j - 1] == '1') {
+                dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1;
+                res = Math.max(dp[i][j], res);
+            }
+        }
+    }
+    return res * res;
+}
+```  
