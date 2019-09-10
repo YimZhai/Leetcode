@@ -3563,3 +3563,127 @@ public int maximalSquare(char[][] matrix) {
     return res * res;
 }
 ```  
+
+### 70. Climbing Stairs
+
+```java
+public int climbStairs(int n) {
+    if (n <= 1) {
+        return 1;
+    }
+    int[] dp = new int[n + 1];
+    dp[1] = 1;
+    dp[2] = 2;
+    for (int i = 3; i <= n; i++) {
+        // 第n层是从n-1层爬一层，或者n-2层爬两层
+        dp[i] = dp[i - 1] + dp[i - 2];
+    }
+    return dp[n];
+}
+```  
+
+### 67. Add Binary
+
+从最右边一位开始相加，使用一个变量记录是否进位, O(max(m, n)) time, O(max(m,n)), space
+
+```java
+public String addBinary(String a, String b) {
+    StringBuilder sb = new StringBuilder();
+    int i = a.length() - 1;
+    int j = b.length() - 1;
+    int carry = 0;
+    while (i >= 0 || j >= 0) {
+        int sum = carry;
+        if (i >= 0) {
+            sum += a.charAt(i--) - '0';
+        }
+        if (j >= 0) {
+            sum += b.charAt(j--) - '0';
+        }
+        sb.append(sum % 2);
+        carry = sum / 2;
+    }
+    if (carry != 0) {
+        sb.append(carry);
+    }
+    return sb.reverse().toString();
+}
+```  
+
+### 443. String Compression
+
+双指针，O(n) time, O(1) space
+
+```java
+public int compress(char[] chars) {
+    int cur = 0; // 赋值下标
+    int index = 0; // 遍历下标
+    int len = chars.length;
+    while (index < len) {
+        char curChar = chars[index];
+        int cnt = 0;
+        while (index < len && chars[index] == curChar) { // 字符相同一直遍历
+            index++;
+            cnt++;
+        }
+        chars[cur++] = curChar;
+        if (cnt != 1) { // 相同字符超过1个，需要更新数组
+            for (char c : Integer.toString(cnt).toCharArray()) {
+                chars[cur++] = c;
+            }
+        }
+    }
+    return cur;
+}
+```  
+
+### 98. Validate Binary Search Tree
+
+```java
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        // use long in case of [2147483647]
+        return dfs(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    private boolean dfs(TreeNode node, long low, long high) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val <= low || node.val >= high) return false;
+        // 判断左节点将high设为根节点，判断右节点将low设为根节点
+        return dfs(node.left, low, node.val) && dfs(node.right, node.val, high);
+    }
+}
+```  
+
+### 39. Combination Sum
+
+Backtracking solution
+
+```java
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> lists = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(lists, new ArrayList<>(), candidates, target, 0);
+        return lists;
+    }
+
+    private void backtrack(List<List<Integer>> lists, List<Integer> list, int[] nums, int remain, int start) {
+        if (remain < 0) { // recursion exit
+            return;
+        } else if (remain == 0) { // find one solution
+            lists.add(new ArrayList(list));
+        } else {
+            for (int i = start; i < nums.length; i++) { // 遍历candidates
+                list.add(nums[i]);
+                backtrack(lists, list, nums, remain - nums[i], i); // not i + 1, since num can be reused
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+```  
+
+
