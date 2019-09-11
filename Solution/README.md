@@ -1178,6 +1178,42 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     }
     return head.next;
 }
+``` 
+
+### 445. Add Two Numbers II
+
+思路同上，使用两个stack来存储list的值, 后面相加的时候再pop就好了
+
+```java
+public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    Stack<Integer> s1 = new Stack<>();
+    Stack<Integer> s2 = new Stack<>();
+    while (l1 != null) {
+        s1.push(l1.val);
+        l1 = l1.next;
+    }
+    while (l2 != null) {
+        s2.push(l2.val);
+        l2 = l2.next;
+    }
+    int carry = 0;
+    ListNode node = null;
+    while (!s1.empty() || !s2.empty()) {
+        int x = s1.empty() ? 0 : s1.pop();
+        int y = s2.empty() ? 0 : s2.pop();
+        int sum = x + y + carry;
+        carry = sum / 10;
+        ListNode n = new ListNode(sum % 10);
+        n.next = node;
+        node = n;
+    }
+    if (carry > 0) {
+        ListNode head = new ListNode(carry);
+        head.next = node;
+        node = head;
+    }
+    return node;
+}
 ```  
 
 ## Hard
@@ -3686,4 +3722,185 @@ class Solution {
 }
 ```  
 
+### 40. Combination Sum II
 
+思路同上，在遍历元素时，跳过重复项，递归时，不使用重复元素
+
+```java
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> lists = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(lists, new ArrayList(), candidates, target, 0);
+        return lists;
+    }
+
+    private void backtrack(List<List<Integer>> lists, List<Integer> list, int[] nums, int remain, int start) {
+        if (remain < 0) {
+            return;
+        } else if (remain == 0) {
+            lists.add(new ArrayList(list));
+        } else {
+            for (int i = start; i < nums.length; i++) {
+                if (i > start && i < nums.length && nums[i] == nums[i - 1]) { // skip duplicate
+                    continue;
+                }
+                list.add(nums[i]);
+                backtrack(lists, list, nums, remain - nums[i], i + 1); // no reuse of elements
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+```  
+
+### 621. Task Schedular
+
+```java
+public int leastInterval(char[] tasks, int n) {
+    // 统计每个字母的出现频率
+    int[] counter = new int[26];
+    int max = 0; // 最高频的次数
+    int maxCnt = 0; // 同时出现最高频的个数
+    for (char task : tasks) {
+        int index = task - 'A';
+        counter[index]++;
+        if (max == counter[index]) {
+            maxCnt++;
+        } else if (max < counter[index]) {
+            max = counter[index];
+            maxCnt = 1;
+        }
+    }
+    // 中间的间隔
+    int partCnt = max - 1;
+    // 间隔的长度
+    int partLength = n - (maxCnt - 1);
+    // 间隔总数
+    int emptySlots = partLength * partCnt;
+    // 还需要分配的任务个数
+    int otherTasks = tasks.length - max * maxCnt;
+    // 所需空闲数
+    int idles = Math.max(0, emptySlots - otherTasks);
+    // 返回任务长度加上额外的空闲数
+    return tasks.length + idles;
+}
+```  
+
+### 362. Design Hit Counter
+
+输入的timestamp是单位为秒的时间, 5分钟也就是timestamp 300，使用一个队列来记录
+
+```java
+class HitCounter {
+
+    Queue<Integer> q;
+    /** Initialize your data structure here. */
+    public HitCounter() {
+        q = new LinkedList<>();
+    }
+
+    /** Record a hit.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public void hit(int timestamp) {
+        q.offer(timestamp);
+    }
+
+    /** Return the number of hits in the past 5 minutes.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public int getHits(int timestamp) {
+        while (!q.isEmpty() && timestamp - q.peek() >= 300) {
+            q.poll();
+        }
+        return q.size();
+    }
+}
+```  
+
+### 706. Design HashMap
+
+最直接的思路，建立一个长度为1000000的数组，初始值全部为-1，下标作为key，下标对应的值作为value  
+缺点：很费空间  
+Some of the questions which can be asked to the interviewer before implementing the solution
+For simplicity, are the keys integers only?
+For collision resolution, can we use chaining?
+Do we have to worry about load factors?
+Can we assume inputs are valid or do we have to validate them?
+Can we assume this fits memory?
+
+```java
+class MyHashMap {
+
+    ListNode[] nodes = new ListNode[10000];
+    /** Initialize your data structure here. */
+    public MyHashMap() {
+
+    }
+
+    /** value will always be non-negative. */
+    public void put(int key, int value) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            nodes[i] = new ListNode(-1, -1);
+        }
+        ListNode prev = find(nodes[i], key);
+        if (prev.next == null) {
+            prev.next = new ListNode(key, value);
+        } else { // change the origin value
+            prev.next.val = value;
+        }
+    }
+
+    /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+    public int get(int key) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            return -1;
+        }
+        ListNode prev = find(nodes[i], key);
+        return prev.next == null ? -1 : prev.next.val;
+    }
+
+    /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+    public void remove(int key) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            return;
+        }
+        ListNode prev = find(nodes[i], key);
+        if (prev.next == null) {
+            return;
+        } else {
+            prev.next = prev.next.next;
+        }
+    }
+
+    public int idx(int key) {
+        return key % nodes.length;
+        // return Integer.hashcode(key) % nodes.length
+        // the point here is to use hashing algorithm (e.g. fmix64) to convert
+        // a non-uniform distribution dataset to a uniform distribution data,
+        // so that the collision rate can be lowered.
+    }
+
+    public ListNode find(ListNode bucket, int key) {
+        // find origin object
+        ListNode node = bucket, prev = null;
+        while (node != null && node.key != key) {
+            prev = node;
+            node = node.next;
+        }
+        return prev;
+    }
+
+    class ListNode {
+        int key, val;
+        ListNode next;
+
+        public ListNode(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+}
+```  
