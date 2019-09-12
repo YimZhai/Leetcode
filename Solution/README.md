@@ -3904,3 +3904,166 @@ class MyHashMap {
     }
 }
 ```  
+
+### 43. Multiply Strings
+
+第一个思路是装string转换为integer，发现存在很多越界情况。  
+不转换，直接通过string进行乘法操作
+
+```java
+public String multiply(String num1, String num2) {
+    int n1 = num1.length();
+    int n2 = num2.length();
+    int[] res = new int[n1 + n2];
+    for (int i = n1 - 1; i >= 0; i--) {
+        for (int j = n2 - 1; j >= 0; j--) {
+            int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+            int left = i + j; // 十位的下标
+            int right = i + j + 1; // 个位的下标
+            int sum = mul + res[right]; // 先计算是否有进位
+            res[left] += sum / 10; // 更新十位
+            res[right] = sum % 10; // 更新个位
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int p : res) {
+        if (!(sb.length() == 0 && p == 0)) { // avoid leading zero
+            sb.append(p);
+        }
+    }
+    return sb.length() == 0 ? "0" : sb.toString();
+}
+```  
+
+### 539. Minimum Time Difference
+
+Bucket Sort
+
+```java
+public int findMinDifference(List<String> timePoints) {
+    boolean[] time = new boolean[1440];
+    for (String points : timePoints) {
+        String[] t = points.split(":");
+        int hour = Integer.parseInt(t[0]);
+        int min = Integer.parseInt(t[1]);
+        if (time[hour * 60 + min]) { // duplicate time
+            return 0;
+        }
+        time[hour * 60 + min] = true;
+    }
+    
+    int min = 1440;
+    int prev = 0;
+    int first = Integer.MAX_VALUE;
+    int last = Integer.MIN_VALUE;
+    for (int i = 0; i < 1440; i++) {
+        if (time[i]) {
+            if (first != Integer.MAX_VALUE) { // 排除第一个找到的时间，无法相减
+                min = Math.min(min, i - prev);
+            }
+            first = Math.min(first, i); // 找到最小时间
+            last = Math.max(last, i); // 找到最大时间
+            prev = i;
+        }
+    }
+    // corner case
+    min = Math.min(min, (1440 - last + first)); // 取反向时间比较
+    return min;
+}
+```  
+
+### 819. Most Common Word
+
+用hashmap存储每个单词出现的次数，在存储时排除在banned里面的值
+
+```java
+public String mostCommonWord(String paragraph, String[] banned) {
+    Set<String> dict = new HashSet(Arrays.asList(banned));
+    String[] words = paragraph.toLowerCase().split("\\W+");
+
+    Map<String, Integer> map = new HashMap<>();
+    for (String word : words) {
+        if (!dict.contains(word)) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+    }
+    int max = Collections.max(map.values());
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        if (entry.getValue() == max) {
+            return entry.getKey();
+        }
+    }
+    return "";
+}
+```  
+
+### 953. Verify an Alien Dictionary
+
+```java
+public boolean isAlienSorted(String[] words, String order) {
+    if (words.length == 1) return true;
+    for (int i = 1; i < words.length; i++) { // O(n)判断相邻的两个词
+        int j = 0;
+        boolean checked = true; // 是否需要额外检查
+        int len = Math.min(words[i].length(), words[i - 1].length());
+        while (j < len) {
+            if (order.indexOf(words[i].charAt(j)) > order.indexOf(words[i - 1].charAt(j))) { // 符合要求，不需要额外检查
+                checked = false;
+                break;
+            } else if (order.indexOf(words[i].charAt(j)) < order.indexOf(words[i - 1].charAt(j))) { // 顺序错误返回false
+                return false;
+            }
+            j++;
+        }
+        if (checked && words[i - 1].length() > words[i].length()) { // 字母顺序都一样，需要额外检查长度
+            return false;
+        }
+    }
+    return true;
+}
+```  
+
+### 301. Remove Invalid Parentheses
+
+解释都在注释里
+
+```java
+class Solution {
+    public List<String> removeInvalidParentheses(String s) {
+        List<String> res = new ArrayList<>();
+        dfs(res, s, 0, 0, '(', ')');
+        return res;
+    }
+    
+    private void dfs(List<String> res, String s, int iStart, int jStart, char open, char close) {
+        // 计算'('和')'的数量
+        int numOpen = 0, numClose = 0;
+        // 我们从iStart开始遍历, 也是在删除多余')'后开始遍历的起点
+        for (int i = iStart; i < s.length(); i++) {
+            // 正向操作时，只处理')'多余的情况
+            if (s.charAt(i) == open) numOpen++;
+            if (s.charAt(i) == close) numClose++;
+            if (numClose > numOpen) {
+                // 移除多余的右括号, 可能有多种移除的方案，因此要遍历所有的右括号, 此时要移除的右括号一定在i的左边
+                for (int j = jStart; j <= i; j++) { 
+                    // 移除时要考虑相邻的右括号重复的情况, (j == jStart)为删除第一个')'的情况
+                    // s.charAt(j - 1) != close 考虑当前为')'同时前一个不能为')'
+                    if (s.charAt(j) == close && (j == jStart || s.charAt(j - 1) != close)) {
+                        // 删除下标为j的右括号后，判断是否valid, iStart = i因为该字符串到i的位置都已经判断过为valid
+                        // jStart = j表示跳过了前一层循环结束时的末尾字符
+                        dfs(res, s.substring(0, j) + s.substring(j + 1, s.length()), i, j, open, close);
+                    }
+                }
+                return; // 递归操作处理后面的字符
+            }
+        }
+        // 正向检查过一遍，接下来倒过来检查是否有多余的'('
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (open == '(') { // 如果是正向到了这步，说明要检查反向
+            dfs(res, reversed, 0, 0, ')', '(');
+        } else { // 如果是反向到了这步，则把反向翻转过来，添加到结果中
+            res.add(reversed);
+        }
+    }
+}
+```  
