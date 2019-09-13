@@ -4067,3 +4067,112 @@ class Solution {
     }
 }
 ```  
+
+### 198. House Robber
+
+Recursion with memo, O(n) time and space
+
+```java
+class Solution {
+    int[] memo;
+    public int rob(int[] nums) {
+        memo = new int[nums.length + 1];
+        Arrays.fill(memo, -1);
+        return helper(nums, nums.length - 1);
+    }
+
+    private int helper(int[] nums, int i) {
+        if (i < 0) {
+            return 0;
+        }
+        if (memo[i] >= 0) {
+            return memo[i];
+        }
+        int res = Math.max(helper(nums, i - 2) + nums[i], helper(nums, i - 1));
+        memo[i] = res;
+        return res;
+    }
+}
+```
+
+DP solution
+
+```java
+public int rob(int[] nums) {
+    if (nums.length == 0) return 0;
+    int[] memo = new int[nums.length + 1];
+    memo[0] = 0;
+    memo[1] = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+        int val = nums[i];
+        // memo[i]，不抢当前的房子
+        // memo[i - 1] + val，抢当前的房子加上向前两个房子的抢钱总额
+        memo[i + 1] = Math.max(memo[i - 1] + val, memo[i]);
+    }
+    return memo[nums.length];
+}
+```  
+
+### 204. Count Primes
+
+```java
+public int countPrimes(int n) {
+    boolean[] prime = new boolean[n + 1];
+    int cnt = 0;
+    // 从2开始，将所有质数的的倍数的值标记为true
+    // 未被标记的则为质数, 如果n <= 2则返回0
+    for (int i = 2; i < n; i++) {
+        if (prime[i] == false) {
+            cnt++;
+            for (int j = 2; i * j < n; j++) {
+                prime[i * j] = true;
+            }
+        }
+    }
+    return cnt;
+}
+```  
+
+### 41. First Missing Integer
+
+O(n) time and space 方法，很直观，用一个set存储出现过的值, 同时记录最大值, 然后从1开始遍历
+
+```java
+public int firstMissingPositive(int[] nums) {
+    int max = 0;
+    Set<Integer> set = new HashSet<>();
+    for (int num : nums) {
+        max = Math.max(max, num);
+        set.add(num);
+    }
+    for (int i = 1; i <= max; i++) {
+        if (!set.contains(i)) {
+            return i;
+        }
+    }
+    return max + 1;
+}
+```  
+
+O(n) time and O(1) space
+
+```java
+public int firstMissingPositive(int[] nums) {
+    int n = nums.length;
+    for (int i = 0; i < n; i++) {
+        // nums[i] 需要在数组的范围内, 同时nums[i]不在应该在的位置上
+        while (nums[i] > 0 && nums[i] < n && nums[i] != nums[nums[i] - 1]) {
+            int tmp = nums[i];
+            nums[i] = nums[nums[i] - 1];
+            nums[tmp - 1] = tmp;
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        // 如果该值和下标不对应则返回
+        if (nums[i] != i + 1) {
+            return i + 1;
+        }
+    }
+    return n + 1;
+}
+```  
