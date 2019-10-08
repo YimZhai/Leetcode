@@ -4176,3 +4176,282 @@ public int firstMissingPositive(int[] nums) {
     return n + 1;
 }
 ```  
+
+### 297. Serialize and Deserialize Binary Tree
+
+```java
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "{}";
+        }
+
+        List<TreeNode> list = new ArrayList<>();
+        list.add(root);
+        for (int i = 0; i < list.size(); i++) {
+            TreeNode node = list.get(i);
+            if (node == null) {
+                continue;
+            }
+            list.add(node.left);
+            list.add(node.right);
+        } // 1, 2, 3, #, #, 4, 5, #, #, #, #, #, #, #, #,
+
+        // remove the rest "null"
+        while (list.get(list.size() - 1) == null) {
+            list.remove(list.size() - 1);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(list.get(0).val);
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i) == null) {
+                sb.append(",#");
+            } else {
+                sb.append(",");
+                sb.append(list.get(i).val);
+            }
+
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.equals("{}")) {
+            return null;
+        }
+
+        String[] vals = data.substring(1, data.length() - 1).split(",");
+        ArrayList<TreeNode> nodes = new ArrayList<>();
+        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
+        nodes.add(root);
+
+        int index = 0;
+        boolean isLeftChild = true;
+
+        for (int i = 1; i < vals.length; i++) {
+            if (!vals[i].equals("#")) {
+                TreeNode node = new TreeNode(Integer.parseInt(vals[i]));
+                if (isLeftChild) {
+                    nodes.get(index).left = node;
+                } else {
+                    nodes.get(index).right = node;
+                }
+
+                nodes.add(node);
+            }
+            if (!isLeftChild) {
+                index++;
+            }
+            isLeftChild = !isLeftChild;
+        }
+        return root;
+
+    }
+}
+```  
+
+### 449. Serialize and Deserialize BST
+
+Preorder traversal + queue
+
+```java
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        if (root == null) return "null";
+        //traverse it recursively if you want to, I am doing it iteratively here
+        Stack<TreeNode> st = new Stack<>();
+        st.push(root);
+        while (!st.empty()) {
+            root = st.pop();
+            sb.append(root.val).append(",");
+            if (root.right != null) st.push(root.right);
+            if (root.left != null) st.push(root.left);
+        }
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.equals("null")) return null;
+        String[] strs = data.split(",");
+        Queue<Integer> q = new LinkedList<>();
+        for (String e : strs) {
+            q.offer(Integer.parseInt(e));
+        }
+        return getNode(q);
+    }
+
+    // some notes:
+    //   5
+    //  3 6
+    // 2   7
+    private TreeNode getNode(Queue<Integer> q) { //q: 5,3,2,6,7
+        if (q.isEmpty()) return null;
+        TreeNode root = new TreeNode(q.poll());//root (5)
+        Queue<Integer> samllerQueue = new LinkedList<>();
+        while (!q.isEmpty() && q.peek() < root.val) {
+            samllerQueue.offer(q.poll());
+        }
+        //smallerQueue : 3,2   storing elements smaller than 5 (root)
+        root.left = getNode(samllerQueue);
+        //q: 6,7   storing elements bigger than 5 (root)
+        root.right = getNode(q);
+        return root;
+    }
+}
+```  
+
+### 69. Sqrt(x)
+
+基础办法, O(n)
+
+```java
+public int mySqrt(int x) {
+    if (x < 2) return x;
+    for (long i = 1; i <= x; i++) {
+        if (i * i > x) {
+            return (int)(i - 1);
+        }
+    }
+    return 0;
+}
+```
+
+牛顿法, O(logN)
+
+```java
+public int mySqrt(int x) {
+    long r = x;
+    while (r*r > x)
+        r = (r + x/r) / 2;
+    return (int) r;
+}
+```  
+
+### 141. Linked List Cycle
+
+Two Pointer, 一快一慢
+
+```java
+public boolean hasCycle(ListNode head) {
+    ListNode slow = head;
+    ListNode fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) return true;
+    }
+    return false;
+}
+```  
+
+### 189. Rotate Array
+
+extra space，目标数组的下标通过取余的方式算
+
+```java
+public void rotate(int[] nums, int k) {
+    int len = nums.length;
+    int[] res = new int[len];
+    for (int i = 0; i < len; i++) {
+        res[(i + k) % len] = nums[i];
+    }
+    for (int i = 0; i < len; i++) {
+        nums[i] = res[i];
+    }
+}
+```  
+
+O(1) space solution
+
+```java
+lass Solution {
+    public void rotate(int[] nums, int k) {
+        k %= nums.length;
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    }
+
+    private void reverse(int[] nums, int left, int right) {
+        while (left < right) {
+            int tmp = nums[left];
+            nums[left] = nums[right];
+            nums[right] = tmp;
+            left++;
+            right--;
+        }
+    }
+}
+```  
+
+### 743. Network Delay Time
+
+Djikstra + BFS
+思路: 
+1. 遍历times，存在HashMap中，节省了遍历的时间
+2. 
+
+### 746. Min Cost Climbing Stairs
+
+DP solution, O(n) space and time
+
+```java
+public int minCostClimbingStairs(int[] cost) {
+    int len = cost.length;
+    int[] dp = new int[len + 1];
+    dp[0] = cost[0];
+    dp[1] = cost[1];
+    for (int i = 2; i <= len; i++) {
+        int c = (i == len) ? 0 : cost[i];
+        dp[i] = Math.min((dp[i - 2] + c), (dp[i - 1] + c));
+    }
+    return dp[len];
+}
+```
+
+O(1) space
+
+```java
+public int minCostClimbingStairs(int[] cost) {
+    int len = cost.length;
+    for (int i = 2; i < len; i++) {
+        cost[i] += Math.min(cost[i - 2], cost[i - 1]);
+    }
+    return Math.min(cost[len - 1], cost[len - 2]);
+}
+```
+
+### 1007. Minimum Domino Rotations For Equal Row
+
+```java
+public int minDominoRotations(int[] A, int[] B) {
+    int len = A.length;
+    int[] cntA = new int[7];
+    int[] cntB = new int[7];
+    int[] same = new int[7];
+    for (int i = 0; i < len; i++) {
+        cntA[A[i]]++;
+        cntB[B[i]]++;
+        if (A[i] == B[i]) {
+            same[A[i]]++;
+        }
+    }
+    for (int i = 0; i < 7; i++) {
+        if (cntA[i] + cntB[i] - same[i] >= len) {
+            return Math.min(cntA[i], cntB[i]) - same[i];
+        }
+    }
+    return -1;
+}
+```
