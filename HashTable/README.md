@@ -22,6 +22,47 @@ class Solution {
 }
 ```
 
+## 288. Unique Word Abbreviation
+
+使用HashMap存储 abbr -> Set(original word)
+
+```java
+class ValidWordAbbr {
+
+    Map<String, Set<String>> map;
+    public ValidWordAbbr(String[] dictionary) {
+        map = new HashMap<>();
+        for (String dict : dictionary) {
+            String key = helper(dict);
+            map.putIfAbsent(key, new HashSet<>());
+            map.get(key).add(dict);
+        }
+    }
+
+    public boolean isUnique(String word) {
+        String key = helper(word);
+        if (map.containsKey(key)) {
+            if (map.get(key).contains(word) && map.get(key).size() == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String helper(String word) {
+        String res = "";
+        if (word.length() < 3) {
+            return word;
+        } else {
+            res = res + word.charAt(0) + Integer.toString(word.length() - 2) + word.charAt(word.length() - 1);
+        }
+        return res;
+    }
+}
+```  
+
 ## 811. Subdomain Visit Count
 
 1. HashMap<domain, times>, 遍历cpdomains, populate map, traversal through keySet(), add to list.

@@ -2,25 +2,6 @@
 
 ## Basic
 
-### 1. Two Sum
-
-1. Brute Force, two level for loop.
-2. One Pass Hash
-
-```java
-public int[] twoSum(int[] nums, int target) {
-    Map<Integer, Integer> map = new HashMap<>();
-    for (int i = 0; i < nums.length; i++) {
-        int n = target - nums[i];
-        if (map.containsKey(n)) {
-            return new int[] {i, map.get(n)};
-        }
-        map.put(nums[i], i);
-    }
-    return new int[] {};
-}
-```  
-
 ### 53. Maximum Subarray
 
 1. 如果sum小于0， 不管下一个数是正是负，肯定会比这个数加上sum的值大
@@ -130,31 +111,6 @@ public void moveZeroes(int[] nums) {
         }
         r++;
     }
-}
-```  
-
-### 167. Two Sum || - Input array is sorted
-
-1. 双指针，一左一右
-
-```java
-public int[] twoSum(int[] numbers, int target) {
-    if (numbers.length < 2) {
-        return new int[2];
-    }
-    int left = 0;
-    int right = numbers.length - 1;
-    while (left < right) {
-        int sum = numbers[left] + numbers[right];
-        if (sum == target) {
-            return new int[] {left + 1, right + 1};
-        } else if (sum > target) {
-            right--;
-        } else {
-            left++;
-        }
-    }
-    return new int[2];
 }
 ```  
 
@@ -1139,7 +1095,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
     while (l1 != null && l2 != null) {
         if (l1.val < l2.val) {
-            pre.next = l1;
+            pre.next = l1;·
             l1 = l1.next;
         } else {
             pre.next = l2;
@@ -1158,7 +1114,9 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 ```  
 
 ### 2. Add Two Numbers
+
 1. 定义carry记录进位
+
 ```java
 public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     ListNode head = new ListNode(0);
@@ -1181,7 +1139,7 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     }
     return head.next;
 }
-``` 
+```
 
 ### 445. Add Two Numbers II
 
@@ -1219,9 +1177,10 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 }
 ```  
 
-## Hard
 ### 23. Merge K Sorted List
+
 1. Divide and Conquer, 比如合并6个链表，那么按照分治法，我们首先分别合并0和3，1和4，2和5.  这样下一次只需合并3个链表，我们再合并1和3，最后和2合并就可以了
+
 ```java
 public ListNode mergeKLists(ListNode[] lists) {
     if (lists == null || lists.length == 0) {
@@ -1263,8 +1222,10 @@ private ListNode mergeTwoLists(ListNode n1, ListNode n2) {
 ```  
 
 ### 234. Palindrome Linked List
-1. O(n) space, convert linked list to array, then solve it 
+
+1. O(n) space, convert linked list to array, then solve it
 2. O(1) space, convert second half of the list
+
 ```java
 public boolean isPalindrome(ListNode head) {
     ListNode fast = head;
@@ -1301,9 +1262,11 @@ public ListNode reverse(ListNode head) {
     return prev;
 }
 ```  
-# Math and String
+
 ### 20. Valid Parentheses
+
 使用stack, 遍历的时候将对称的parentheses放入stack，不存在的时候pop，最后检查stack是否为空
+
 ```java
 public boolean isValid(String s) {
     Stack<Character> stack = new Stack<>();
@@ -1326,7 +1289,9 @@ public boolean isValid(String s) {
 ```  
 
 ### 937. Reorder Log Files
+
 用两个ArrayList分别存num log和letter log, sort letter log, 最后拼在一起
+
 ```java
 class LetterComparator implements Comparator<String> {
     @Override
@@ -2066,8 +2031,10 @@ public int[][] kClosest(int[][] points, int K) {
 ```  
 
 ### 215. Kth Largest Element in Array
+
 1. Sort
 2. PriorityQueue, add 默认为升序，判断queue的size和值的大小
+
 ```java
 public int findKthLargest(int[] nums, int k) {
     PriorityQueue<Integer> pq = new PriorityQueue<>();
@@ -2083,10 +2050,10 @@ public int findKthLargest(int[] nums, int k) {
 }
 ```  
 
-# Stack and Queue
-## Easy  
 ### 155. Min Stack
+
 用两个stack，第一个正常操作，第二个站只push比当前peek值小的
+
 ```java
 class MinStack {
 
@@ -2151,7 +2118,9 @@ class Solution {
 ```
 
 ## Medium 253. Meeting Room II
+
 1. Priority Queue, 会议按照开始时间ascending, PQ按照结束时间ascending
+
 ```java
 public int minMeetingRooms(int[][] intervals) {
     int len = intervals.length;
@@ -2190,7 +2159,9 @@ public int minMeetingRooms(int[][] intervals) {
     return heap.size();
 }
 ```  
-2. 同样的思路，使用两个数组解决
+
+2.同样的思路，使用两个数组解决
+
 ```java
 public int minMeetingRooms(int[][] intervals) {
     int len = intervals.length;
@@ -2216,7 +2187,9 @@ public int minMeetingRooms(int[][] intervals) {
 ```  
 
 ### 394. Decode String
+
 用两个stack, 一个记录数字，一个记录内容，遍历字符串，分四种情况考虑
+
 ```java
 public String decodeString(String s) {
     String res = "";
@@ -2253,9 +2226,11 @@ public String decodeString(String s) {
 ```  
 
 ### 341. Flatten Nested List Iterator
+
 由于栈的后进先出的特性，我们在对向量遍历的时候，从后往前把对象压入栈中，那么第一个对象最后压入栈就会第一个取出来处理，  
 我们的hasNext()函数需要遍历栈，并进行处理，如果栈顶元素是整数，直接返回true，如果不是，那么移除栈顶元素，  
 并开始遍历这个取出的list，还是从后往前压入栈，循环停止条件是栈为空，返回false
+
 ```java
 public class NestedIterator implements Iterator<Integer> {
 
@@ -2290,8 +2265,10 @@ public class NestedIterator implements Iterator<Integer> {
 ```  
 
 ### 692. Top K Frequent Word
+
 HashMap和PriorityQueue, HashMap用来记录每个词和这个词出现的次数，在insert到pq的时候，按照单词出现的次数insert  
 如果次数相同，则按照字母顺序.
+
 ```java
 public List<String> topKFrequent(String[] words, int k) {
     List<String> res = new LinkedList<>();
@@ -2299,12 +2276,10 @@ public List<String> topKFrequent(String[] words, int k) {
     for (String word : words) {
         map.put(word, map.getOrDefault(word, 0) + 1);
     }
-    
     PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
-        (a, b) -> a.getValue() == b.getValue() ? 
+        (a, b) -> a.getValue() == b.getValue() ?
          b.getKey().compareTo(a.getKey()) : a.getValue() - b.getValue()
     );
-    
     // insert into pq
     for (Map.Entry<String, Integer> entry : map.entrySet()) {
         pq.offer(entry);
@@ -2312,7 +2287,6 @@ public List<String> topKFrequent(String[] words, int k) {
             pq.poll();
         }
     }
-    
     while (!pq.isEmpty()) {
         res.add(0, pq.poll().getKey()); // pq.poll() always return the smallest.
     }
@@ -2351,7 +2325,7 @@ public List<Integer> topKFrequent(int[] nums, int k) {
 ```  
 
 1. Bucket Sort
-建立一个数组，List<Integer>[]，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些  
+建立一个数组，`List<Integer>[]`，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些  
 
 ```java
 public List<Integer> topKFrequent(int[] nums, int k) {
@@ -2651,8 +2625,6 @@ public String reorganizeString(String S) {
 
 1. DFS用到了递归的形式，使用栈的结构，FILO
 2. BFS的状态选取用了队列的形式，FIFO
-
-
 
 ### 200. Number of Islands
 
@@ -4092,8 +4064,6 @@ public int firstMissingPositive(int[] nums) {
     return n + 1;
 }
 ```  
-
-
 
 ### 69. Sqrt(x)
 

@@ -1,6 +1,10 @@
-### 1. Two Sum
+# Questions
+
+## 1. Two Sum
+
 1. Brute Force, two level for loop.
 2. One Pass Hash
+
 ```java
 public int[] twoSum(int[] nums, int target) {
     Map<Integer, Integer> map = new HashMap<>();
@@ -14,8 +18,11 @@ public int[] twoSum(int[] nums, int target) {
     return new int[] {};
 }
 ```  
-### 53. Maximum Subarray
+
+## 53. Maximum Subarray
+
 1. 如果sum小于0， 不管下一个数是正是负，肯定会比这个数加上sum的值大
+
 ```java
 public int maxSubArray(int[] nums) {
     int sum = Integer.MIN_VALUE;
@@ -32,8 +39,10 @@ public int maxSubArray(int[] nums) {
 }
 ```  
 
-### 121. Best time to buy and sell stock
+## 121. Best time to buy and sell stock
+
 1. 两个值，分别记录最大和最小，O(n)遍历一遍，如果price[i] < low更新low, 否则更新max
+
 ```java
 public int maxProfit(int[] prices) {
     int profit = 0;
@@ -51,8 +60,11 @@ public int maxProfit(int[] prices) {
     return profit;
 }
 ```  
-### 509. Fibonacci Number
+
+## 509. Fibonacci Number
+
 1. 使用一个数组，计算出每个下标对应的值，返回array[N].
+
 ```java
 public int fib(int N) {
     if (N == 0) {
@@ -71,8 +83,10 @@ public int fib(int N) {
 }
 ```  
 
-### 88. Merge Sorted Array
+## 88. Merge Sorted Array
+
 1. 使用三个指针，m - 1, n - 1, m + n - 1，从右往左更新
+
 ```java
 public void merge(int[] nums1, int m, int[] nums2, int n) {
     int i = m - 1;
@@ -97,8 +111,10 @@ public void merge(int[] nums1, int m, int[] nums2, int n) {
 }
 ```  
 
-### 283. Move Zeroes
+## 283. Move Zeroes
+
 1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
+
 ```java
 public void moveZeroes(int[] nums) {
     int l = 0;
@@ -115,8 +131,10 @@ public void moveZeroes(int[] nums) {
 }
 ```  
 
-### 167. Two Sum || - Input array is sorted
+## 167. Two Sum II - Input array is sorted
+
 1. 双指针，一左一右
+
 ```java
 public int[] twoSum(int[] numbers, int target) {
     if (numbers.length < 2) {
@@ -138,8 +156,57 @@ public int[] twoSum(int[] numbers, int target) {
 }
 ```  
 
-### 268. Missing Number
+## 170. Two Sum III - Data Structure Design
+
+```java
+class TwoSum {
+
+    List<Integer> arr;
+    /** Initialize your data structure here. */
+    public TwoSum() {
+        arr = new ArrayList<>();
+    }
+    
+    /** Add the number to an internal data structure.. */
+    public void add(int number) {
+        arr.add(number);
+    }
+    
+    /** Find if there exists any pair of numbers which sum is equal to the value. */
+    public boolean find(int value) {
+        /* 267 ms
+        Set<Integer> set = new HashSet<>();
+        for (int a : arr) {
+            if (set.contains(a)) {
+                return true;
+            }
+            set.add(value - a);
+        }
+        return false;
+        */
+        // 108 ms
+        Collections.sort(arr, (a, b) -> a - b);
+        int left = 0;
+        int right = arr.size() - 1;
+        while (left < right) {
+            int sum = arr.get(left) + arr.get(right);
+            if (sum == value) {
+                return true;
+            } else if (sum > value) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return false;
+    }
+}
+```  
+
+## 268. Missing Number
+
 1. 求和相减, 为了防止overflow, 减的操作提前执行。
+
 ```java
 public int missingNumber(int[] nums) {
     int res = 0;
@@ -150,8 +217,10 @@ public int missingNumber(int[] nums) {
 }
 ```  
 
-### 26. Remove Duplicates from Sorted Array
+## 26. Remove Duplicates from Sorted Array
+
 1. Two Pointer, 如果右值不等于左值，左值右移一位，更新左值
+
 ```java
 public int removeDuplicates(int[] nums) {
     int l = 0;
@@ -165,9 +234,11 @@ public int removeDuplicates(int[] nums) {
 }
 ```  
 
-### 977. Squares of Sorted Array
+## 977. Squares of Sorted Array
+
 1. O(nLogn), 遍历数组，求平方，再sort
 2. O(n), Two Pointer, 一左一右
+
 ```java
 public int[] sortedSquares(int[] A) {
     int[] res = new int[A.length];
@@ -195,23 +266,22 @@ public int[] sortedSquares(int[] A) {
 }
 ```
 
-## Medium
-### 15. Three Sum
+## 15. Three Sum
+
 1. Brute Force, three level for loop O(n^3)
 2. Sort数组，第一个数One Pass，二三用双指针
+
 ```java
 public List<List<Integer>> threeSum(int[] nums) {
     List<List<Integer>> res = new ArrayList<>();
     if (nums.length < 3) {
         return res;
     }
-    
     Arrays.sort(nums);
     for (int i = 0; i < nums.length - 2; i++) {
         if (i > 0 && nums[i] == nums[i - 1]) {
             continue;
         }
-        
         int l = i + 1;
         int r = nums.length - 1;
         while (l < r) {
@@ -234,9 +304,11 @@ public List<List<Integer>> threeSum(int[] nums) {
 }
 ```  
 
-### 56. Merge Intervals
+## 56. Merge Intervals
+
 1. Sort Interval的最小值, 使用interval[0]记录区域，判断下一个区域的起点和当前区域的终点，  
 重合则更新当前区域终点，否则更新当前区域两端，使用comparator提高效率
+
 ```java
 public int[][] merge(int[][] intervals) {
     if (intervals == null || intervals.length == 0) {
@@ -264,8 +336,10 @@ private class IntervalsComparator implements Comparator<int[]> {
 }
 ```
 
-### 33. Search in Rotated Sorted Array
+## 33. Search in Rotated Sorted Array
+
 1. Binary Search, 判断中心点在哪个区间, 判断是否在线性的区间内
+
 ```java
 public int search(int[] nums, int target) {
     int len = nums.length, left = 0, right = len - 1;
@@ -291,9 +365,11 @@ public int search(int[] nums, int target) {
 }
 ```  
 
-### 283. Product of Array Except Self
+## 283. Product of Array Except Self
+
 1. O(n) time, O(1) space, left -> right计算每个点左边的数的乘积,  
 right -> left计算每个点右边数的乘积。
+
 ```java
 public int[] productExceptSelf(int[] nums) {
     int[] res = new int[nums.length];
@@ -310,7 +386,7 @@ public int[] productExceptSelf(int[] nums) {
 }
 ```  
 
-### 11. Container With Most Water
+## 11. Container With Most Water
 1. 双指针, 一左一右, 两个指针的值比大小，更新指针
 ```java
 public int maxArea(int[] height) {
@@ -329,7 +405,7 @@ public int maxArea(int[] height) {
 }
 ```  
 
-### 289. Game of Life
+## 289. Game of Life
 1. O(1) space and O(mn) time, copy数组，根据copy计算每个点新值，更新原始board
 ```java
 public void gameOfLife(int[][] board) {
@@ -376,7 +452,7 @@ public void gameOfLife(int[][] board) {
 }
 ```  
 
-### 31. Next Permutation
+## 31. Next Permutation
 1. 找到下一个全排列，首先找到第一个下降点，从下降序列中找到刚好大于下降点的点，交换两个点，将后面的序列reverse
 ```java
 public void nextPermutation(int[] nums) {
@@ -412,7 +488,7 @@ private void reverse(int[] nums, int start) {
 }
 ```  
 
-### 54. Spiral Matrix
+## 54. Spiral Matrix
 1. Layer by Layer
 ![define layer](54_spiralmatrix.png)
 ```java
@@ -451,7 +527,7 @@ public List<Integer> spiralOrder(int[][] matrix) {
 ```  
 
 ## Hard
-### 4. Median of Two Sorted Array
+## 4. Median of Two Sorted Array
 1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值  
 [解释](https://blog.csdn.net/hk2291976/article/details/51107778)
 ```java
@@ -485,7 +561,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 }
 ```  
 
-### 42. Trapping Rain Water
+## 42. Trapping Rain Water
 1. Two Pointer. 
 ```java
 public int trap(int[] height) {
@@ -517,7 +593,7 @@ public int trap(int[] height) {
 }
 ```  
 
-### 528. Random Pick With Weight
+## 528. Random Pick With Weight
 比如若权重数组为 [1, 3, 2] 的话，那么累加和数组为 [1, 4, 6]，整个的权重和为6，我们 rand() % 6，可以随机出范围 [0, 5] 内的数,  
 随机到 0 则为第一个点，随机到 1，2，3 则为第二个点，随机到 4，5则为第三个点,  所以我们随机出一个数字x后，然后再累加和数组中查找第一个大于随机数x的数字，使用二分查找法可以找到第一个大于随机数x的数字的坐标，即为所求
 ```java
