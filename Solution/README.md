@@ -1,5 +1,7 @@
 # Array
 
+## Basic
+
 ### 1. Two Sum
 
 1. Brute Force, two level for loop.
@@ -40,7 +42,9 @@ public int maxSubArray(int[] nums) {
 ```  
 
 ### 121. Best time to buy and sell stock
+
 1. 两个值，分别记录最大和最小，O(n)遍历一遍，如果price[i] < low更新low, 否则更新max
+
 ```java
 public int maxProfit(int[] prices) {
     int profit = 0;
@@ -58,8 +62,11 @@ public int maxProfit(int[] prices) {
     return profit;
 }
 ```  
+
 ### 509. Fibonacci Number
+
 1. 使用一个数组，计算出每个下标对应的值，返回array[N].
+
 ```java
 public int fib(int N) {
     if (N == 0) {
@@ -79,7 +86,9 @@ public int fib(int N) {
 ```  
 
 ### 88. Merge Sorted Array
+
 1. 使用三个指针，m - 1, n - 1, m + n - 1，从右往左更新
+
 ```java
 public void merge(int[] nums1, int m, int[] nums2, int n) {
     int i = m - 1;
@@ -105,7 +114,9 @@ public void merge(int[] nums1, int m, int[] nums2, int n) {
 ```  
 
 ### 283. Move Zeroes
+
 1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
+
 ```java
 public void moveZeroes(int[] nums) {
     int l = 0;
@@ -123,7 +134,9 @@ public void moveZeroes(int[] nums) {
 ```  
 
 ### 167. Two Sum || - Input array is sorted
+
 1. 双指针，一左一右
+
 ```java
 public int[] twoSum(int[] numbers, int target) {
     if (numbers.length < 2) {
@@ -146,7 +159,9 @@ public int[] twoSum(int[] numbers, int target) {
 ```  
 
 ### 268. Missing Number
+
 1. 求和相减, 为了防止overflow, 减的操作提前执行。
+
 ```java
 public int missingNumber(int[] nums) {
     int res = 0;
@@ -158,7 +173,9 @@ public int missingNumber(int[] nums) {
 ```  
 
 ### 26. Remove Duplicates from Sorted Array
+
 1. Two Pointer, 如果右值不等于左值，左值右移一位，更新左值
+
 ```java
 public int removeDuplicates(int[] nums) {
     int l = 0;
@@ -173,8 +190,10 @@ public int removeDuplicates(int[] nums) {
 ```  
 
 ### 977. Squares of Sorted Array
+
 1. O(nLogn), 遍历数组，求平方，再sort
 2. O(n), Two Pointer, 一左一右
+
 ```java
 public int[] sortedSquares(int[] A) {
     int[] res = new int[A.length];
@@ -203,9 +222,13 @@ public int[] sortedSquares(int[] A) {
 ```
 
 ## Medium
+
 ### 912. Sort an Array
+
 Array排序用quick sort, LinkedList排序用merge sort
+
 1. Merge Sort
+
 ```java
 class Solution {
     public int[] sortArray(int[] nums) {
@@ -248,7 +271,9 @@ class Solution {
     }
 }
 ```  
-2. Quick Sort
+
+2.Quick Sort
+
 ```java
 class Solution {
     public int[] sortArray(int[] nums) {
@@ -288,21 +313,21 @@ class Solution {
 ```  
 
 ### 15. Three Sum
+
 1. Brute Force, three level for loop O(n^3)
 2. Sort数组，第一个数One Pass，二三用双指针
+
 ```java
 public List<List<Integer>> threeSum(int[] nums) {
     List<List<Integer>> res = new ArrayList<>();
     if (nums.length < 3) {
         return res;
     }
-    
     Arrays.sort(nums);
     for (int i = 0; i < nums.length - 2; i++) {
         if (i > 0 && nums[i] == nums[i - 1]) {
             continue;
         }
-        
         int l = i + 1;
         int r = nums.length - 1;
         while (l < r) {
@@ -326,8 +351,10 @@ public List<List<Integer>> threeSum(int[] nums) {
 ```  
 
 ### 56. Merge Intervals
+
 1. Sort Interval的最小值, 使用interval[0]记录区域，判断下一个区域的起点和当前区域的终点，  
 重合则更新当前区域终点，否则更新当前区域两端，使用comparator提高效率
+
 ```java
 public int[][] merge(int[][] intervals) {
     if (intervals == null || intervals.length == 0) {
@@ -356,7 +383,9 @@ private class IntervalsComparator implements Comparator<int[]> {
 ```
 
 ### 33. Search in Rotated Sorted Array
+
 1. Binary Search, 判断中心点在哪个区间, 判断是否在线性的区间内
+
 ```java
 public int search(int[] nums, int target) {
     int len = nums.length, left = 0, right = len - 1;
@@ -383,8 +412,10 @@ public int search(int[] nums, int target) {
 ```  
 
 ### 283. Product of Array Except Self
+
 1. O(n) time, O(1) space, left -> right计算每个点左边的数的乘积,  
 right -> left计算每个点右边数的乘积。
+
 ```java
 public int[] productExceptSelf(int[] nums) {
     int[] res = new int[nums.length];
@@ -402,7 +433,9 @@ public int[] productExceptSelf(int[] nums) {
 ```  
 
 ### 11. Container With Most Water
+
 1. 双指针, 一左一右, 两个指针的值比大小，更新指针
+
 ```java
 public int maxArea(int[] height) {
     int l = 0;
@@ -421,7 +454,9 @@ public int maxArea(int[] height) {
 ```  
 
 ### 289. Game of Life
+
 1. O(1) space and O(mn) time, copy数组，根据copy计算每个点新值，更新原始board
+
 ```java
 public void gameOfLife(int[][] board) {
 
@@ -468,7 +503,9 @@ public void gameOfLife(int[][] board) {
 ```  
 
 ### 31. Next Permutation
+
 1. 找到下一个全排列，首先找到第一个下降点，从下降序列中找到刚好大于下降点的点，交换两个点，将后面的序列reverse
+
 ```java
 public void nextPermutation(int[] nums) {
     int i = nums.length - 2;
@@ -504,8 +541,10 @@ private void reverse(int[] nums, int start) {
 ```  
 
 ### 54. Spiral Matrix
+
 1. Layer by Layer
 ![define layer](54_spiralmatrix.png)
+
 ```java
 public List<Integer> spiralOrder(int[][] matrix) {
     List<Integer> list = new ArrayList<>();
@@ -541,10 +580,11 @@ public List<Integer> spiralOrder(int[][] matrix) {
 }
 ```  
 
-## Hard
 ### 4. Median of Two Sorted Array
-1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值  
+
+1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值
 [解释](https://blog.csdn.net/hk2291976/article/details/51107778)
+
 ```java
 public double findMedianSortedArrays(int[] nums1, int[] nums2) {
     int n = nums1.length;
@@ -577,7 +617,9 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 ```  
 
 ### 42. Trapping Rain Water
-1. Two Pointer. 
+
+1. Two Pointer.
+
 ```java
 public int trap(int[] height) {
     if (height.length < 3) {
@@ -609,8 +651,10 @@ public int trap(int[] height) {
 ```  
 
 ### 528. Random Pick With Weight
+
 比如若权重数组为 [1, 3, 2] 的话，那么累加和数组为 [1, 4, 6]，整个的权重和为6，我们 rand() % 6，可以随机出范围 [0, 5] 内的数,  
 随机到 0 则为第一个点，随机到 1，2，3 则为第二个点，随机到 4，5则为第三个点,  所以我们随机出一个数字x后，然后再累加和数组中查找第一个大于随机数x的数字，使用二分查找法可以找到第一个大于随机数x的数字的坐标，即为所求
+
 ```java
 int[] sum;
 Random random;
@@ -640,30 +684,10 @@ public int pickIndex() {
 }
 ```  
 
-# HashTable
-## Easy
-### 771. Jewels and Stones
-1. Traversal two String, put Jewels in set, and check if stones has jewels.
-```java
-public int numJewelsInStones(String J, String S) {
-    char[] jewels = J.toCharArray();
-    Set<Character> set = new HashSet<>();
-    for (char c : jewels) {
-        set.add(c);
-    }
-    int cnt = 0;
-    char[] stones = S.toCharArray();
-    for (char s : stones) {
-        if (set.contains(s)) {
-            cnt++;
-        }
-    }
-    return cnt;
-}
-```
-
 ### 811. Subdomain Visit Count
+
 1. HashMap<domain, times>, 遍历cpdomains, populate map, traversal through keySet(), add to list.
+
 ```java
 public List<String> subdomainVisits(String[] cpdomains) {
     List<String> list = new ArrayList<>();
@@ -692,7 +716,9 @@ public List<String> subdomainVisits(String[] cpdomains) {
 ```  
 
 ### 349. Intersection of Two Arrays
+
 分别遍历两个数组，用set记录元素，第二次遍历，set存在则加入结果
+
 ```java
 public int[] intersection(int[] nums1, int[] nums2) {
     Set<Integer> set = new HashSet<>();
@@ -716,7 +742,9 @@ public int[] intersection(int[] nums1, int[] nums2) {
 ```  
 
 ### 350. Intersection of Two Arrays II
+
 原理同上，使用map代替set，如果map的值不为0，则重复值也继续添加
+
 ```java
 public int[] intersect(int[] nums1, int[] nums2) {
     List<Integer> list = new ArrayList<>();
@@ -739,9 +767,10 @@ public int[] intersect(int[] nums1, int[] nums2) {
 }
 ```
 
-## Medium
 ### 3. Longest Substring Without Repeating Characters
+
 1. 双指针， 一前一后，如果后不在set里，添加进去，更新后，更新len，否则，删除前，更新前
+
 ```java
 public int lengthOfLongestSubstring(String s) {
     int len = 0;
@@ -767,7 +796,9 @@ public int lengthOfLongestSubstring(String s) {
 
 }
 ```  
-2. Optimization 使用map代替set，map存char对应的上一次出现重复的地方，免去i一个一个更新和判断
+
+2.Optimization 使用map代替set，map存char对应的上一次出现重复的地方，免去i一个一个更新和判断
+
 ```java
 public int lengthOfLongestSubstring(String s) {
     int n = s.length();
@@ -785,7 +816,9 @@ public int lengthOfLongestSubstring(String s) {
 ```  
 
 ### 242. Valid Anagram
+
 将字符串转为字符数组，然后逐一比较
+
 ```java
 public boolean isAnagram(String s, String t) {
     if (s.length() != t.length()) {
@@ -804,7 +837,9 @@ public boolean isAnagram(String s, String t) {
     return true;
 }
 ```  
+
 None Sorting solution
+
 ```java
 public boolean isAnagram(String s, String t) {
     if (s.length() != t.length()) return false;
@@ -824,30 +859,10 @@ public boolean isAnagram(String s, String t) {
 }
 ```  
 
-### 49. Grouped Anagrams
-1. HashMap<String, List>, key是每个string sort过之后的，遍历一遍，判断当前string sort过之后是否存在在map中
-```java
-public List<List<String>> groupAnagrams(String[] strs) {
-    if (strs.length == 0) {
-        return new ArrayList();
-    }
-
-    Map<String, List> map = new HashMap<>();
-    for (String str : strs) {
-        char[] chs = str.toCharArray();
-        Arrays.sort(chs);
-        String key = String.valueOf(chs);
-        if (!map.containsKey(key)) {
-            map.put(key, new ArrayList<>());
-        }
-        map.get(key).add(str);
-    }
-    return new ArrayList(map.values());
-}
-```  
-
 ### 560. Subarray Sum Equals K
+
 1. O(n^2), 一个数组记录叠加到当前index时，前面的数值总和，双指针一前一后，判断差值是否为k，更新cnt
+
 ```java
 public int subarraySum(int[] nums, int k) {
     int cnt = 0;
@@ -866,7 +881,9 @@ public int subarraySum(int[] nums, int k) {
     return cnt;
 }
 ```
-2. O(n), HashMap, <curricularSum, numOfOccurance>, 如果在两个sum的区间内，则sum[j] - k = sum[i], i一定存在map的entry.
+
+2.O(n), HashMap, <curricularSum, numOfOccurance>, 如果在两个sum的区间内，则sum[j] - k = sum[i], i一定存在map的entry.
+
 ```java
 public int subarraySum(int[] nums, int k) {
     Map<Integer, Integer> map = new HashMap<>();
@@ -885,7 +902,9 @@ public int subarraySum(int[] nums, int k) {
 ```  
 
 ### 380. Insert Delete GetRandom O(1)
+
 1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置
+
 ```java
 class RandomizedSet {
     ArrayList<Integer> nums;
@@ -929,30 +948,8 @@ class RandomizedSet {
 }
 ```  
 
-### 609. Find Duplicate File in System
-1. HashMap，括号内的作为key，value是List<String>
-```java
-public List<List<String>> findDuplicate(String[] paths) {
-    Map<String, List<String>> map = new HashMap<>();
-    for (String path : paths) {
-        String[] parts = path.split(" ");
-        for (int i = 1; i < parts.length; i++) {
-            int k = parts[i].indexOf("(");
-            String content = parts[i].substring(k, parts[i].length() - 1);
-            map.putIfAbsent(content, new LinkedList<>());
-            map.get(content).add(parts[0] + "/" + parts[i].substring(0, k));
-        }
-    }
-    List<List<String>> r = new LinkedList<>();
-    for (List<String> list : map.values())
-        if (list.size() > 1)
-            r.add(list);
-    return r;
-}
-```  
-
-## Hard
 ### 76. Minimum Window Substring
+
 1.预扫描目标字符串 t，哈希表存储出现的字符及其个数
 2.遍历 源字符串s，遇到 t 中字符，其哈希值减一，直到当前子串包含了所有 t 中的字符，记录该子串，并更新最小子串。
 3.收缩该子串，首指针右移
@@ -960,17 +957,16 @@ public List<List<String>> findDuplicate(String[] paths) {
     3.2当子串中出现某字符次数多于 t 中该字符的个数，也可忽略该字符。比如 找到某子串 AACD ，t = ACD，则第一个A也可忽略。
     3.3直到右移至 该子串缺失某字符。如 ACD -> CD, count--, 跳出循环
 4.重复2，直到遍历到s尾
+
 ```java
 public String minWindow(String s, String t) {
     if (t.length() > s.length()) {
         return "";
     }
-    
     Map<Character, Integer> map = new HashMap<>();
     for (char c : t.toCharArray()) {
         map.put(c, map.getOrDefault(c, 0) + 1);
     }
-    
     int count = 0; // 记录匹配到的字符个数，count == t.length()表示全部找到
     int minStart = 0;
     int minLen = s.length() + 1;
@@ -1006,8 +1002,10 @@ public String minWindow(String s, String t) {
 ```
 
 ### 336. Palindrome Pairs
+
 1. Brute Force, 两两配对，正反concatenation, 判断是否是回文O(n^2)
 2. 见注释
+
 ```java
 public List<List<Integer>> palindromePairs(String[] words) {
     if (words == null || words.length < 2) {
@@ -1063,7 +1061,9 @@ private boolean isPalindrome(String str) {
 ```  
 
 ### 981. Time Based key-value Store
+
 使用一个map来存储 key - (timestamp - value)
+
 ```java
 class TimeMap {
 
@@ -1095,9 +1095,8 @@ class TimeMap {
 }
 ```  
 
-# LinkedList
-## Easy
 ### 206. Reversed LinkedList
+
 ```java
 public ListNode reverseList(ListNode head) {
     ListNode pre = null;
@@ -1113,7 +1112,9 @@ public ListNode reverseList(ListNode head) {
 ```
 
 ### 21. Merge Two Sorted Lists
+
 1. Recursion
+
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     if (l1 == null) return l2;
@@ -1128,12 +1129,14 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     }
 }
 ```  
-2. Iterator
+
+2.Iterator
+
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     ListNode preHead = new ListNode(-1);
     ListNode pre = preHead;
-    
+
     while (l1 != null && l2 != null) {
         if (l1.val < l2.val) {
             pre.next = l1;

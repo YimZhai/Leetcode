@@ -1,5 +1,7 @@
-## Easy
-### 206. Reversed LinkedList
+# Questions
+
+## 206. Reversed LinkedList
+
 ```java
 public ListNode reverseList(ListNode head) {
     ListNode pre = null;
@@ -14,8 +16,10 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-### 21. Merge Two Sorted Lists
+## 21. Merge Two Sorted Lists
+
 1. Recursion
+
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     if (l1 == null) return l2;
@@ -30,12 +34,13 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     }
 }
 ```  
-2. Iterator
+
+2.Iterator
+
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     ListNode preHead = new ListNode(-1);
     ListNode pre = preHead;
-    
     while (l1 != null && l2 != null) {
         if (l1.val < l2.val) {
             pre.next = l1;
@@ -56,8 +61,10 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 }
 ```  
 
-### 2. Add Two Numbers
+## 2. Add Two Numbers
+
 1. 定义carry记录进位
+
 ```java
 public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     ListNode head = new ListNode(0);
@@ -83,8 +90,11 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 ```  
 
 ## Hard
-### 23. Merge K Sorted List
+
+## 23. Merge K Sorted List
+
 1. Divide and Conquer, 比如合并6个链表，那么按照分治法，我们首先分别合并0和3，1和4，2和5.  这样下一次只需合并3个链表，我们再合并1和3，最后和2合并就可以了
+
 ```java
 public ListNode mergeKLists(ListNode[] lists) {
     if (lists == null || lists.length == 0) {
@@ -125,9 +135,11 @@ private ListNode mergeTwoLists(ListNode n1, ListNode n2) {
 }
 ```  
 
-### 234. Palindrome Linked List
-1. O(n) space, convert linked list to array, then solve it 
+## 234. Palindrome Linked List
+
+1. O(n) space, convert linked list to array, then solve it
 2. O(1) space, convert second half of the list
+
 ```java
 public boolean isPalindrome(ListNode head) {
     ListNode fast = head;

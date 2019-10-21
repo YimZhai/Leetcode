@@ -1,26 +1,31 @@
-## Easy
-### 771. Jewels and Stones
+# Questions
+
+## 771. Jewels and Stones
+
 1. Traversal two String, put Jewels in set, and check if stones has jewels.
+
 ```java
-public int numJewelsInStones(String J, String S) {
-    char[] jewels = J.toCharArray();
-    Set<Character> set = new HashSet<>();
-    for (char c : jewels) {
-        set.add(c);
-    }
-    int cnt = 0;
-    char[] stones = S.toCharArray();
-    for (char s : stones) {
-        if (set.contains(s)) {
-            cnt++;
+class Solution {
+    public int numJewelsInStones(String J, String S) {
+        int cnt = 0;
+        Set<Character> set = new HashSet<>();
+        for (char c : J.toCharArray()) {
+            set.add(c);
         }
+        for (char c : S.toCharArray()) {
+            if (set.contains(c)) {
+                cnt++;
+            }
+        }
+        return cnt;
     }
-    return cnt;
 }
 ```
 
-### 811. Subdomain Visit Count
+## 811. Subdomain Visit Count
+
 1. HashMap<domain, times>, 遍历cpdomains, populate map, traversal through keySet(), add to list.
+
 ```java
 public List<String> subdomainVisits(String[] cpdomains) {
     List<String> list = new ArrayList<>();
@@ -48,8 +53,10 @@ public List<String> subdomainVisits(String[] cpdomains) {
 }
 ```  
 
-### 349. Intersection of Two Arrays
+## 349. Intersection of Two Arrays
+
 分别遍历两个数组，用set记录元素，第二次遍历，set存在则加入结果
+
 ```java
 public int[] intersection(int[] nums1, int[] nums2) {
     Set<Integer> set = new HashSet<>();
@@ -72,9 +79,10 @@ public int[] intersection(int[] nums1, int[] nums2) {
 }
 ```  
 
-## Medium
-### 3. Longest Substring Without Repeating Characters
+## 3. Longest Substring Without Repeating Characters
+
 1. 双指针， 一前一后，如果后不在set里，添加进去，更新后，更新len，否则，删除前，更新前
+
 ```java
 public int lengthOfLongestSubstring(String s) {
     int len = 0;
@@ -100,25 +108,35 @@ public int lengthOfLongestSubstring(String s) {
 
 }
 ```  
-2. Optimization 使用map代替set，map存char对应的上一次出现重复的地方，免去i一个一个更新和判断
+
+2.Optimization 使用map代替set，map存char对应的上一次出现重复的地方，免去i一个一个更新和判断
+
 ```java
-public int lengthOfLongestSubstring(String s) {
-    int n = s.length();
-    int len = 0;
-    Map<Character, Integer> map = new HashMap<>();
-    for (int j = 0, i = 0; j < n; j++) {
-        if (map.containsKey(s.charAt(j))) {
-            i = Math.max(map.get(s.charAt(j)), i); // 直接跳到j的最新位置
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
         }
-        len = Math.max(len, j - i + 1);
-        map.put(s.charAt(j), j + 1);
+        // char -> last shown position
+        Map<Character, Integer> map = new HashMap<>();
+        int res = 0;
+        for (int i = 0, j = 0; j < s.length(); j++) { // update j
+            if (map.containsKey(s.charAt(j))) {
+                // update substring starting position
+                i = Math.max(map.get(s.charAt(j)), i); // abcdba
+            }
+            res = Math.max(res, j - i + 1);
+            map.put(s.charAt(j), j + 1);
+        }
+        return res;
     }
-    return len;
 }
 ```  
 
-### 49. Grouped Anagrams
+## 49. Grouped Anagrams
+
 1. HashMap<String, List>, key是每个string sort过之后的，遍历一遍，判断当前string sort过之后是否存在在map中
+
 ```java
 public List<List<String>> groupAnagrams(String[] strs) {
     if (strs.length == 0) {
@@ -139,8 +157,75 @@ public List<List<String>> groupAnagrams(String[] strs) {
 }
 ```  
 
-### 560. Subarray Sum Equals K
+## 249. Group Shifted Strings
+
+```java
+class Solution {
+    public List<List<String>> groupStrings(String[] strings) {
+        List<List<String>> res = new ArrayList<>();
+        if (strings == null || strings.length == 0) {
+            return res;
+        }
+        HashMap<String, List<String>> map = new HashMap<>();
+        for (String str : strings) {
+            // convert all String to String start with a
+            // abc -> abc, bcd -> abc
+            int diff = str.charAt(0) - 'a';
+            String key = "";
+            for (int i = 0; i < str.length(); i++) {
+                char c = (char)(str.charAt(i) - diff);
+                if (c < 'a') {
+                    c += 26;
+                }
+                key += c;
+            }
+            map.putIfAbsent(key, new ArrayList<>());
+            map.get(key).add(str);
+        }
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            res.add(entry.getValue());
+        }
+        return res;
+    }
+}
+```  
+
+## 36. Valid Sudoku
+
+```java
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        Map<Integer, Set<Integer>> row = new HashMap<>();
+        Map<Integer, Set<Integer>> col = new HashMap<>();
+        Map<Integer, Set<Integer>> sqr = new HashMap<>();
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int index = i / 3 * 3 + j / 3;
+                    sqr.putIfAbsent(index, new HashSet<>());
+                    if (!sqr.get(index).add(board[i][j] - '0')) {
+                        return false;
+                    }
+                    row.putIfAbsent(i, new HashSet<>());
+                    if (!row.get(i).add(board[i][j] - '0')) {
+                        return false;
+                    }
+                    col.putIfAbsent(j, new HashSet<>());
+                    if (!col.get(j).add(board[i][j] - '0')) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+}
+```
+
+## 560. Subarray Sum Equals K
+
 1. O(n^2), 一个数组记录叠加到当前index时，前面的数值总和，双指针一前一后，判断差值是否为k，更新cnt
+
 ```java
 public int subarraySum(int[] nums, int k) {
     int cnt = 0;
@@ -159,7 +244,9 @@ public int subarraySum(int[] nums, int k) {
     return cnt;
 }
 ```
-2. O(n), HashMap, <curricularSum, numOfOccurance>, 如果在两个sum的区间内，则sum[j] - k = sum[i], i一定存在map的entry.
+
+2.O(n), HashMap, <curricularSum, numOfOccurance>, 如果在两个sum的区间内，则sum[j] - k = sum[i], i一定存在map的entry.
+
 ```java
 public int subarraySum(int[] nums, int k) {
     Map<Integer, Integer> map = new HashMap<>();
@@ -177,8 +264,10 @@ public int subarraySum(int[] nums, int k) {
 }
 ```  
 
-### 380. Insert Delete GetRandom O(1)
+## 380. Insert Delete GetRandom O(1)
+
 1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置
+
 ```java
 class RandomizedSet {
     ArrayList<Integer> nums;
@@ -222,8 +311,10 @@ class RandomizedSet {
 }
 ```  
 
-### 609. Find Duplicate File in System
-1. HashMap，括号内的作为key，value是List<String>
+## 609. Find Duplicate File in System
+
+1. HashMap，括号内的作为key，value是String的List
+
 ```java
 public List<List<String>> findDuplicate(String[] paths) {
     Map<String, List<String>> map = new HashMap<>();
@@ -244,8 +335,8 @@ public List<List<String>> findDuplicate(String[] paths) {
 }
 ```  
 
-## Hard
-### 76. Minimum Window Substring
+## 76. Minimum Window Substring
+
 1.预扫描目标字符串 t，哈希表存储出现的字符及其个数
 2.遍历 源字符串s，遇到 t 中字符，其哈希值减一，直到当前子串包含了所有 t 中的字符，记录该子串，并更新最小子串。
 3.收缩该子串，首指针右移
@@ -253,17 +344,16 @@ public List<List<String>> findDuplicate(String[] paths) {
     3.2当子串中出现某字符次数多于 t 中该字符的个数，也可忽略该字符。比如 找到某子串 AACD ，t = ACD，则第一个A也可忽略。
     3.3直到右移至 该子串缺失某字符。如 ACD -> CD, count--, 跳出循环
 4.重复2，直到遍历到s尾
+
 ```java
 public String minWindow(String s, String t) {
     if (t.length() > s.length()) {
         return "";
     }
-    
     Map<Character, Integer> map = new HashMap<>();
     for (char c : t.toCharArray()) {
         map.put(c, map.getOrDefault(c, 0) + 1);
     }
-    
     int count = 0; // 记录匹配到的字符个数，count == t.length()表示全部找到
     int minStart = 0;
     int minLen = s.length() + 1;
@@ -298,9 +388,11 @@ public String minWindow(String s, String t) {
 }
 ```
 
-### 336. Palindrome Pairs
+## 336. Palindrome Pairs
+
 1. Brute Force, 两两配对，正反concatenation, 判断是否是回文O(n^2)
 2. 见注释
+
 ```java
 public List<List<Integer>> palindromePairs(String[] words) {
     if (words == null || words.length < 2) {
@@ -355,8 +447,10 @@ private boolean isPalindrome(String str) {
 }
 ```  
 
-### 981. Time Based key-value Store
+## 981. Time Based key-value Store
+
 使用一个map来存储 key - (timestamp - value)
+
 ```java
 class TimeMap {
 
@@ -387,4 +481,3 @@ class TimeMap {
     }
 }
 ```  
-

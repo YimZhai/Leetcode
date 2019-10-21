@@ -1,6 +1,6 @@
-# Binary Tree
+# Tree
 
-## Basic
+## Binary Tree
 
 ### 297. Serialize and Deserialize Binary Tree
 
@@ -263,7 +263,6 @@ class Solution {
 }
 ```  
 
-
-# N-ary Tree
+## N-ary Tree
 
 ## Trie Tree
