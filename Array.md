@@ -653,7 +653,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 
 ## 42. Trapping Rain Water
 
-1. Two Pointer. 
+1. Two Pointer.
 
 ```java
 public int trap(int[] height) {
