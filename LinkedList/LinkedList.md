@@ -16,6 +16,48 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
+## 24. Swap Nodes in Pairs
+
+```java
+// recursive solution, O(N) space
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode second = head.next;
+        ListNode third = head.next.next;
+
+        second.next = head;
+        head.next = swapPairs(third);
+        return second;
+    }
+}
+```
+
+```java
+// iterative O(1) space
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode dummy = new ListNode(0);
+        ListNode point = dummy;
+        dummy.next = head;
+        while (point.next != null && point.next.next != null) {
+            ListNode n1 = point.next;
+            ListNode n2 = point.next.next;
+            point.next = n2;
+            n1.next = n2.next;
+            n2.next = n1;
+            point = n1;
+        }
+        return dummy.next;
+    }
+}
+```
+
 ## 21. Merge Two Sorted Lists
 
 1. Recursion
@@ -88,8 +130,6 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     return head.next;
 }
 ```  
-
-## Hard
 
 ## 23. Merge K Sorted List
 

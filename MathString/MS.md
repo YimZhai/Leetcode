@@ -1,5 +1,91 @@
-### 20. Valid Parentheses
+# Questions
+
+## 118. Pascal's Triangle
+
+```java
+// intuitive solution
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 1; i <= numRows; i++) {
+            List<Integer> list = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                if (j == 0) {
+                    list.add(1);
+                } else if (j == i - 1) {
+                    list.add(1);
+                } else if (j > 0 && i > 1) {
+                    list.add(res.get(i - 2).get(j) + res.get(i - 2).get(j - 1));
+                }
+            }
+            res.add(list);
+        }
+        return res;
+    }
+}
+```
+
+```java
+// recursive
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> res = new ArrayList<>();
+        helper(res, numRows);
+        return res;
+    }
+
+    public void helper(List<List<Integer>> res, int rows) {
+        if (rows == 1) {
+            res.add(Arrays.asList(1));
+        } else if (rows > 1) {
+            helper(res, rows - 1);
+            List<Integer> previous = res.get(rows - 2);
+            List<Integer> list = new ArrayList<>();
+            int n = previous.size();
+            for (int i = 0; i < n; i++) {
+                if (i == 0) {
+                    list.add(1);
+                }
+                if (i > 0) {
+                    list.add(previous.get(i) + previous.get(i - 1));
+                }
+                if (i == n - 1) {
+                    list.add(1);
+                }
+            }
+            res.add(list);
+        }
+    }
+}
+```  
+
+## 119. Pascal's Triangle II
+
+沿用上一题解法，计算到k层的时候返回结果，time, O(N), space, O(K^2)
+O(K) space solution
+
+```java
+// O(K^2) time
+class Solution {
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> res = new ArrayList<>();
+        res.add(1);
+        for (int i = 1; i <= rowIndex; i++) {
+            for (int j = i - 1; j >= 1; j--) {
+                int sum = res.get(j) + res.get(j - 1);
+                res.set(j, sum);
+            }
+            res.add(1);
+        }
+        return res;
+    }
+}
+```
+
+## 20. Valid Parentheses
+
 使用stack, 遍历的时候将对称的parentheses放入stack，不存在的时候pop，最后检查stack是否为空
+
 ```java
 public boolean isValid(String s) {
     Stack<Character> stack = new Stack<>();
@@ -21,8 +107,10 @@ public boolean isValid(String s) {
 }
 ```  
 
-### 937. Reorder Log Files
+## 937. Reorder Log Files
+
 用两个ArrayList分别存num log和letter log, sort letter log, 最后拼在一起
+
 ```java
 class LetterComparator implements Comparator<String> {
     @Override
@@ -59,8 +147,10 @@ class Solution {
 }
 ```  
 
-### 7. Reverse Integer
+## 7. Reverse Integer
+
 Use Long for result incase of overflow
+
 ```java
 public int reverse(int x) {
     long res = 0;
@@ -75,8 +165,10 @@ public int reverse(int x) {
 }
 ```
 
-### 344. Reverse String
+## 344. Reverse String
+
 Two Pointer, left, right
+
 ```java
 public void reverseString(char[] s) {
     int l = 0;
@@ -89,9 +181,30 @@ public void reverseString(char[] s) {
         r--;
     }
 }
-``` 
+```  
 
-### 13. Roman to Integer
+```java
+// resursive
+class Solution {
+    public void reverseString(char[] s) {
+        int n = s.length;
+        helper(s, 0, n - 1);
+    }
+
+    public void helper(char[] s, int left, int right) {
+        if (left > right) {
+            return;
+        }
+        char c = s[left];
+        s[left] = s[right];
+        s[right] = c;
+        helper(s, left + 1, right - 1);
+    }
+}
+```
+
+## 13. Roman to Integer
+
 ```java
 public int romanToInt(String s) {
     char[] chs = s.toCharArray();
@@ -119,8 +232,10 @@ public int romanToInt(String s) {
 }
 ```  
 
-### 202. Happy Number
+## 202. Happy Number
+
 1. Floyed Cycle Detection, O(1) space
+
 ```java
 private int calSum(int n) {
     int sum = 0, tmp;
@@ -152,7 +267,9 @@ public boolean isHappy(int n) {
     return true;
 }
 ```  
-2. HashSet, 如果新的计算结果不能加到set中，则返回false，只有在计算结果为1时返回true
+
+2.HashSet, 如果新的计算结果不能加到set中，则返回false，只有在计算结果为1时返回true
+
 ```java
 public boolean isHappy(int n) {
     Set<Integer> set = new HashSet<>();
@@ -174,8 +291,10 @@ public boolean isHappy(int n) {
 }
 ```  
 
-### 415. Add Strings
+## 415. Add Strings
+
 用StringBuilder，从末位开始向前叠加，使用carry记录进位
+
 ```java
 public String addStrings(String num1, String num2) {
     int i = num1.length() - 1;
@@ -195,9 +314,11 @@ public String addStrings(String num1, String num2) {
 }
 ```  
 
-### 5. Longest Palindrome Substring
+## 5. Longest Palindrome Substring
+
 1. Brute Force O(n^3)
 2. 从中心向两端扩展，奇偶分开考虑, (s, i, i), (s, i, i + 1), 找到新的len更新longest，计算出start位置
+
 ```java
 public String longestPalindrome(String s) {
     if (s == null || s.length() == 0) {
@@ -236,10 +357,12 @@ private int findLongest(String s, int start, int end) {
 }
 ```  
 
-### 22. Generate Parentheses
+## 22. Generate Parentheses
+
 First, the first character should be “(“. Second, at each step, you can either print “(“ or “)”,  
 but print “)” only when there are more “(“s than “)”s. Stop printing out “(“ when the number of “(“ s hit n.  
 The first actually merges into the second condition.
+
 ```java
 public List<String> generateParenthesis(int n) {
     List<String> list = new ArrayList<>();
@@ -263,8 +386,11 @@ public void backtracking(List<String> list, String str,
 }
 ```  
 
-### 17. Letter Combination of a Phone Number
+## 17. Letter Combination of a Phone Number
+
 1. Single queue BFS
+
+```java
 public List<String> letterCombinations(String digits) {
     LinkedList<String> list = new LinkedList<>();
     if (digits.isEmpty()) {
@@ -288,14 +414,13 @@ public List<String> letterCombinations(String digits) {
 }
 ```  
 
-### 273. Integer to English Word
-Intuitive
+## 273. Integer to English Word
+
 ```java
 public String numberToWords(int num) {
     if (num == 0) {
         return "Zero";
     }
-    
     return helper(num);
 }
 
@@ -304,7 +429,6 @@ public String helper(int num) {
     "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
     "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
     StringBuilder res = new StringBuilder();
-    
     if (num >= 1000000000) {
         res.append(helper(num / 1000000000)).append(" Billion ").append(helper(num % 1000000000));
     } else if (num >= 1000000) {
@@ -320,10 +444,12 @@ public String helper(int num) {
     }
     return res.toString().trim();
 }
-```   
+```  
 
-### 227. Basic Calculator II
+## 227. Basic Calculator II
+
 使用stack, 将每次计算出的数存在stack中
+
 ```java
 public int calculate(String s) {
     int len = s.length();
@@ -365,7 +491,8 @@ public int calculate(String s) {
 }
 ```  
 
-### 8. String to Integer (atoi)
+## 8. String to Integer (atoi)
+
 ```java
 public int myAtoi(String str) {
     int index = 0, sign = 1, total = 0;
@@ -408,23 +535,26 @@ public int myAtoi(String str) {
 }
 ```  
 
-## Hard  
-### 10. Regular Expression Matching
+## 10. Regular Expression Matching
+
 1. Funny solution
+
 ```java
 public boolean isMatch(String s, String p) {
     return s.matches(p);
 }
 ```  
-2. 1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
+
+1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
 2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
-3, If p.charAt(j) == '*': 
+3, If p.charAt(j) == '*':
 here are two sub conditions:
        1   if p.charAt(j-1) != s.charAt(i) : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
        2   if p.charAt(i-1) == s.charAt(i) or p.charAt(i-1) == '.':
-        dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
+        dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a
         or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
         or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
+
 ```java
 public boolean isMatch(String s, String p) {
     if(s == null || p == null) {
@@ -457,9 +587,10 @@ public boolean isMatch(String s, String p) {
     }
     return state[s.length()][p.length()];
 }
-```   
+```  
 
-### 68. Text Justification
+## 68. Text Justification
+
 ```java
 //首先要做的就是确定每一行能放下的单词数，这个不难，就是比较n个单词的长度和加上n - 1个空格的长度跟给定的长度L来比较即可
 //找到了一行能放下的单词个数，然后计算出这一行存在的空格的个数，是用给定的长度L减去这一行所有单词的长度和。
@@ -523,8 +654,10 @@ public List<String> fullJustify(String[] words, int maxWidth) {
 }
 ```  
 
-### 50. Pow(x,n)
+## 50. Pow(x,n)
+
 用二分法，注意int越界情况
+
 ```java
 public double myPow(double x, int n) {
     double ans;
@@ -535,7 +668,6 @@ public double myPow(double x, int n) {
     } else {
         ans = 1.0;
     }
-    
     double tmp = x;
     while (n != 0) {
         if (n % 2 == 1) {
@@ -549,9 +681,11 @@ public double myPow(double x, int n) {
 }
 ```  
 
-### 125. Valid Palindrome
+## 125. Valid Palindrome
+
 1. 去除空格和符号, 转为小写字母
 2. 两端双指针
+
 ```java
 public boolean isPalindrome(String s) {
     String input = s.replaceAll("\\p{Punct}", "").replaceAll(" ", "").toLowerCase();
