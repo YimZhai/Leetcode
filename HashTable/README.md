@@ -263,6 +263,53 @@ class Solution {
 }
 ```
 
+## 380. Insert Delete GetRandom O(1)
+
+1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置
+
+```java
+class RandomizedSet {
+    ArrayList<Integer> nums;
+    HashMap<Integer, Integer> locs;
+    java.util.Random rand = new java.util.Random();
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        nums = new ArrayList<Integer>();
+        locs = new HashMap<Integer, Integer>();
+    }
+
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        boolean contain = locs.containsKey(val);
+        if (contain) return false;
+        locs.put( val, nums.size());
+        nums.add(val);
+        return true;
+    }
+
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        boolean contain = locs.containsKey(val);
+        if (!contain) return false;
+        int loc = locs.get(val); // removed value's index
+        if (loc < nums.size() - 1) { // not the last one of arraylist
+            int lastone = nums.get(nums.size() - 1); // last elements of arraylist
+            nums.set(loc, lastone); // move the lastone to val's location
+            locs.put(lastone, loc); // update lastone's location in the map
+        }
+        locs.remove(val); // the val has been replaced with the lastone
+        nums.remove(nums.size() - 1);
+        return true;
+    }
+
+    /** Get a random element from the set. */
+    public int getRandom() {
+        return nums.get( rand.nextInt(nums.size()) );
+    }
+}
+```  
+
 ## 560. Subarray Sum Equals K
 
 1. O(n^2), 一个数组记录叠加到当前index时，前面的数值总和，双指针一前一后，判断差值是否为k，更新cnt

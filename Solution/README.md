@@ -857,53 +857,6 @@ public int subarraySum(int[] nums, int k) {
 }
 ```  
 
-### 380. Insert Delete GetRandom O(1)
-
-1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置
-
-```java
-class RandomizedSet {
-    ArrayList<Integer> nums;
-    HashMap<Integer, Integer> locs;
-    java.util.Random rand = new java.util.Random();
-
-    /** Initialize your data structure here. */
-    public RandomizedSet() {
-        nums = new ArrayList<Integer>();
-        locs = new HashMap<Integer, Integer>();
-    }
-
-    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
-    public boolean insert(int val) {
-        boolean contain = locs.containsKey(val);
-        if (contain) return false;
-        locs.put( val, nums.size());
-        nums.add(val);
-        return true;
-    }
-
-    /** Removes a value from the set. Returns true if the set contained the specified element. */
-    public boolean remove(int val) {
-        boolean contain = locs.containsKey(val);
-        if (!contain) return false;
-        int loc = locs.get(val);
-        if (loc < nums.size() - 1) { // not the last one, swap
-            int lastone = nums.get(nums.size() - 1);
-            nums.set(loc, lastone);
-            locs.put(lastone, loc);
-        }
-        locs.remove(val);
-        nums.remove(nums.size() - 1);
-        return true;
-    }
-
-    /** Get a random element from the set. */
-    public int getRandom() {
-        return nums.get( rand.nextInt(nums.size()) );
-    }
-}
-```  
-
 ### 76. Minimum Window Substring
 
 1.预扫描目标字符串 t，哈希表存储出现的字符及其个数
@@ -1444,7 +1397,9 @@ public boolean isHappy(int n) {
 ```  
 
 ### 415. Add Strings
+
 用StringBuilder，从末位开始向前叠加，使用carry记录进位
+
 ```java
 public String addStrings(String num1, String num2) {
     int i = num1.length() - 1;
@@ -1465,8 +1420,10 @@ public String addStrings(String num1, String num2) {
 ```  
 
 ### 5. Longest Palindrome Substring
+
 1. Brute Force O(n^3)
 2. 从中心向两端扩展，奇偶分开考虑, (s, i, i), (s, i, i + 1), 找到新的len更新longest，计算出start位置
+
 ```java
 public String longestPalindrome(String s) {
     if (s == null || s.length() == 0) {
@@ -2261,95 +2218,6 @@ public class NestedIterator implements Iterator<Integer> {
         }
         return false;
     }
-}
-```  
-
-### 692. Top K Frequent Word
-
-HashMap和PriorityQueue, HashMap用来记录每个词和这个词出现的次数，在insert到pq的时候，按照单词出现的次数insert  
-如果次数相同，则按照字母顺序.
-
-```java
-public List<String> topKFrequent(String[] words, int k) {
-    List<String> res = new LinkedList<>();
-    Map<String, Integer> map = new HashMap<>();
-    for (String word : words) {
-        map.put(word, map.getOrDefault(word, 0) + 1);
-    }
-    PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
-        (a, b) -> a.getValue() == b.getValue() ?
-         b.getKey().compareTo(a.getKey()) : a.getValue() - b.getValue()
-    );
-    // insert into pq
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
-        pq.offer(entry);
-        if (pq.size() > k) {
-            pq.poll();
-        }
-    }
-    while (!pq.isEmpty()) {
-        res.add(0, pq.poll().getKey()); // pq.poll() always return the smallest.
-    }
-    return res;
-}
-```  
-
-### 347. Top K Frequent Elements
-
-思路同上，更换数据类型
-
-```java
-public List<Integer> topKFrequent(int[] nums, int k) {
-    List<Integer> res = new LinkedList<>();
-    Map<Integer, Integer> map = new HashMap<>();
-    for (int num : nums) {
-        map.put(num, map.getOrDefault(num, 0) + 1);
-    }
-
-    PriorityQueue<Map.Entry<Integer, Integer>> pq = new PriorityQueue<>(
-        (a, b) -> a.getValue() - b.getValue()
-    );
-
-    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-        pq.offer(entry);
-        if (pq.size() > k) {
-            pq.poll();
-        }
-    }
-
-    while (!pq.isEmpty()) {
-        res.add(0, pq.poll().getKey());
-    }
-    return res;
-}
-```  
-
-1. Bucket Sort
-建立一个数组，`List<Integer>[]`，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些  
-
-```java
-public List<Integer> topKFrequent(int[] nums, int k) {
-    List<Integer>[] bucket = new List[nums.length + 1];
-    Map<Integer, Integer> map = new HashMap<>();
-    List<Integer> res = new LinkedList<>();
-    for (int num : nums) {
-        map.put(num, map.getOrDefault(num, 0) + 1);
-    }
-    // 遍历keySet()
-    for (int key : map.keySet()) {
-        int cnt = map.get(key);
-        if (bucket[cnt] == null) {
-            bucket[cnt] = new ArrayList<>();
-        }
-        bucket[cnt].add(key);
-    }
-    // 遍历bucket
-    for (int i = bucket.length - 1; i >= 0 && res.size() < k; i--) {
-        if (bucket[i] != null) {
-            res.addAll(bucket[i]);
-        }
-    }
-    return res;
 }
 ```  
 

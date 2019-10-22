@@ -166,12 +166,10 @@ class TwoSum {
     public TwoSum() {
         arr = new ArrayList<>();
     }
-    
     /** Add the number to an internal data structure.. */
     public void add(int number) {
         arr.add(number);
     }
-    
     /** Find if there exists any pair of numbers which sum is equal to the value. */
     public boolean find(int value) {
         /* 267 ms
@@ -304,6 +302,89 @@ public List<List<Integer>> threeSum(int[] nums) {
 }
 ```  
 
+## 18. 4Sum
+
+在3Sum的基础上，再套一层loop
+
+```java
+class Solution {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums.length < 4) {
+            return res;
+        }
+        int n = nums.length;
+        Arrays.sort(nums);
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) { // skip duplicate
+                continue;
+            }
+            for (int j = i + 1; j < n - 2; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) { // skip duplicate
+                    continue;
+                }
+                int left = j + 1;
+                int right = n - 1;
+                while (left < right) {
+                    int sum = nums[left] + nums[right] + nums[i] + nums[j];
+                    if (sum == target) {
+                        res.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
+                        left++;
+                        right--;
+                         // skip duplicate
+                        while (left < right && nums[left] == nums[left - 1]) {
+                            left++;
+                        }
+                         // skip duplicate
+                        while (left < right && nums[right] == nums[right + 1]) {
+                            right--;
+                        }
+                    } else if (sum > target) {
+                        right--;
+                    } else {
+                        left++;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+}
+```
+
+## 454. 4Sum II
+
+O(N^2), 将前两个数组的所有可能性算出来，用map存好 sum -> times
+
+```java
+class Solution {
+    public int fourSumCount(int[] A, int[] B, int[] C, int[] D) {
+        int n = A.length;
+        int res = 0;
+        if (n == 0) {
+            return res;
+        }
+        // sum of A[] + B[] -> how many time it occurs
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int sum = A[i] + B[j];
+                map.put(sum, map.getOrDefault(sum, 0) + 1);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int sum = 0 - (C[i] + D[j]);
+                if (map.containsKey(sum)) {
+                    res += map.get(sum);
+                }
+            }
+        }
+        return res;
+    }
+}
+```
+
 ## 56. Merge Intervals
 
 1. Sort Interval的最小值, 使用interval[0]记录区域，判断下一个区域的起点和当前区域的终点，  
@@ -387,7 +468,9 @@ public int[] productExceptSelf(int[] nums) {
 ```  
 
 ## 11. Container With Most Water
+
 1. 双指针, 一左一右, 两个指针的值比大小，更新指针
+
 ```java
 public int maxArea(int[] height) {
     int l = 0;
@@ -406,7 +489,9 @@ public int maxArea(int[] height) {
 ```  
 
 ## 289. Game of Life
+
 1. O(1) space and O(mn) time, copy数组，根据copy计算每个点新值，更新原始board
+
 ```java
 public void gameOfLife(int[][] board) {
 
@@ -453,7 +538,9 @@ public void gameOfLife(int[][] board) {
 ```  
 
 ## 31. Next Permutation
+
 1. 找到下一个全排列，首先找到第一个下降点，从下降序列中找到刚好大于下降点的点，交换两个点，将后面的序列reverse
+
 ```java
 public void nextPermutation(int[] nums) {
     int i = nums.length - 2;
@@ -489,8 +576,10 @@ private void reverse(int[] nums, int start) {
 ```  
 
 ## 54. Spiral Matrix
+
 1. Layer by Layer
 ![define layer](54_spiralmatrix.png)
+
 ```java
 public List<Integer> spiralOrder(int[][] matrix) {
     List<Integer> list = new ArrayList<>();
@@ -526,10 +615,11 @@ public List<Integer> spiralOrder(int[][] matrix) {
 }
 ```  
 
-## Hard
 ## 4. Median of Two Sorted Array
+
 1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值  
 [解释](https://blog.csdn.net/hk2291976/article/details/51107778)
+
 ```java
 public double findMedianSortedArrays(int[] nums1, int[] nums2) {
     int n = nums1.length;
@@ -562,7 +652,9 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 ```  
 
 ## 42. Trapping Rain Water
+
 1. Two Pointer. 
+
 ```java
 public int trap(int[] height) {
     if (height.length < 3) {
@@ -594,8 +686,10 @@ public int trap(int[] height) {
 ```  
 
 ## 528. Random Pick With Weight
+
 比如若权重数组为 [1, 3, 2] 的话，那么累加和数组为 [1, 4, 6]，整个的权重和为6，我们 rand() % 6，可以随机出范围 [0, 5] 内的数,  
 随机到 0 则为第一个点，随机到 1，2，3 则为第二个点，随机到 4，5则为第三个点,  所以我们随机出一个数字x后，然后再累加和数组中查找第一个大于随机数x的数字，使用二分查找法可以找到第一个大于随机数x的数字的坐标，即为所求
+
 ```java
 int[] sum;
 Random random;
@@ -622,5 +716,44 @@ public int pickIndex() {
         }
     }
     return left;
+}
+```  
+
+## 1231. Divide Chocolate
+
+Binary Search, left, mid, right表示可以切成的长度，找到符合范围的这个长度的最大值  
+这个长度同时也是所有切好的块数中，长度最短的  
+限制条件，切成的块数一定要大于K，也就是要给k+1个人吃
+
+```java
+class Solution {
+    public int maximizeSweetness(int[] sweetness, int K) {
+        int left = 1;
+        int right = 0;
+        for (int num : sweetness) {
+            right += num;
+        }
+        while (left < right) {
+            int mid = (left + right + 1) / 2; // 每次都拿到长度的偏大值
+            int cur = 0;
+            int cuts = 0;
+            for (int num : sweetness) {
+                cur += num;
+                if (cur >= mid) { // 甜度和达到要求
+                    cur = 0; // 重新计算甜度和
+                    cuts++;
+                    if (cuts > K) { // 分的块数符合要求
+                        break;
+                    }
+                }
+            }
+            if (cuts > K) {
+                left = mid;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return left;
+    }
 }
 ```  
