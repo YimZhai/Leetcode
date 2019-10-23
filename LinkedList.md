@@ -3,6 +3,7 @@
 ## 206. Reversed LinkedList
 
 ```java
+// iterative
 public ListNode reverseList(ListNode head) {
     ListNode pre = null;
     ListNode curr = head;
@@ -13,6 +14,21 @@ public ListNode reverseList(ListNode head) {
         curr = node;
     }
     return pre;
+}
+```
+
+```java
+// recursive
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return node;
+    }
 }
 ```
 

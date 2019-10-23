@@ -64,7 +64,7 @@ class Solution {
 ```  
 
 1. Bucket Sort
-建立一个数组，`List<Integer>[]`，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些 
+建立一个数组，`List<Integer>[]`，数组下标对应的是频率，list里存储出现这么多频率的数字有哪些
 O(N) time and O(N) space
 
 ```java
