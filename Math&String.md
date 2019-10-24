@@ -659,27 +659,59 @@ public List<String> fullJustify(String[] words, int maxWidth) {
 用二分法，注意int越界情况
 
 ```java
-public double myPow(double x, int n) {
-    double ans;
-    if (n < 0) {
-        x = 1 / x;
-        n = -(n + 1); // 处理int越界情况
-        ans = 1.0 * x;
-    } else {
-        ans = 1.0;
-    }
-    double tmp = x;
-    while (n != 0) {
-        if (n % 2 == 1) {
-            ans *= tmp;
+class Solution {
+    public double myPow(double x, int n) {
+        double res = 1.0;
+        if (n < 0) {
+            x = 1 / x;
+            n = -(n + 1); // 处理边界
+            res *= x;
+        } else {
+            res = 1.0;
         }
-        tmp *= tmp;
-        n /= 2;
+        double tmp = x;
+        while (n != 0) {
+            if (n % 2 == 1) {
+                res *= tmp;
+            }
+            tmp *= tmp;
+            n /= 2;
+        }
+        return res;
     }
-
-    return ans;
 }
 ```  
+
+## 779. K-th Symbol in Grammar
+
+```java
+// 比如我们求第11行的1000个数字是0还是1
+// 那么第11行的第1000个数字 a 是根据哪儿来的呢，
+// 是依照第10行的第500个数字 b 而来
+// b 又是依照 9行250个数字 c 来，数字才依照 8 行 125数字 d 来， d 依照 7 行 63 e 来... 以此类推
+// O(N)
+class Solution {
+    public int kthGrammar(int N, int K) {
+        if (N == 1) {
+            return 0;
+        }
+        if (K % 2 == 1) {
+            return kthGrammar(N - 1, (K + 1) / 2) == 0 ? 0 : 1;
+        } else {
+            return kthGrammar(N - 1, K / 2) == 0 ? 1 : 0;
+        }
+    }
+}
+```
+
+```java
+// trick solution, O(logN)
+class Solution {
+    public int kthGrammar(int N, int K) {
+        return Integer.bitCount(K - 1) % 2;
+    }
+}
+```
 
 ## 125. Valid Palindrome
 
@@ -701,5 +733,40 @@ public boolean isPalindrome(String s) {
         }
     }
     return true;
+}
+```  
+
+## 680. Valid Palindrome II
+
+思路同上，双指针从两端向中间移动，遇到不同的时候分情况考虑，判断左边跳一位和右边挑一位后是否还是回文
+
+```java
+class Solution {
+    public boolean validPalindrome(String s) {
+        char[] chs = s.toCharArray();
+        int left = 0;
+        int right = chs.length - 1;
+        boolean jump = true;
+        while (left < right) {
+            if (chs[left] == chs[right]) {
+                left++;
+                right--;
+            } else {
+                return isPalindrome(chs, left + 1, right) || isPalindrome(chs, left, right - 1);
+            }
+        }
+        return true;
+    }
+
+    public boolean isPalindrome(char[] chs, int left, int right) {
+        while (left < right) {
+            if (chs[left] != chs[right]) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
 }
 ```  

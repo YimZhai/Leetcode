@@ -61,28 +61,6 @@ public int maxProfit(int[] prices) {
 }
 ```  
 
-## 509. Fibonacci Number
-
-1. 使用一个数组，计算出每个下标对应的值，返回array[N].
-
-```java
-public int fib(int N) {
-    if (N == 0) {
-        return 0;
-    }
-    if (N == 1) {
-        return 1;
-    }
-    int[] f = new int[N + 1];
-    f[0] = 0;
-    f[1] = 1;
-    for (int i = 2; i <= N; i++) {
-        f[i] = f[i - 1] + f[i - 2];
-    }
-    return f[N];
-}
-```  
-
 ## 88. Merge Sorted Array
 
 1. 使用三个指针，m - 1, n - 1, m + n - 1，从右往左更新
@@ -615,6 +593,54 @@ public List<Integer> spiralOrder(int[][] matrix) {
 }
 ```  
 
+## 34. Find First and Last Position of Element in Sorted Array
+
+分两步，首先找到first, 然后找到last
+
+```java
+public int[] searchRange(int[] nums, int target) {
+
+    int[] res = {-1, -1};
+    if (nums == null || nums.length == 0) {
+        return res;
+    }
+
+    int lo = 0;
+    int hi = nums.length - 1;
+    while (lo + 1 < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (target <= nums[mid]) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    if (nums[lo] == target) {
+        res[0] = lo;
+    } else if (nums[hi] == target) {
+        res[0] = hi;
+    }
+
+    lo = 0;
+    hi = nums.length - 1;
+    while (lo + 1 < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (target >= nums[mid]) {
+            lo = mid;
+        } else {
+            hi = mid - 1;
+        }
+    }
+    if (nums[hi] == target) {
+        res[1] = hi;
+    } else if (nums[lo] == target) {
+        res[1] = lo;
+    }
+
+    return res;
+}
+```  
+
 ## 4. Median of Two Sorted Array
 
 1. 找到中位数，由于m+n奇偶性不确定，trick: 找到(m+n+1)/2和(m+n+2)/2取平均值  
@@ -682,6 +708,35 @@ public int trap(int[] height) {
         }
     }
     return vol;
+}
+```  
+
+## 986. Interval List Intersections
+
+双指针，在两个数组从左向右遍历
+
+```java
+public int[][] intervalIntersection(int[][] A, int[][] B) {
+    List<int[]> list = new ArrayList<>();
+    int m = A.length;
+    int n = B.length;
+    int i = 0, j = 0;
+    int startMax = Integer.MIN_VALUE;
+    int endMin = Integer.MAX_VALUE;
+    while (i < m && j < n) {
+        startMax = Math.max(A[i][0], B[j][0]);
+        endMin = Math.min(A[i][1], B[j][1]);
+        if (endMin >= startMax) { // 比较是否有重合部分
+            list.add(new int[]{startMax, endMin});
+        }
+        if (A[i][1] == endMin) {
+            i++;
+        }
+        if (B[j][1] == endMin){
+            j++;
+        }
+    }
+    return list.toArray(new int[list.size()][2]);
 }
 ```  
 

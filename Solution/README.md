@@ -44,28 +44,6 @@ public int maxProfit(int[] prices) {
 }
 ```  
 
-### 509. Fibonacci Number
-
-1. 使用一个数组，计算出每个下标对应的值，返回array[N].
-
-```java
-public int fib(int N) {
-    if (N == 0) {
-        return 0;
-    }
-    if (N == 1) {
-        return 1;
-    }
-    int[] f = new int[N + 1];
-    f[0] = 0;
-    f[1] = 1;
-    for (int i = 2; i <= N; i++) {
-        f[i] = f[i - 1] + f[i - 2];
-    }
-    return f[N];
-}
-```  
-
 ### 88. Merge Sorted Array
 
 1. 使用三个指针，m - 1, n - 1, m + n - 1，从右往左更新
@@ -1020,52 +998,6 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-### 21. Merge Two Sorted Lists
-
-1. Recursion
-
-```java
-public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-    if (l1 == null) return l2;
-    if (l2 == null) return l1;
-
-    if (l1.val < l2.val) {
-        l1.next = mergeTwoLists(l1.next, l2);
-        return l1;
-    } else {
-        l2.next = mergeTwoLists(l2.next, l1);
-        return l2;
-    }
-}
-```  
-
-2.Iterator
-
-```java
-public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-    ListNode preHead = new ListNode(-1);
-    ListNode pre = preHead;
-
-    while (l1 != null && l2 != null) {
-        if (l1.val < l2.val) {
-            pre.next = l1;·
-            l1 = l1.next;
-        } else {
-            pre.next = l2;
-            l2 = l2.next;
-        }
-        pre = pre.next;
-    }
-    if (l1 == null) {
-        pre.next = l2;
-    }
-    if (l2 == null) {
-        pre.next = l1;
-    }
-    return preHead.next;
-}
-```  
-
 ### 2. Add Two Numbers
 
 1. 定义carry记录进位
@@ -1282,7 +1214,9 @@ class Solution {
 ```  
 
 ### 7. Reverse Integer
+
 Use Long for result incase of overflow
+
 ```java
 public int reverse(int x) {
     long res = 0;
@@ -1298,7 +1232,9 @@ public int reverse(int x) {
 ```
 
 ### 344. Reverse String
+
 Two Pointer, left, right
+
 ```java
 public void reverseString(char[] s) {
     int l = 0;
@@ -1311,9 +1247,10 @@ public void reverseString(char[] s) {
         r--;
     }
 }
-``` 
+```  
 
 ### 13. Roman to Integer
+
 ```java
 public int romanToInt(String s) {
     char[] chs = s.toCharArray();
@@ -1342,7 +1279,9 @@ public int romanToInt(String s) {
 ```  
 
 ### 202. Happy Number
+
 1. Floyed Cycle Detection, O(1) space
+
 ```java
 private int calSum(int n) {
     int sum = 0, tmp;
@@ -1374,7 +1313,9 @@ public boolean isHappy(int n) {
     return true;
 }
 ```  
-2. HashSet, 如果新的计算结果不能加到set中，则返回false，只有在计算结果为1时返回true
+
+2.HashSet, 如果新的计算结果不能加到set中，则返回false，只有在计算结果为1时返回true
+
 ```java
 public boolean isHappy(int n) {
     Set<Integer> set = new HashSet<>();
@@ -1463,9 +1404,11 @@ private int findLongest(String s, int start, int end) {
 ```  
 
 ### 22. Generate Parentheses
+
 First, the first character should be “(“. Second, at each step, you can either print “(“ or “)”,  
 but print “)” only when there are more “(“s than “)”s. Stop printing out “(“ when the number of “(“ s hit n.  
 The first actually merges into the second condition.
+
 ```java
 public List<String> generateParenthesis(int n) {
     List<String> list = new ArrayList<>();
@@ -1490,7 +1433,10 @@ public void backtracking(List<String> list, String str,
 ```  
 
 ### 17. Letter Combination of a Phone Number
+
 1. Single queue BFS
+
+```java
 public List<String> letterCombinations(String digits) {
     LinkedList<String> list = new LinkedList<>();
     if (digits.isEmpty()) {
@@ -1515,13 +1461,12 @@ public List<String> letterCombinations(String digits) {
 ```  
 
 ### 273. Integer to English Word
-Intuitive
+
 ```java
 public String numberToWords(int num) {
     if (num == 0) {
         return "Zero";
     }
-    
     return helper(num);
 }
 
@@ -1530,7 +1475,6 @@ public String helper(int num) {
     "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
     "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
     StringBuilder res = new StringBuilder();
-    
     if (num >= 1000000000) {
         res.append(helper(num / 1000000000)).append(" Billion ").append(helper(num % 1000000000));
     } else if (num >= 1000000) {
@@ -1546,10 +1490,12 @@ public String helper(int num) {
     }
     return res.toString().trim();
 }
-```   
+```  
 
 ### 227. Basic Calculator II
+
 使用stack, 将每次计算出的数存在stack中
+
 ```java
 public int calculate(String s) {
     int len = s.length();
@@ -1592,7 +1538,9 @@ public int calculate(String s) {
 ```  
 
 ### 224. Basic Calculator
+
 使用stack存放sign和中间结果
+
 ```java
 public int calculate(String s) {
     int len = s.length();
@@ -1630,6 +1578,7 @@ public int calculate(String s) {
 ```  
 
 ### 8. String to Integer (atoi)
+
 ```java
 public int myAtoi(String str) {
     int index = 0, sign = 1, total = 0;
@@ -1672,23 +1621,26 @@ public int myAtoi(String str) {
 }
 ```  
 
-## Hard  
 ### 10. Regular Expression Matching
+
 1. Funny solution
+
 ```java
 public boolean isMatch(String s, String p) {
     return s.matches(p);
 }
 ```  
-2. 1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
+
+1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
 2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
-3, If p.charAt(j) == '*': 
+3, If p.charAt(j) == '*':
 here are two sub conditions:
        1   if p.charAt(j-1) != s.charAt(i) : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
        2   if p.charAt(i-1) == s.charAt(i) or p.charAt(i-1) == '.':
-        dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
+        dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a
         or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
         or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
+
 ```java
 public boolean isMatch(String s, String p) {
     if(s == null || p == null) {
@@ -1721,9 +1673,10 @@ public boolean isMatch(String s, String p) {
     }
     return state[s.length()][p.length()];
 }
-```   
+```  
 
 ### 68. Text Justification
+
 ```java
 //首先要做的就是确定每一行能放下的单词数，这个不难，就是比较n个单词的长度和加上n - 1个空格的长度跟给定的长度L来比较即可
 //找到了一行能放下的单词个数，然后计算出这一行存在的空格的个数，是用给定的长度L减去这一行所有单词的长度和。
@@ -1785,269 +1738,12 @@ public List<String> fullJustify(String[] words, int maxWidth) {
     }
     return lines;
 }
-```  
-
-### 50. Pow(x,n)
-用二分法，注意int越界情况
-```java
-public double myPow(double x, int n) {
-    double ans;
-    if (n < 0) {
-        x = 1 / x;
-        n = -(n + 1); // 处理int越界情况
-        ans = 1.0 * x;
-    } else {
-        ans = 1.0;
-    }
-    
-    double tmp = x;
-    while (n != 0) {
-        if (n % 2 == 1) {
-            ans *= tmp;
-        }
-        tmp *= tmp;
-        n /= 2;
-    }
-
-    return ans;
-}
-```  
-
-### 125. Valid Palindrome
-1. 去除空格和符号, 转为小写字母
-2. 两端双指针
-```java
-public boolean isPalindrome(String s) {
-    String input = s.replaceAll("\\p{Punct}", "").replaceAll(" ", "").toLowerCase();
-    char[] charArr = input.toCharArray();
-    int i = 0;
-    int j = charArr.length - 1;
-    while (i <= j) {
-        if (charArr[i] == charArr[j]) {
-            i++;
-            j--;
-        } else {
-            return false;
-        }
-    }
-    return true;
-}
-```  
-
-### 680. Valid Palindrome II
-思路同上，双指针从两端向中间移动，遇到不同的时候分情况考虑，判断左边跳一位和右边挑一位后是否还是回文
-```java
-class Solution {
-    public boolean validPalindrome(String s) {
-        char[] chs = s.toCharArray();
-        int left = 0;
-        int right = chs.length - 1;
-        boolean jump = true;
-        while (left < right) {
-            if (chs[left] == chs[right]) {
-                left++;
-                right--;
-            } else {
-                return isPalindrome(chs, left + 1, right) || isPalindrome(chs, left, right - 1);
-            }
-        }
-        return true;
-    }
-
-    public boolean isPalindrome(char[] chs, int left, int right) {
-        while (left < right) {
-            if (chs[left] != chs[right]) {
-                return false;
-            }
-            left++;
-            right--;
-        }
-        return true;
-    }
-}
-```  
-
-# Two Pointer & Binary Search
-### 34. Find First and Last Position of Element in Sorted Array
-分两步，首先找到first, 然后找到last
-```java
-public int[] searchRange(int[] nums, int target) {
-
-    int[] res = {-1, -1};
-    if (nums == null || nums.length == 0) {
-        return res;
-    }
-
-    int lo = 0;
-    int hi = nums.length - 1;
-    while (lo + 1 < hi) {
-        int mid = lo + (hi - lo) / 2;
-        if (target <= nums[mid]) {
-            hi = mid;
-        } else {
-            lo = mid + 1;
-        }
-    }
-    if (nums[lo] == target) {
-        res[0] = lo;
-    } else if (nums[hi] == target) {
-        res[0] = hi;
-    }
-
-    lo = 0;
-    hi = nums.length - 1;
-    while (lo + 1 < hi) {
-        int mid = lo + (hi - lo) / 2;
-        if (target >= nums[mid]) {
-            lo = mid;
-        } else {
-            hi = mid - 1;
-        }
-    }
-    if (nums[hi] == target) {
-        res[1] = hi;
-    } else if (nums[lo] == target) {
-        res[1] = lo;
-    }
-
-    return res;
-}
-```   
-
-### 986. Interval List Intersections
-双指针，在两个数组从左向右遍历
-```java
-public int[][] intervalIntersection(int[][] A, int[][] B) {
-    List<int[]> list = new ArrayList<>();
-    int m = A.length;
-    int n = B.length;
-    int i = 0, j = 0;
-    int startMax = Integer.MIN_VALUE;
-    int endMin = Integer.MAX_VALUE;
-    while (i < m && j < n) {
-        startMax = Math.max(A[i][0], B[j][0]);
-        endMin = Math.min(A[i][1], B[j][1]);
-        if (endMin >= startMax) { // 比较是否有重合部分
-            list.add(new int[]{startMax, endMin});
-        }
-        if (A[i][1] == endMin) {
-            i++;
-        }
-        if (B[j][1] == endMin){
-            j++;
-        }
-    }
-    return list.toArray(new int[list.size()][2]);
-}
-```  
-
-# Divide and Conquer
-### 973. K Closet Point to Origin
-思路：使用一个数组，记录每个点的距离，将这个数组排序，我们需要K个点，所以距离为这个数组的前K位的点就是我们的目标
-```java
-public int[][] kClosest(int[][] points, int K) {
-    int[] power = new int[points.length];
-    for (int i = 0; i < points.length; i++) {
-        power[i] = cal(points[i][0], points[i][1]);
-    }
-
-    Arrays.sort(power);
-    int target = power[K - 1];
-    int[][] res = new int[K][2];
-    int index = 0;
-    for (int[] point : points) {
-        if (cal(point[0], point[1]) <= target) {
-            res[index] = point;
-            index++;
-        }
-    }
-    return res;
-}
-
-public int cal(int i, int j) {
-    return i * i + j * j;
-}
-```  
-2. PriorityQueue, 保持queue的size为k，在放入queue的时候，降序放入
-```java
-public int[][] kClosest(int[][] points, int K) {
-    PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparing(a -> -a[0] * a[0] - a[1] * a[1]));
-    for (int[] p : points) {
-        pq.offer(p);
-        if (pq.size() > K) { // poll out the farthest among the K + 1 points.
-            pq.poll();
-        }
-    }
-    int[][] ans = new int[K][2];
-    while (K > 0) {
-        K--;
-        ans[K] = pq.poll();
-    }
-    return ans;
-}
-```  
-
-### 215. Kth Largest Element in Array
-
-1. Sort
-2. PriorityQueue, add 默认为升序，判断queue的size和值的大小
-
-```java
-public int findKthLargest(int[] nums, int k) {
-    PriorityQueue<Integer> pq = new PriorityQueue<>();
-    for (int num : nums) {
-        if (pq.size() < k || num > pq.peek()) {
-            pq.add(num);
-        }
-        if (pq.size() > k) {
-            pq.remove();
-        }
-    }
-    return pq.peek();
-}
-```  
-
-### 155. Min Stack
-
-用两个stack，第一个正常操作，第二个站只push比当前peek值小的
-
-```java
-class MinStack {
-
-    Stack<Integer> s1;
-    Stack<Integer> s2;
-    /** initialize your data structure here. */
-    public MinStack() {
-        s1 = new Stack<>();
-        s2 = new Stack<>();
-    }
-
-    public void push(int x) {
-        s1.push(x);
-        if (s2.empty() || x <= s2.peek()) {
-            s2.push(x);
-        }
-    }
-
-    public void pop() {
-        int x = s1.pop();
-        if (x == s2.peek()) {
-            s2.pop();
-        }
-    }
-
-    public int top() {
-        return s1.peek();
-    }
-
-    public int getMin() {
-        return s2.peek();
-    }
-}
-```  
+```
 
 ### 252. Meeting Room
+
 根据每段会议的开始时间sort数组，从第二个元素开始遍历，比较开始时间和上一个会议的结束时间，发现重合则返回false
+
 ```java
 public class IntervalComparator implements Comparator<int[]> {
     @Override
@@ -2563,7 +2259,9 @@ public void dfs(char[][] grid, int i, int j) {
 ```  
 
 ### 127. Word Ladder
+
 1. Bidirectional Searching, 用两个set，从两端开始搜索
+
 ```java
 public int ladderLength(String beginWord, String endWord, List<String> wordList) {
     Set<String> dict = new HashSet(wordList);
@@ -2617,7 +2315,9 @@ public int ladderLength(String beginWord, String endWord, List<String> wordList)
 ```  
 
 ### 332. Reconstruct Itinerary
+
 Eulerian Path, 有向图寻找欧拉路径, 解决欧拉路径的算法，Hierholzer.  
+
 ```java
 path = []
 DFS(u):
@@ -2627,6 +2327,7 @@ DFS(u):
     End
     path.pushLeft(u)
 ```
+
 ``` java
 class Solution {
     Map<String, PriorityQueue<String>> flights; // edge start -> edge end
@@ -2655,6 +2356,7 @@ class Solution {
 ```  
 
 ### 547. Friend Circle
+
 ```java
 class Solution {
     public int findCircleNum(int[][] M) {
@@ -2681,8 +2383,9 @@ class Solution {
 ```  
 
 ### 339. Nested List Weight Sum
-1. Recursion 
+
 ```java
+// recursion
 class Solution {
     public int depthSum(List<NestedInteger> nestedList) {
         return dfs(nestedList, 1);
@@ -2701,8 +2404,9 @@ class Solution {
     }
 }
 ```  
-2. Iteration
+
 ```java
+// Iteration
 class Solution {
     public int depthSum(List<NestedInteger> nestedList) {
         int sum = 0;
@@ -2727,8 +2431,9 @@ class Solution {
 ```  
 
 ### 364. Nested List Weight Sum II
-1. BFS
+
 ```java
+// BFS
 public int depthSumInverse(List<NestedInteger> nestedList) {
     int sum = 0;
     int res = 0;
@@ -2876,14 +2581,14 @@ class Solution {
         return false;
     }
 
-    private boolean dfs(char[][] board, String word, boolean[][] visited, 
+    private boolean dfs(char[][] board, String word, boolean[][] visited,
                         int i, int j, int idx) {
         // the last character match
         if (idx == word.length()) {
             return true;
         }
         // index out of bound, character doesn't match or been visited
-        if (i < 0 || i >= board.length 
+        if (i < 0 || i >= board.length
             || j < 0 || j >= board[i].length
             || board[i][j] != word.charAt(idx)
             || visited[i][j]) {
@@ -2891,7 +2596,7 @@ class Solution {
         }
         visited[i][j] = true;
         // dfs all four directions
-        if (dfs(board, word, visited, i + 1, j, idx + 1) 
+        if (dfs(board, word, visited, i + 1, j, idx + 1)
            || dfs(board, word, visited, i - 1, j, idx + 1)
            || dfs(board, word, visited, i, j + 1, idx + 1)
            || dfs(board, word, visited, i, j - 1, idx + 1)) {
@@ -3079,7 +2784,7 @@ public boolean validUtf8(int[] data) {
         if (cnt == 0) {
             if (d >> 5 == 0b110) { // 2 byte
                 cnt = 1;
-            } else if (d >> 4 == 0b1110) { // 3 byte 
+            } else if (d >> 4 == 0b1110) { // 3 byte
                 cnt = 2;
             } else if (d >> 3 == 0b11110) { // 4 byte
                 cnt = 3;
@@ -3373,24 +3078,6 @@ public int maximalSquare(char[][] matrix) {
         }
     }
     return res * res;
-}
-```  
-
-### 70. Climbing Stairs
-
-```java
-public int climbStairs(int n) {
-    if (n <= 1) {
-        return 1;
-    }
-    int[] dp = new int[n + 1];
-    dp[1] = 1;
-    dp[2] = 2;
-    for (int i = 3; i <= n; i++) {
-        // 第n层是从n-1层爬一层，或者n-2层爬两层
-        dp[i] = dp[i - 1] + dp[i - 2];
-    }
-    return dp[n];
 }
 ```  
 
@@ -3707,7 +3394,6 @@ public int findMinDifference(List<String> timePoints) {
         }
         time[hour * 60 + min] = true;
     }
-    
     int min = 1440;
     int prev = 0;
     int first = Integer.MAX_VALUE;
@@ -3790,7 +3476,7 @@ class Solution {
         dfs(res, s, 0, 0, '(', ')');
         return res;
     }
-    
+
     private void dfs(List<String> res, String s, int iStart, int jStart, char open, char close) {
         // 计算'('和')'的数量
         int numOpen = 0, numClose = 0;
@@ -3801,7 +3487,7 @@ class Solution {
             if (s.charAt(i) == close) numClose++;
             if (numClose > numOpen) {
                 // 移除多余的右括号, 可能有多种移除的方案，因此要遍历所有的右括号, 此时要移除的右括号一定在i的左边
-                for (int j = jStart; j <= i; j++) { 
+                for (int j = jStart; j <= i; j++) {
                     // 移除时要考虑相邻的右括号重复的情况, (j == jStart)为删除第一个')'的情况
                     // s.charAt(j - 1) != close 考虑当前为')'同时前一个不能为')'
                     if (s.charAt(j) == close && (j == jStart || s.charAt(j - 1) != close)) {
@@ -4019,41 +3705,6 @@ lass Solution {
 
 ### 743. Network Delay Time
 
-Djikstra + BFS
-思路: 
-1. 遍历times，存在HashMap中，节省了遍历的时间
-2. 
-
-### 746. Min Cost Climbing Stairs
-
-DP solution, O(n) space and time
-
-```java
-public int minCostClimbingStairs(int[] cost) {
-    int len = cost.length;
-    int[] dp = new int[len + 1];
-    dp[0] = cost[0];
-    dp[1] = cost[1];
-    for (int i = 2; i <= len; i++) {
-        int c = (i == len) ? 0 : cost[i];
-        dp[i] = Math.min((dp[i - 2] + c), (dp[i - 1] + c));
-    }
-    return dp[len];
-}
-```
-
-O(1) space
-
-```java
-public int minCostClimbingStairs(int[] cost) {
-    int len = cost.length;
-    for (int i = 2; i < len; i++) {
-        cost[i] += Math.min(cost[i - 2], cost[i - 1]);
-    }
-    return Math.min(cost[len - 1], cost[len - 2]);
-}
-```
-
 ### 1007. Minimum Domino Rotations For Equal Row
 
 ```java
@@ -4079,6 +3730,7 @@ public int minDominoRotations(int[] A, int[] B) {
 ```
 
 ### 647. Palindromic Substrings
+
 ```java
 class Solution {
     int count = 0;
@@ -4105,6 +3757,7 @@ class Solution {
 ```
 
 ### 829. Consecutive Numbers Sum
+
 ```java
 class Solution {
     public int consecutiveNumbersSum(int N) {

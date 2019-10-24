@@ -648,6 +648,65 @@ class Solution {
 }
 ```  
 
+## 96. Unique Binary Search Trees
+
+```java
+// dp solution, calculate Catalan Number
+// dp[2] = dp[0] * dp[1] + dp[1] * dp[0]
+// dp[3] = dp[0] * dp[2] + dp[1] * dp[1] + dp[2] * dp[0]
+class Solution {
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - 1 - j];
+            }
+        }
+        return dp[n];
+    }
+}
+```
+
+## 95. Unique Binary Search Trees II
+
+```java
+// 思路：从1到n-1中选取作为root的点，将两边点分别construct
+class Solution {
+    public List<TreeNode> generateTrees(int n) {
+        if (n == 0) {
+            return new ArrayList<TreeNode>();
+        }
+        return helper(1, n);
+    }
+
+    public List<TreeNode> helper(int start, int end) {
+        List<TreeNode> list = new ArrayList<>();
+        if (start > end) { // recursion exit
+            list.add(null);
+            return list;
+        }
+        for (int i = start; i <= end; i++) {
+            // all the possible left subtree
+            List<TreeNode> left = helper(start, i - 1);
+            // all the possible right subtree
+            List<TreeNode> right = helper(i + 1, end);
+            // connect left tree and right tree to the root i
+            for (TreeNode l : left) {
+                for (TreeNode r : right) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = l;
+                    root.right = r;
+                    list.add(root);
+                }
+            }
+        }
+        return list;
+    }
+}
+```
+
 ***
 
 ## N-ary Tree
