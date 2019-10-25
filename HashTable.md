@@ -263,6 +263,52 @@ class Solution {
 }
 ```
 
+## 37. Sudoku Solver
+
+```java
+// backtracking, 遍历二维数组
+// O(N^3)
+class Solution {
+    public void solveSudoku(char[][] board) {
+        solve(board);
+    }
+
+    private boolean solve(char[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == '.') { // 需要填充数字
+                    for (char c = '1'; c <= '9'; c++) { // 分别判断九个数字
+                        if (isValid(board, i, j, c)) { // 是否符合要求
+                            board[i][j] = c;
+                            if (solve(board)) { // 递归继续解决下一个位置
+                                return true;
+                            } else {
+                                board[i][j] = '.'; // go back
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isValid(char[][] board, int row, int col, char c) {
+        for (int i = 0; i < 9; i++) {
+            if (board[i][col] != '.' && board[i][col] == c) return false; // check row
+            if (board[row][i] != '.' && board[row][i] == c) return false; // check column
+            // check 3 * 3
+            if (board[(row / 3) * 3 + i / 3][(col / 3) * 3 + i % 3] != '.'
+               && board[(row / 3) * 3 + i / 3][(col / 3) * 3 + i % 3] == c) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
 ## 380. Insert Delete GetRandom O(1)
 
 1. HashMap记录val和在ArrayList对应的下标，remove的时候如不是删最后一位则换位置

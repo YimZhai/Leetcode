@@ -224,3 +224,218 @@ class Solution {
     }
 }
 ```
+
+***
+
+## Backtracking
+
+## 46. Permutation
+
+```java
+// 三个思路解决，backtracking
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        permute(nums, lists, new ArrayList<>(), new boolean[nums.length]);
+        return lists;
+    }
+    private void permute(int[] nums, List<List<Integer>> lists,
+                         List<Integer> list, boolean[] used) {
+        // recursion exit
+        if (list.size() == nums.length) {
+            lists.add(new ArrayList(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            list.add(nums[i]);
+            used[i] = true;
+            permute(nums, lists, list, used);
+            used[i] = false;
+            list.remove(list.size() - 1); // remove the last digit
+        }
+    }
+}
+```
+
+```java
+// 交换法
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        permute(nums, 0, lists); // 从下标0开始组合
+        return lists;
+    }
+
+    private void permute(int[] nums, int begin, List<List<Integer>> lists) {
+        if (begin == nums.length) {
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < nums.length; i++) {
+                list.add(nums[i]);
+            }
+            lists.add(list);
+            return;
+        }
+
+        for (int i = begin; i < nums.length; i++) {
+            swap(nums, i, begin);
+            permute(nums, begin + 1, lists);
+            swap(nums, i, begin);
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+}
+```
+
+## 77. Combination
+
+```java
+// backtracking
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> lists = new ArrayList<>();
+        int[] nums = new int[n];
+        boolean[] used = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = i + 1;
+        }
+        backtrack(lists, new ArrayList<>(), nums, used, k, 0);
+        return lists;
+    }
+
+    public void backtrack(List<List<Integer>> lists, List<Integer> list,
+                          int[] nums, boolean[] used, int k, int start) {
+        if (list.size() == k) {
+            // System.out.println("test");
+            lists.add(new ArrayList(list));
+            return;
+        }
+        for (int i = start; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            list.add(nums[i]);
+            used[i] = true;
+            backtrack(lists, list, nums, used, k, i + 1);
+            used[i] = false;
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+## 39. Combination Sum
+
+```java
+// Backtracking solution
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> lists = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(lists, new ArrayList<>(), candidates, target, 0);
+        return lists;
+    }
+
+    private void backtrack(List<List<Integer>> lists, List<Integer> list, int[] nums, int remain, int start) {
+        if (remain < 0) { // recursion exit
+            return;
+        } else if (remain == 0) { // find one solution
+            lists.add(new ArrayList(list));
+        } else {
+            for (int i = start; i < nums.length; i++) { // 遍历candidates
+                list.add(nums[i]);
+                backtrack(lists, list, nums, remain - nums[i], i); // not i + 1, since num can be reused
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+```  
+
+## 40. Combination Sum II
+
+```java
+// 思路同上，在遍历元素时，跳过重复项，递归时，不使用重复元素
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> lists = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(lists, new ArrayList(), candidates, target, 0);
+        return lists;
+    }
+
+    private void backtrack(List<List<Integer>> lists, List<Integer> list, int[] nums, int remain, int start) {
+        if (remain < 0) {
+            return;
+        } else if (remain == 0) {
+            lists.add(new ArrayList(list));
+        } else {
+            for (int i = start; i < nums.length; i++) {
+                if (i > start && i < nums.length && nums[i] == nums[i - 1]) { // skip duplicate
+                    continue;
+                }
+                list.add(nums[i]);
+                backtrack(lists, list, nums, remain - nums[i], i + 1); // no reuse of elements
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+}
+```  
+
+## 52. N-Queens
+
+```java
+//
+```  
+
+## 53. N-Queens II
+
+## 489. Robot Room Cleaner
+
+```java
+// DFS + backtracking
+// 以起点作为坐标轴原点，用set记录经过的点
+class Solution {
+    int[] xDirect = {1, 0, -1, 0};
+    int[] yDirect = {0, 1, 0, -1};
+    public void cleanRoom(Robot robot) {
+        dfs(robot, new HashSet(), 0, 0, 0);
+    }
+    // x, y: 当前节点坐标
+    // dir: 当前方向, 0: up, 1: right, 2: down, 3: left
+    public void dfs(Robot robot, Set<String> visited, int x, int y, int dir) {
+        String key = x + "," + y;
+        if (visited.contains(key)) {
+            return;
+        }
+        visited.add(key);
+        robot.clean();
+        for (int i = 0; i < 4; i++) {
+            if (robot.move()) { // 如果可以沿着当前方向走
+                dfs(robot, visited, x + xDirect[dir], y + yDirect[dir], dir);
+                backtrack(robot);
+            }
+            // 如果当前方向不能走, 换方向继续走
+            robot.turnRight();
+            dir += 1;
+            dir %= 4;
+        }
+    }
+    // 往回走一格
+    public void backtrack(Robot robot) {
+        robot.turnRight();
+        robot.turnRight();
+        robot.move();
+        robot.turnLeft();
+        robot.turnLeft();
+    }
+}

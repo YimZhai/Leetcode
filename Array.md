@@ -89,6 +89,95 @@ public void merge(int[] nums1, int m, int[] nums2, int n) {
 }
 ```  
 
+## 912. Sort an Array
+
+Array排序用quick sort, LinkedList排序用merge sort
+
+1. Merge Sort
+
+```java
+class Solution {
+    public int[] sortArray(int[] nums) {
+        mSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    public void mSort(int[] nums, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int mid = (left + right) / 2;
+        mSort(nums, left, mid);
+        mSort(nums, mid + 1, right);
+        merge(nums, left, mid, right);
+    }
+
+    public void merge(int[] nums, int left, int mid, int right) {
+        int i = left;
+        int j = mid + 1;
+        int[] tmp = new int[right - left + 1];
+        int index = 0;
+        while (i <= mid && j <= right) {
+            if (nums[i] < nums[j]) {
+                tmp[index++] = nums[i++];
+            } else {
+                tmp[index++] = nums[j++];
+            }
+        }
+        while (i <= mid) {
+            tmp[index++] = nums[i++];
+        }
+        while (j <= right) {
+            tmp[index++] = nums[j++];
+        }
+        for (int k = 0; k < tmp.length; k++) {
+            nums[left + k] = tmp[k];
+        }
+    }
+}
+```  
+
+2.Quick Sort
+
+```java
+class Solution {
+    public int[] sortArray(int[] nums) {
+        qSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    public void qSort(int[] nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+
+        // 选择pivot点，nums[start], nums[mid], nums[random]
+        int pivot = nums[start];
+        int left = start;
+        int right = end;
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                left++;
+            }
+            while (left <= right && nums[right] > pivot) {
+                right--;
+            }
+
+            if (left <= right) {
+                int tmp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = tmp;
+                left++;
+                right--;
+            }
+        }
+        qSort(nums, start, right);
+        qSort(nums, left, end);
+    }
+}
+```  
+
 ## 283. Move Zeroes
 
 1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
@@ -209,6 +298,61 @@ public int removeDuplicates(int[] nums) {
     return l + 1;
 }
 ```  
+
+## 240. Search a 2D Matrix II
+
+```java
+// O(MN) TLE
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int n = matrix.length;
+        if (n == 0) {
+            return false;
+        }
+        int m = matrix[0].length;
+        return helper(matrix, 0, 0, target);
+    }
+
+    public boolean helper(int[][] matrix, int r, int c, int target) {
+        if (r == matrix.length || c == matrix[0].length) {
+            return false;
+        }
+        if (target < matrix[r][c]) {
+            return false;
+        }
+        if (target == matrix[r][c]) {
+            return true;
+        }
+        return helper(matrix, r + 1, c, target) || helper(matrix, r, c + 1, target);
+    }
+}
+```
+
+```java
+// O(M+N) solution, 从左下角或者右上角开始遍历
+// 可以将该图理解为两个root的BST
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int n = matrix.length;
+        if (n == 0) {
+            return false;
+        }
+        int m = matrix[0].length;
+        int i = n - 1;
+        int j = 0;
+        while (i >= 0 && j < m) {
+            if (matrix[i][j] == target) {
+                return true;
+            } else if (matrix[i][j] > target) {
+                i--;
+            } else {
+                j++;
+            }
+        }
+        return false;
+    }
+}
+```
 
 ## 977. Squares of Sorted Array
 
