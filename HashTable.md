@@ -174,6 +174,31 @@ class Solution {
 }
 ```  
 
+## 819. Most Common Word
+
+用hashmap存储每个单词出现的次数，在存储时排除在banned里面的值
+
+```java
+public String mostCommonWord(String paragraph, String[] banned) {
+    Set<String> dict = new HashSet(Arrays.asList(banned));
+    String[] words = paragraph.toLowerCase().split("\\W+");
+
+    Map<String, Integer> map = new HashMap<>();
+    for (String word : words) {
+        if (!dict.contains(word)) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+    }
+    int max = Collections.max(map.values());
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        if (entry.getValue() == max) {
+            return entry.getKey();
+        }
+    }
+    return "";
+}
+```  
+
 ## 49. Grouped Anagrams
 
 1. HashMap<String, List>, key是每个string sort过之后的，遍历一遍，判断当前string sort过之后是否存在在map中

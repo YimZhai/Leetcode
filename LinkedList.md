@@ -232,3 +232,61 @@ public ListNode reverse(ListNode head) {
     return prev;
 }
 ```  
+
+## 138. Copy List With Random Pointer
+
+O(n) Space, HashMap
+
+```java
+public Node copyRandomList(Node head) {
+    Map<Node, Node> map = new HashMap<>();
+    // store copy of each node
+    Node node = head;
+    while (node != null) {
+        map.put(node, new Node(node.val));
+        node = node.next;
+    }
+    // assign to new node
+    node = head;
+    while (node != null) {
+        map.get(node).next = map.get(node.next);
+        map.get(node).random = map.get(node.random);
+        node = node.next;
+    }
+    return map.get(head);
+}
+```
+
+O(1) space
+
+```java
+public Node copyRandomList(Node head) {
+    if (head == null) return head;
+    // 1 -> 2 -> 3-> 4
+    Node pre = head;
+    while (pre != null) { // 1->1->2->2->3->3->4->4
+        Node clone = new Node(pre.val);
+        clone.next = pre.next;
+        pre.next = clone;
+        pre = clone.next;
+    }
+    // Update random
+    pre = head;
+    while (pre != null) {
+        pre.next.random = (pre.random == null) ? null : pre.random.next;
+        pre = pre.next.next;
+    }
+    // seperate list
+    pre = head;
+    Node copyHead = head.next;
+    Node copy = copyHead;
+    while (copy != null) {
+        pre.next = pre.next.next; // don't modify original list
+        pre = pre.next;
+
+        copy.next = (copy.next == null) ? null : copy.next.next;
+        copy = copy.next;
+    }
+    return copyHead;
+}
+```

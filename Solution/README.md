@@ -2101,74 +2101,6 @@ public String reorganizeString(String S) {
 1. DFS用到了递归的形式，使用栈的结构，FILO
 2. BFS的状态选取用了队列的形式，FIFO
 
-### 200. Number of Islands
-
-1. BFS，遍历所有点，遇到'1'的时候，将与1相邻的所有1全部标为0
-
-```java
-class Solution {
-    public int numIslands(char[][] grid) {
-        if (grid.length == 0) {
-            return 0;
-        }
-        int cnt = 0;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j] == '1') {
-                    bfs(grid, i, j);
-                    cnt++;
-                }
-            }
-        }
-        return cnt;
-    }
-
-    public void bfs(char[][] grid, int i, int j) {
-        grid[i][j] = '0';
-        int m = grid.length;
-        int n = grid[0].length;
-        Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{i, j});
-        while (!q.isEmpty()) {
-            int[] point = q.poll();
-            int x = point[0];
-            int y = point[1];
-            if (x < m - 1 && grid[x + 1][y] == '1') {
-                q.offer(new int[]{x + 1, y});
-                grid[x + 1][y] = '0';
-            }
-            if (x > 0 && grid[x - 1][y] == '1') {
-                q.offer(new int[]{x - 1, y});
-                grid[x - 1][y] = '0';
-            }
-            if (y < n - 1 && grid[x][y + 1] == '1') {
-                q.offer(new int[]{x, y + 1});
-                grid[x][y + 1] = '0';
-            }
-            if (y > 0 && grid[x][y - 1] == '1') {
-                q.offer(new int[]{x, y - 1});
-                grid[x][y - 1] = '0';
-            }
-        }
-    }
-}
-```  
-
-1. DFS, 思路同上, 只贴dfs()部分
-
-```java
-public void dfs(char[][] grid, int i, int j) {
-    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1') {
-        return;
-    }
-    grid[i][j] = '0';
-    dfs(grid, i + 1, j);
-    dfs(grid, i - 1, j);
-    dfs(grid, i, j + 1);
-    dfs(grid, i, j - 1);
-}
-```  
-
 ### 127. Word Ladder
 
 1. Bidirectional Searching, 用两个set，从两端开始搜索
@@ -2644,64 +2576,6 @@ public boolean validUtf8(int[] data) {
     return cnt == 0; // only return true when no byte remaining.
 }
 ```  
-
-### 138. Copy List With Random Pointer
-
-O(n) Space, HashMap
-
-```java
-public Node copyRandomList(Node head) {
-    Map<Node, Node> map = new HashMap<>();
-    // store copy of each node
-    Node node = head;
-    while (node != null) {
-        map.put(node, new Node(node.val));
-        node = node.next;
-    }
-    // assign to new node
-    node = head;
-    while (node != null) {
-        map.get(node).next = map.get(node.next);
-        map.get(node).random = map.get(node.random);
-        node = node.next;
-    }
-    return map.get(head);
-}
-```
-
-O(1) space
-
-```java
-public Node copyRandomList(Node head) {
-    if (head == null) return head;
-    // 1 -> 2 -> 3-> 4
-    Node pre = head;
-    while (pre != null) { // 1->1->2->2->3->3->4->4
-        Node clone = new Node(pre.val);
-        clone.next = pre.next;
-        pre.next = clone;
-        pre = clone.next;
-    }
-    // Update random
-    pre = head;
-    while (pre != null) {
-        pre.next.random = (pre.random == null) ? null : pre.random.next;
-        pre = pre.next.next;
-    }
-    // seperate list
-    pre = head;
-    Node copyHead = head.next;
-    Node copy = copyHead;
-    while (copy != null) {
-        pre.next = pre.next.next; // don't modify original list
-        pre = pre.next;
-
-        copy.next = (copy.next == null) ? null : copy.next.next;
-        copy = copy.next;
-    }
-    return copyHead;
-}
-```
 
 ### 193. Valid Phone Numbers
 
@@ -3193,31 +3067,6 @@ public int findMinDifference(List<String> timePoints) {
     // corner case
     min = Math.min(min, (1440 - last + first)); // 取反向时间比较
     return min;
-}
-```  
-
-### 819. Most Common Word
-
-用hashmap存储每个单词出现的次数，在存储时排除在banned里面的值
-
-```java
-public String mostCommonWord(String paragraph, String[] banned) {
-    Set<String> dict = new HashSet(Arrays.asList(banned));
-    String[] words = paragraph.toLowerCase().split("\\W+");
-
-    Map<String, Integer> map = new HashMap<>();
-    for (String word : words) {
-        if (!dict.contains(word)) {
-            map.put(word, map.getOrDefault(word, 0) + 1);
-        }
-    }
-    int max = Collections.max(map.values());
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
-        if (entry.getValue() == max) {
-            return entry.getKey();
-        }
-    }
-    return "";
 }
 ```  
 

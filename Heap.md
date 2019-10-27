@@ -1,5 +1,25 @@
 # Questions
 
+## 1167. Minimum Cost to Connect Sticks
+
+```java
+class Solution {
+    public int connectSticks(int[] sticks) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int stick : sticks) {
+            pq.offer(stick);
+        }
+        int res = 0;
+        while (pq.size() > 1) {
+            int cost = pq.poll() + pq.poll();
+            res += cost;
+            pq.offer(cost);
+        }
+        return res;
+    }
+}
+```
+
 ## 692. Top K Frequent Word
 
 HashMap和PriorityQueue, HashMap用来记录每个词和这个词出现的次数，在insert到pq的时候，按照单词出现的次数insert  

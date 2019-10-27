@@ -737,6 +737,43 @@ public List<Integer> spiralOrder(int[][] matrix) {
 }
 ```  
 
+## 59. Spiral Matrix II
+
+```java
+// 思路同上
+class Solution {
+    public int[][] generateMatrix(int n) {
+        int[][] res = new int[n][n];
+        int r1 = 0;
+        int r2 = n - 1;
+        int c1 = 0;
+        int c2 = n - 1;
+        int num = 1;
+        while (r1 <= r2 && c1 <= c2) {
+            for (int c = c1; c <= c2; c++) {
+                res[r1][c] = num++;
+            }
+            for (int r = r1 + 1; r <= r2; r++) {
+                res[r][c2] = num++;
+            }
+            if (r1 < r2 && c1 < c2) {
+                for (int c = c2 - 1; c > c1; c--) {
+                    res[r2][c] = num++;
+                }
+                for (int r = r2; r > r1; r--) {
+                    res[r][c1] = num++;
+                }
+            }
+            r1++;
+            r2--;
+            c1++;
+            c2--;
+        }
+        return res;
+    }
+}
+```  
+
 ## 34. Find First and Last Position of Element in Sorted Array
 
 分两步，首先找到first, 然后找到last

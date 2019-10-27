@@ -109,9 +109,8 @@ public boolean isValid(String s) {
 
 ## 937. Reorder Log Files
 
-用两个ArrayList分别存num log和letter log, sort letter log, 最后拼在一起
-
 ```java
+// 用两个ArrayList分别存num log和letter log, sort letter log, 最后拼在一起
 class LetterComparator implements Comparator<String> {
     @Override
     public int compare(String s1, String s2) {

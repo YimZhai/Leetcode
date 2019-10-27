@@ -2,6 +2,61 @@
 
 ## Binary Tree
 
+### 100. Same Tree
+
+```java
+class Solution {
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) {
+            return true;
+        }
+        if (p == null || q == null) {
+            return false;
+        }
+        if (p.val != q.val) {
+            return false;
+        }
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+}
+```
+
+### 572. Subtree of Another Tree
+
+```java
+// 思路同上，在初始函数里分别调用节点，对比s和t是否相同
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null) {
+            return false;
+        }
+        if (helper(s, t)) {
+            return true;
+        }
+        return isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+
+    public boolean helper(TreeNode s, TreeNode t) {
+        if (s == null && t == null) {
+            return true;
+        }
+        if (s == null || t == null || s.val != t.val) {
+            return false;
+        }
+        return helper(s.left, t.left) && helper(s.right, t.right);
+    }
+}
+```
+
 ### 297. Serialize and Deserialize Binary Tree
 
 ```java

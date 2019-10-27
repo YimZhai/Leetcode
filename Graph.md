@@ -1,5 +1,602 @@
 # Questions
 
+## 994. Rotting Oranges
+
+```java
+// BFS, O(MN) time and space
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        int cnt = 0;
+        int minutes = 0; // store steps
+        Queue<int[]> q = new LinkedList<>();
+        // traversal through graph, find starting node, add to queue
+        // use cnt to track remaining fresh oranges
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 2) {
+                    q.offer(new int[]{i, j});
+                } else if (grid[i][j] == 1) {
+                    cnt++;
+                }
+            }
+        }
+        if (cnt == 0) {
+            return minutes;
+        }
+        int[] xDirect = {1, 0, -1, 0};
+        int[] yDirect = {0, 1, 0, -1};
+        // BFS
+        while (!q.isEmpty()) {
+            int size = q.size();
+            minutes++;
+            for (int i = 0; i < size; i++) {
+                int[] coor = q.poll();
+                for (int j = 0; j < 4; j++) {
+                    int x = coor[0] + xDirect[j];
+                    int y = coor[1] + yDirect[j];
+                    if (x < 0 || y < 0 || x >= grid.length
+                        || y >= grid[0].length || grid[x][y] != 1) {
+                        continue;
+                    }
+                    grid[x][y] = 2;
+                    cnt--;
+                    q.offer(new int[]{x, y});
+                }
+            }
+        }
+        return cnt == 0 ? minutes - 1 : -1;
+    }
+}
+```
+
+## 346. Moving Average from Data Stream
+
+```java
+class MovingAverage {
+    Queue<Integer> q;
+    int size;
+    /** Initialize your data structure here. */
+    public MovingAverage(int size) {
+        q = new LinkedList<>();
+        this.size = size;
+    }
+
+    public double next(int val) {
+        q.offer(val);
+        if (q.size() > size) {
+            q.poll();
+        }
+        double sum = 0.0;
+        for (int i : q) {
+            sum += i;
+        }
+        return sum / q.size();
+    }
+}
+```
+
+## 286. Walls and Gates
+
+```java
+/* Idea: BFS
+traversal through matrix, add all the coordinate of gate to the queue.
+start BFS, for each point head four directions(check boundaries)
+Time complexity: O(MN), Let us start with the case with only one gate. The breadth-first search takes at most m \times nm×n steps to reach all rooms, therefore the time complexity is O(MN). But what if you are doing breadth-first search from k gates?
+Once we set a room's distance, we are basically marking it as visited, which means each room is visited at most once. Therefore, the time complexity does not depend on the number of gates and is O(MN).
+Space complexity : O(MN). The space complexity depends on the queue's size. We insert at most m \times nm×n points into the queue.
+*/
+class Solution {
+    private static final int GATE = 0;
+    private static final int EMPTY = Integer.MAX_VALUE;
+    private static final int[] xDirect = {1, 0, -1, 0};
+    private static final int[] yDirect = {0, 1, 0, -1};
+
+    public void wallsAndGates(int[][] rooms) {
+        int m = rooms.length;
+        if (rooms == null || m == 0) {
+            return;
+        }
+        int n = rooms[0].length;
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rooms[i][j] == GATE) {
+                    q.offer(new int[]{i, j});
+                }
+            }
+        }
+
+        // BFS
+        while (!q.isEmpty()) {
+            int[] coor = q.poll();
+            int row = coor[0];
+            int col = coor[1];
+            for (int i = 0; i < 4; i++) {
+                int r = row + xDirect[i];
+                int c = col + yDirect[i];
+                // check boundaries
+                if (r < 0 || c < 0 || r >= m || c >= n || rooms[r][c] != EMPTY) {
+                    continue;
+                }
+                rooms[r][c] = rooms[row][col] + 1;
+                q.offer(new int[]{r, c});
+            }
+        }
+    }
+}
+```  
+
+## 622. Design Circular Queue
+
+```java
+class MyCircularQueue {
+
+    int[] queue;
+    int head;
+    int tail;
+    int size;
+    /** Initialize your data structure here. Set the size of the queue to be k. */
+    public MyCircularQueue(int k) {
+        queue = new int[k];
+        head = -1;
+        tail = -1;
+        size = k;
+    }
+
+    /** Insert an element into the circular queue. Return true if the operation is successful. */
+    public boolean enQueue(int value) {
+        if (isFull()) {
+            return false;
+        }
+        if (isEmpty()) { // add first element
+            head = 0;
+        }
+        tail = (tail + 1) % size;
+        queue[tail] = value;
+        return true;
+    }
+
+    /** Delete an element from the circular queue. Return true if the operation is successful. */
+    public boolean deQueue() {
+        if (isEmpty()) {
+            return false;
+        }
+        if (head == tail) { // delete last element
+            head = -1;
+            tail = -1;
+            return true;
+        }
+        head = (head + 1) % size;
+        return true;
+    }
+
+    /** Get the front item from the queue. */
+    public int Front() {
+        if (isEmpty()) {
+            return -1;
+        }
+        return queue[head];
+    }
+
+    /** Get the last item from the queue. */
+    public int Rear() {
+        if (isEmpty()) {
+            return -1;
+        }
+        return queue[tail];
+    }
+
+    /** Checks whether the circular queue is empty or not. */
+    public boolean isEmpty() {
+        return head == -1;
+    }
+
+    /** Checks whether the circular queue is full or not. */
+    public boolean isFull() {
+        return (tail + 1) % size == head;
+    }
+}
+```
+
+## 200. Number of Island
+
+```java
+// BFS
+class Solution {
+    private static final int[] xDirect = {1, 0, -1, 0};
+    private static final int[] yDirect = {0, 1, 0, -1};
+
+    public int numIslands(char[][] grid) {
+        int m = grid.length;
+        if (grid == null || m == 0) {
+            return 0;
+        }
+        int n = grid[0].length;
+        int cnt = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    cnt++;
+                    // BFS
+                    grid[i][j] = '0';
+                    Queue<int[]> q = new LinkedList<>();
+                    q.offer(new int[]{i, j});
+                    while (!q.isEmpty()) {
+                        int[] coor = q.poll();
+                        int row = coor[0];
+                        int col = coor[1];
+                        for (int k = 0; k < 4; k++) {
+                            int r = row + xDirect[k];
+                            int c = col + yDirect[k];
+                            if (r < 0 || c < 0 || r >= m || c >= n || grid[r][c] != '1') {
+                                continue;
+                            }
+                            grid[r][c] = '0';
+                            q.offer(new int[]{r, c});
+                        }
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+}
+```
+
+```java
+// DFS
+class Solution {
+    public int numIslands(char[][] grid) {
+        int cnt = 0;
+        int m = grid.length;
+        if (grid == null || m == 0) {
+            return 0;
+        }
+        int n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    cnt++;
+                    dfs(grid, i, j, m, n);
+                }
+            }
+        }
+        return cnt;
+    }
+
+    private void dfs(char[][] grid, int i, int j, int m, int n) {
+        // recursion exit
+        if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] != '1') {
+            return;
+        }
+        // update current position
+        grid[i][j] = '0';
+        dfs(grid, i + 1, j, m, n);
+        dfs(grid, i - 1, j, m, n);
+        dfs(grid, i, j + 1, m, n);
+        dfs(grid, i, j - 1, m ,n);
+    }
+}
+```
+
+## 752. Open the Lock
+
+```java
+/* BFS,
+setup: one set for dead end, one set for visited, one queue for BFS
+Time complexity: O(N^2 * A^N + D), we may visited every lock combination, A is number of digit in the String, N is the number of digit in the lock, D is the size of dead end
+Space complexity: (A^N + D),  for the queue and set.
+*/
+public int openLock(String[] deadends, String target) {
+    Set<String> set = new HashSet(Arrays.asList(deadends));
+
+    Queue<String> q = new LinkedList<>();
+    q.offer("0000");
+
+    Set<String> visited = new HashSet<>();
+    visited.add("0000");
+
+    int turns = 0;
+    while (!q.isEmpty()) {
+        int size = q.size();
+        for (int k = 0; k < size; k++) {
+            String state = q.poll();
+            if (state.equals(target)) {
+                return turns;
+            } else if (!set.contains(state)) {
+                for (int i = 0; i < 4; i++) {
+                    for (int j = -1; j < 2; j += 2) {
+                        // generate new code
+                        int y = ((state.charAt(i) - '0') + j + 10) % 10;
+                        String newState = state.substring(0, i) + ("" + y) + state.substring(i + 1);
+                        if (!visited.contains(newState)) {
+                            q.offer(newState);
+                            visited.add(newState);
+                        }
+                    }
+                }
+            }
+        }
+        turns++;
+    }
+    return -1;
+}
+```
+
+## 279. Perfect Square
+
+```java
+// Idea: Start from node 0 in queue, and keep pushing in perfect square number + current value, once we reach number n.
+public int numSquares(int n) {
+    Queue<Integer> q = new LinkedList<>();
+    Set<Integer> visited = new HashSet<>();
+    // start from 0
+    q.offer(0);
+    visited.add(0);
+    int res = 0;
+    while (!q.isEmpty()) {
+        int size = q.size();
+        res++;
+        for (int i = 0; i < size; i++) {
+            int num = q.poll();
+            for (int j = 1; j * j <= n; j++) {
+                // add new square to current num
+                int sum = num + j * j;
+                if (sum == n) {
+                    return res;
+                } else if (sum > n) {
+                    break;
+                }
+                if (!visited.contains(sum)){
+                    q.offer(sum);
+                    visited.add(sum);
+                }
+            }
+        }
+    }
+    return res;
+}
+```
+
+## 841. Keys and Rooms
+
+```java
+// Idea: using queue to traversal starting from room zero, in each room, we add the keys in the room only if the room have not been visited.
+class Solution {
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int room = q.poll();
+                visited.add(room);
+                for (int j = 0; j < rooms.get(room).size(); j++) {
+                    if (!visited.contains(rooms.get(room).get(j))) {
+                        q.offer(rooms.get(room).get(j));
+                    }
+                }
+            }
+        }
+        return visited.size() == rooms.size();
+    }
+}
+```
+
+## 542. 01 Matrix
+
+```java
+// O(MN) time and O(1) space
+class Solution {
+    public int[][] updateMatrix(int[][] matrix) {
+        int[] xDirect = {1, 0, -1, 0};
+        int[] yDirect = {0, 1, 0, -1};
+        int m = matrix.length;
+        if (m == 0) {
+            return new int[][]{};
+        }
+        int n = matrix[0].length;
+        Queue<int[]> q = new LinkedList<>();
+        // start from every zero
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    q.offer(new int[]{i, j});
+                } else {
+                    matrix[i][j] = Integer.MAX_VALUE;
+                }
+            }
+        }
+        // update non-zero point with smallest distance
+        while (!q.isEmpty()) {
+            int[] point = q.poll();
+            int row = point[0];
+            int col = point[1];
+            for (int i = 0; i < 4; i++) {
+                int r = row + xDirect[i];
+                int c = col + yDirect[i];
+                // check boundaries and if the new point is the smallest distance to 0;
+                if (r < 0 || c < 0 || r >= m || c >= n || matrix[r][c] <= matrix[row][col] + 1) {
+                    continue;
+                }
+                q.offer(new int[]{r, c});
+                matrix[r][c] = matrix[row][col] + 1;
+            }
+        }
+        return matrix;
+    }
+}
+```
+
+## 733. Flood Fill
+
+```java
+// Easy BFS solution, set start point {sr, sc}, record the color on that point, traversal adjacent position, skip if over the boundary, not the old color or this position is already updated.
+class Solution {
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        int[] xDirect = {1, 0, -1, 0};
+        int[] yDirect = {0, 1, 0, -1};
+        int m = image.length;
+        int n = image[0].length;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{sr, sc});
+        // record the original color
+        int oldColor = image[sr][sc];
+        while (!q.isEmpty()) {
+            int[] start = q.poll();
+            int row = start[0];
+            int col = start[1];
+            image[row][col] = newColor;
+            for (int i = 0; i < 4; i++) {
+                int r = row + xDirect[i];
+                int c = col + yDirect[i];
+                if (r < 0 || c < 0 || r >= m || c >= n || image[r][c] != oldColor || image[r][c] == newColor) {
+                    continue;
+                }
+                q.offer(new int[]{r, c});
+            }
+        }
+        return image;
+    }
+}
+```
+
+## 695. Max Area of Island
+
+```java
+// O(MN) time and space
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int[] xDirect = {1, 0, -1, 0};
+        int[] yDirect = {0, 1, 0, -1};
+        int m = grid.length;
+        if (m == 0) return 0;
+        int n = grid[0].length;
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    int cnt = 0;
+                    Queue<int[]> q = new LinkedList<>();
+                    q.offer(new int[]{i, j});
+                    while (!q.isEmpty()) {
+                        int size = q.size();
+                        for (int k = 0; k < size; k++) {
+                            int[] coor = q.poll();
+                            cnt++;
+                            for (int l = 0; l < 4; l++) {
+                                int x = coor[0] + xDirect[l];
+                                int y = coor[1] + yDirect[l];
+                                if (x < 0 || y < 0 || x >= m || y >= n
+                                    || grid[x][y] == 0) {
+                                    continue;
+                                }
+                                grid[x][y] = 0;
+                                q.offer(new int[]{x, y});
+                            }
+                        }
+                    }
+                    res = Math.max(res, cnt);
+                }
+            }
+        }
+        return res;
+    }
+}
+```
+
+## 207. Course Schedule
+
+```java
+// O(MN) time and space
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+
+        if (numCourses == 0 || prerequisites == null) {
+            return false;
+        }
+        int[] inDegree = new int[numCourses];
+        for(int[] pre : prerequisites) {
+            inDegree[pre[0]]++;
+        }
+
+        List<Integer> res = new LinkedList<>();
+        Queue<Integer> q = new LinkedList<>();
+
+        for (int i = 0; i < numCourses; i++) {
+           if(inDegree[i] == 0) {
+               q.offer(i);
+           }
+        }
+        while(!q.isEmpty()) {
+            int course = q.poll();
+            res.add(course);
+            for (int[] pre : prerequisites) {
+                if (course == pre[1]) {
+                    inDegree[pre[0]]--;
+                    if (inDegree[pre[0]] == 0) {
+                        q.offer(pre[0]);
+                    }
+                }
+            }
+        }
+        return res.size() == numCourses;
+    }
+}
+```  
+
+## 210. Course Schedule II
+
+```java
+// BFS, find a path which all nodes are connected.
+// Directed graph, calculate indegree of each node.
+// Time: calculate indegree, O(n), find course with no pre O(m),  check rest course O(mn)
+// sum it up is O(mn)
+public int[] findOrder(int numCourses, int[][] prerequisites) {
+    // corner case
+    if (numCourses == 0) return null;
+    // Convert graph presentation from edges to indegree of adjacent list.
+    int[] indegree = new int[numCourses];
+    int[] res = new int[numCourses];
+    int index = 0; // index of res
+    // calculate how many prerequisites are needed for each course
+    for (int i = 0; i < prerequisites.length; i++) {
+        indegree[prerequisites[i][0]]++;
+    }
+
+    Queue<Integer> queue = new LinkedList<>();
+    // first, add all the courses which have no prerequisites
+    for (int i = 0; i < numCourses; i++) {
+        if (indegree[i] == 0) {
+            queue.offer(i);
+            res[index] = i;
+            index++;
+        }
+    }
+
+    // check the rest courses
+    while (!queue.isEmpty()) {
+        int pre = queue.poll();
+        // traversal all the prerequisites
+        for (int i = 0; i < prerequisites.length; i++) {
+            // this course is another course's prerequisite
+            if (prerequisites[i][1] == pre) {
+                indegree[prerequisites[i][0]]--;
+                // no pre for this course any more
+                if (indegree[prerequisites[i][0]] == 0) {
+                    res[index] = prerequisites[i][0];
+                    index++;
+                    queue.offer(prerequisites[i][0]);
+                }
+            }
+        }
+    }
+
+    return index == numCourses ? res : new int[0];
+}
+
 ## 997. Find the Town Judge
 
 ```java
@@ -439,3 +1036,66 @@ class Solution {
         robot.turnLeft();
     }
 }
+```
+
+## 1192. Critical Connections in a Network
+
+```java
+// Tarjan Algorithm
+// O(V + E)
+class Solution {
+    // Basically, it uses dfs to travel through the graph to find if current vertex u,
+    // can travel back to u or previous vertex
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        int[] lowLinkValue = new int[n]; // records the lowest vertex u can reach
+        int[] nodes = new int[n]; // records time when a node is visited
+        Arrays.fill(nodes, -1); // -1 represent the node has not been visited
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>(); // initialization
+        }
+        // build graph
+        for (List<Integer> conn : connections) {
+            int src = conn.get(0);
+            int tar = conn.get(1);
+            graph[src].add(tar);
+            graph[tar].add(src);
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (nodes[i] == -1) {
+                dfs(i, lowLinkValue, nodes, graph, res, i);
+            }
+        }
+        return res;
+    }
+
+    int time = 0;
+    public void dfs(int u, int[] low, int[] nodes, List<Integer>[] graph, List<List<Integer>> res, int pre) {
+        nodes[u] = time;
+        low[u] = time;
+        time++;
+        for (int i = 0; i < graph[u].size(); i++) { // 以u为起点
+            int v = graph[u].get(i);
+            if (v == pre) { // ignore parent node
+                continue;
+            }
+            if (nodes[v] == -1) { // v 没有遇到过
+                dfs(v, low, nodes, graph, res, u);
+                low[u] = Math.min(low[u], low[v]);
+                // 如果是强连通图，且u,v相连，low[v] == nodes[u]
+                // 如果两者不属于同一个强连通图，low[v]就不会更新，因此会大于nodes[u]
+                if (low[v] > nodes[u]) {
+                    // u - v is critical, there is no path for v to reach back to u
+                    // or previous vertices of u
+                    res.add(Arrays.asList(u, v));
+                }
+            } else {
+                // if v discovered and is not parent of u,
+                // update low[u], cannot use low[v] because u is not subtree of v
+                low[u] = Math.min(low[u], nodes[v]);
+            }
+        }
+    }
+}
+```
