@@ -181,3 +181,45 @@ public int findKthLargest(int[] nums, int k) {
     return pq.peek();
 }
 ```  
+
+## 218. The Skyline Problem
+
+```java
+// 使用最大堆， O(NlogN)
+class Solution {
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<int[]> height = new ArrayList<>();
+        for (int[] building : buildings) {
+            // 将起始点标记为负高度
+            // 终点标记为正高度
+            height.add(new int[]{building[0], -building[2]});
+            height.add(new int[]{building[1], building[2]});
+        }
+        // 将高度按照起始点排序，如果起始点相同，按照高度排序
+        Collections.sort(height, (a, b) -> {
+            if (a[0] == b[0]) {
+               return a[1] - b[1];
+            }
+            return a[0] - b[0];
+        });
+        // max heap
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        int prev = 0;
+        pq.offer(prev);
+        for (int[] h : height) {
+            if (h[1] < 0) { // 起始点
+                pq.offer(-h[1]);
+            } else { // 到达该高度的终点
+                pq.remove(h[1]);
+            }
+            int cur = pq.peek(); // 当前最大高度
+            if (cur != prev) { // 更新当前最大高度
+                res.add(new ArrayList<>(Arrays.asList(h[0], cur)));
+                prev = cur;
+            }
+        }
+        return res;
+    }
+}
+```  

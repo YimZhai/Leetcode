@@ -369,6 +369,8 @@ public List<String> generateParenthesis(int n) {
     return list;
 }
 
+// @Param: left, number of left brackets
+// @Param: right, number of right brackets
 public void backtracking(List<String> list, String str,
                          int left, int right, int n) {
     if (str.length() == 2*n) {
@@ -398,13 +400,13 @@ public List<String> letterCombinations(String digits) {
 
     String[] buttons = {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
     list.add("");
-    char[] dc = digits.toCharArray();
+    char[] dc = digits.toCharArray(); // 2, 3
 
     for (int i = 0; i < dc.length; i++) {
-        char[] letters = buttons[dc[i] - '0'].toCharArray();
+        char[] letters = buttons[dc[i] - '0'].toCharArray(); // a, b, c
         while (list.peek().length() == i) { // Make sure it's on the same level
             String row = list.poll();
-            for (char letter : letters) {
+            for (char letter : letters) { // "" + a, "" + b, "" + c
                 list.add(row + letter);
             }
         }

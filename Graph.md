@@ -991,10 +991,100 @@ class Solution {
 ## 52. N-Queens
 
 ```java
-//
+// 思路同上，在遍历到每一行的时候新建一个String，加到board里，在backtrack的时候再将最后一位删除
+class Solution {
+    int[] col;
+    int[] diag1;
+    int[] diag2;
+    List<String> board;
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> res = new ArrayList<>();
+        col = new int[n];
+        diag1 = new int[2*n - 1];
+        diag2 = new int[2*n - 1];
+        board = new ArrayList<>();
+        helper(n, 0, res);
+        return res;
+    }
+
+    public void helper(int n, int row, List<List<String>> res) {
+        if (row == n) {
+            res.add(new ArrayList<>(board));
+            return;
+        }
+
+        for (int c = 0; c < n; c++) {
+             if (!available(row, c, n)) {
+                continue;
+            }
+            char[] charArray = new char[n];
+            Arrays.fill(charArray, '.');
+            charArray[c] = 'Q';
+            String rowString = new String(charArray);
+            board.add(rowString);
+            update(row, c, 1, n);
+            helper(n, row + 1, res);
+            board.remove(board.size() - 1);
+            update(row, c, 0, n);
+        }
+    }
+
+    public boolean available(int r, int c, int n) {
+        return (col[c] == 0) && (diag1[r + c] == 0) && (diag2[c - r + n - 1] == 0);
+    }
+
+    public void update(int r, int c, int val, int n) {
+        col[c] = val;
+        diag1[r + c] = val;
+        diag2[c - r + n - 1] = val;
+    }
+}
 ```  
 
 ## 53. N-Queens II
+
+```java
+// 递归查询，每放入一个queen，标记当前row, column和对角线
+// row和column有index标记，对角线赋予index，/ 方向设为 x + y, \ 方向设为 x - y + (n - 1)
+// 因为x - y 的范围是 -(n - 1) ~ (n - 1)，加上(n - 1)就变成了0 ~ 2n - 2
+class Solution {
+    int[] col; // 列
+    int[] diag; // 对角线
+    int[] rev_diag; // 反对角线
+    int res;
+    public int totalNQueens(int n) {
+        col = new int[n];
+        diag = new int[n*2 - 1];
+        rev_diag = new int[n*2 - 1];
+        helper(n, 0); // 从第0行开始递归调用
+        return res;
+    }
+
+    public void helper(int n, int row) {
+        if (row == n) {
+            res++;
+        }
+        for (int c = 0; c < n; c++) { // 遍历col
+            if (!available(row, c, n)) {
+                continue;
+            }
+            update(row, c, 1, n);
+            helper(n, row + 1);
+            update(row, c, 0, n);
+        }
+    }
+
+    public boolean available(int r, int c, int n) { // 检查当前的列和对角线
+        return (col[c] == 0) && (diag[r + c] == 0) && (rev_diag[c - r + n - 1] == 0);
+    }
+
+    public void update(int r, int c, int val, int n) { // 更新列和对角线
+        col[c] = val;
+        diag[r + c] = val;
+        rev_diag[c - r + n - 1] = val;
+    }
+}
+```
 
 ## 489. Robot Room Cleaner
 

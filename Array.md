@@ -993,3 +993,35 @@ class Solution {
     }
 }
 ```  
+
+## 84. Largest Rectangle in Histogram
+
+```java
+// 直观的思路，两个指针从左向右扫，O(N^2)时间
+// 优化，使用stack，时间降低到 O(N)
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int len = heights.length;
+        int maxArea = 0;
+        // 建立stack只存储比当前stack中最大高度大的bar的index
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i <= len;) {
+            int height = (i == len) ? 0 : heights[i];
+            // 将0加入stack应对[1]的情况
+            // 只有在新的高度入栈的时候才向右移动游标
+            if (stack.empty() || height > heights[stack.peek()]) {
+                stack.push(i);
+                i++;
+            } else {
+                // 此时i到了目前最大高度的右边第一个小于左边的值
+                int curMaxHeight = heights[stack.pop()]; // 获取当前的最大高度
+                int right = i - 1; // 右边界
+                int left = stack.empty() ? 0 : stack.peek() + 1; // 左边界
+                int width = right - left + 1;
+                maxArea = Math.max(maxArea, curMaxHeight * width);
+            }
+        }
+        return maxArea;
+    }
+}
+```

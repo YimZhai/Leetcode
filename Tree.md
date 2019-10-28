@@ -21,6 +21,36 @@ class Solution {
 }
 ```
 
+```java
+// non-recursion solution
+class Solution {
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        Queue<TreeNode> q1 = new LinkedList<>();
+        Queue<TreeNode> q2 = new LinkedList<>();
+        q1.offer(p);
+        q2.offer(q);
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            TreeNode np = q1.poll();
+            TreeNode nq = q2.poll();
+            if (np == null && nq == null) {
+                continue;
+            }
+            if (np == null || nq == null || np.val != nq.val) {
+                return false;
+            }
+            q1.offer(np.left);
+            q1.offer(np.right);
+            q2.offer(nq.left);
+            q2.offer(nq.right);
+        }
+        if (!q1.isEmpty() || !q2.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+}
+```
+
 ### 572. Subtree of Another Tree
 
 ```java
@@ -235,6 +265,35 @@ public List<Integer> rightSideView(TreeNode root) {
         }
     }
     return res;
+}
+```
+
+### 543. Diameter of Binary Tree
+
+```java
+// DFS, 分别遍历左右子树，遍历的同时更新res
+class Solution {
+    int res = 0;
+    public int diameterOfBinaryTree(TreeNode root) {
+        dfs(root);
+        return res;
+    }
+
+    public int dfs(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int left = 0;
+        if (node.left != null) {
+            left = dfs(node.left);
+        }
+        int right = 0;
+        if (node.right != null) {
+            right = dfs(node.right);
+        }
+        res = Math.max(res, left + right);
+        return Math.max(left, right) + 1;
+    }
 }
 ```
 
@@ -762,9 +821,94 @@ class Solution {
 }
 ```
 
+## 426. Convert Binary Search Tree to Sorted Doubly Linked List
+
+```java
+// 思路，用中序遍历，第一步更新头尾之间的指针，第二步更新头尾互指
+class Solution {
+    Node pre = null;
+    public Node treeToDoublyList(Node root) {
+        if (root == null) {
+            return null;
+        }
+        Node head = new Node(0, null, null);
+        pre = head;
+        inorder(root); // 建立链接
+        // 建立头尾的链接
+        pre.right = head.right;
+        head.right.left = pre;
+        return head.right;
+    }
+
+    public void inorder(Node node) {
+        if (node == null) {
+            return;
+        }
+        inorder(node.left);
+        pre.right = node; // 建立双向指针
+        node.left = pre;
+        pre = node; // 更新pre
+        inorder(node.right);
+    }
+}
+
 ***
 
 ## N-ary Tree
+
+## 428. Serialize and Deserialize N-ary Tree
+
+```java
+// 使用递归的方法解决
+// 时间复杂度 O(N)
+// 同样的方法也可以解决二叉树的序列化，只需要跳过添加children size的步骤即可
+class Codec {
+
+    String NULL_NODE = "#";
+    String SPLITER = ",";
+    // Encodes a tree to a single string.
+    public String serialize(Node root) {
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        return sb.toString();
+    }
+
+    public void serializeHelper(Node node, StringBuilder sb) {
+        if (node == null) {
+            sb.append(NULL_NODE);
+            sb.append(SPLITER);
+        } else {
+            sb.append(node.val);
+            sb.append(SPLITER);
+            sb.append(node.children.size());
+            sb.append(SPLITER);
+            for (Node n : node.children) {
+                serializeHelper(n, sb);
+            }
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    public Node deserialize(String data) {
+        Deque<String> dq = new LinkedList(Arrays.asList(data.split(SPLITER)));
+        return deserializeHelper(dq);
+    }
+
+    public Node deserializeHelper(Deque<String> dq) {
+        String str = dq.removeFirst();
+        if (str.equals(NULL_NODE)) {
+            return null;
+        }
+        int val = Integer.valueOf(str); // 该节点的值
+        int childrenNum = Integer.valueOf(dq.removeFirst()); // 该节点孩子节点的个数
+        Node root = new Node(val, new ArrayList<Node>());
+        for (int i = 0; i < childrenNum; i++) {
+            root.children.add(deserializeHelper(dq));
+        }
+        return root;
+    }
+}
+```  
 
 ***
 
