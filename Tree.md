@@ -2,6 +2,178 @@
 
 ## Binary Tree
 
+### Three Way Traversal
+
+```java
+// Preorder, Recursion
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        dfs(root, res);
+        return res;
+    }
+
+    private void dfs(TreeNode node, List<Integer> res) {
+        if (node == null) return;
+        res.add(node.val);
+        dfs(node.left, res);
+        dfs(node.right, res);
+    }
+}
+
+// Iteration
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.empty()) {
+            TreeNode node = stack.pop();
+            res.add(node.val);
+            if (node.right != null) {
+                stack.push(node.right);
+            }
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+        }
+        return res;
+    }
+}
+```
+
+```java
+// Inorder, recursion
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        dfs(root, res);
+        return res;
+    }
+
+    private void dfs(TreeNode node, List<Integer> res) {
+        if (node == null) return;
+        dfs(node.left, res);
+        res.add(node.val);
+        dfs(node.right, res);
+    }
+}
+
+// Iteration
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        while (cur != null || !stack.empty()) {
+            while (cur != null) { // find the most left
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            res.add(cur.val);
+            cur = cur.right;
+        }
+        return res;
+    }
+}
+```  
+
+```java
+// Postorder, recursion
+class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        dfs(root, res);
+        return res;
+    }
+
+    private void dfs(TreeNode node, List<Integer> res) {
+        if (node == null) return;
+        dfs(node.left, res);
+        dfs(node.right, res);
+        res.add(node.val);
+    }
+}
+
+// Iteration
+/**
+ * 1. Reverse preorder traversal result
+ * Result is correct, however, the traversal order is not correct
+ */
+class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        LinkedList<Integer> res = new LinkedList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        if (root == null) return res;
+
+        stack.push(root);
+        while (!stack.empty()) {
+            TreeNode node = stack.pop();
+            res.addFirst(node.val);
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+            if (node.right != null) {
+                stack.push(node.right);
+            }
+        }
+        return res;
+    }
+}
+
+// correct traversal order
+class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        LinkedList<Integer> res = new LinkedList<>();
+        Stack<TreeNode> stack = new Stack<>();
+
+        while (!stack.empty() || root != null) {
+            // find leaf nodes
+            while (root != null) {
+                stack.push(root);
+                if (root.left != null) {
+                    root = root.left;
+                } else {
+                    root = root.right;
+                }
+            }
+            TreeNode node = stack.pop();
+            res.add(node.val);
+            if (!stack.empty() && stack.peek().left == node) { // current node is left child
+                root = stack.peek().right;
+            }
+        }
+        return res;
+    }
+}
+```  
+
+### 110. Balanced Binary Tree
+
+```java
+// bottom up
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        int left = getDepth(root.left);
+        int right = getDepth(root.right);
+        return Math.abs(left - right) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    public int getDepth(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return Math.max(getDepth(node.left), getDepth(node.right)) + 1;
+    }
+}
+```  
+
 ### 100. Same Tree
 
 ```java
@@ -55,15 +227,6 @@ class Solution {
 
 ```java
 // 思路同上，在初始函数里分别调用节点，对比s和t是否相同
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
- */
 class Solution {
     public boolean isSubtree(TreeNode s, TreeNode t) {
         if (s == null) {
@@ -85,7 +248,7 @@ class Solution {
         return helper(s.left, t.left) && helper(s.right, t.right);
     }
 }
-```
+```  
 
 ### 297. Serialize and Deserialize Binary Tree
 
@@ -196,7 +359,7 @@ class Solution {
         return str;
     }
 }
-```
+```  
 
 ### 103. Binary Tree Zigzag Level Order Traversal
 
@@ -266,7 +429,7 @@ public List<Integer> rightSideView(TreeNode root) {
     }
     return res;
 }
-```
+```  
 
 ### 543. Diameter of Binary Tree
 
@@ -338,7 +501,8 @@ public boolean hasPathSum(TreeNode root, int sum) {
     if (root == null) return false; // recursion exit;
 
     sum -= root.val; // minus the current value
-    if ((root.left == null) && (root.right == null)) { // when it is leaf node, check whether the sum equal to 0
+    if ((root.left == null) && (root.right == null)) {
+        // when it is leaf node, check whether the sum equal to 0
         return sum == 0;
     }
     // check left and right
@@ -551,7 +715,7 @@ class Solution {
 ### 257. Binary Tree Paths
 
 ```java
-// Recursion
+// Recursion backtracking
 class Solution {
     public List<String> binaryTreePaths(TreeNode root) {
         List<String> res = new ArrayList<>();
@@ -682,7 +846,24 @@ class Solution {
         }
     }
 }
-```
+```  
+
+### 235. Lowest Common Ancestor of a Binary Search Tree
+
+```java
+// BT的解法也适用
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (p.val < root.val && q.val < root.val) { // p，q都在左子树
+            return lowestCommonAncestor(root.left, p, q);
+        } else if (p.val > root.val && q.val > root.val) { // p, q都在右子树
+            return lowestCommonAncestor(root.right, p, q);
+        } else { // 分别在左右子树，直接返回root
+            return root;
+        }
+    }
+}
+```  
 
 ***
 
@@ -694,7 +875,6 @@ Preorder traversal + queue
 
 ```java
 public class Codec {
-
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
         StringBuilder sb = new StringBuilder();
@@ -762,7 +942,332 @@ class Solution {
 }
 ```  
 
-## 96. Unique Binary Search Trees
+### 285. Inorder Successor in BST
+
+```java
+// 第一个思路，中序遍历得到整个树的结果，再用二分查找，找到目标值的下一个值
+// 空间复杂度为O(N)，时间为中序遍历O(N) + 二分查找O(logN)
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        Stack<TreeNode> stack = new Stack<>();
+        List<TreeNode> list = new ArrayList<>();
+        TreeNode runner = root;
+        while (runner != null || !stack.empty()) {
+            while (runner != null) {
+                stack.push(runner);
+                runner = runner.left;
+            }
+            runner = stack.pop();
+            list.add(runner);
+            runner = runner.right;
+        }
+        int left = 0;
+        int right = list.size() - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (list.get(mid).val == p.val) {
+                if (mid != list.size() - 1) {
+                    return list.get(mid + 1);
+                } else {
+                    return null;
+                }
+            } else if (list.get(mid).val > p.val) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return null;
+    }
+}
+```  
+
+```java
+// O(H) solution, worst case could be O(N)
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        TreeNode succ = null;
+        while (root != null) {
+            if (p.val < root.val) {
+                succ = root;
+                root = root.left;
+            } else {
+                root = root.right;
+            }
+        }
+        return succ;
+    }
+}
+```  
+
+### 173. Binary Search Tree Iterator
+
+```java
+// 考点，BST的非递归中序遍历
+class BSTIterator {
+
+    Stack<TreeNode> stack;
+    public BSTIterator(TreeNode root) {
+        stack = new Stack<>();
+        while (root != null) { // 将左子树全部放入stack
+            stack.push(root);
+            root = root.left;
+        }
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode node = stack.pop();
+        int res = node.val;
+        // 若右子树不为空，将右子树的全部左子树放入stack
+        if (node.right != null) {
+            node = node.right;
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+        }
+        return res;
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.empty();
+    }
+}
+```  
+
+### 108. Convert Sorted Array to Binary Search Tree
+
+```java
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums.length == 0) {
+            return null;
+        }
+        TreeNode root = helper(nums, 0, nums.length - 1);
+        return root;
+    }
+
+    public TreeNode helper(int[] nums, int lo, int hi) {
+        if (lo > hi) {
+            return null;
+        }
+        int mid = (lo + hi) / 2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = helper(nums, lo, mid - 1);
+        node.right = helper(nums, mid + 1, hi);
+        return node;
+    }
+}
+```  
+
+### 700. Search in a Binary Search Tree
+
+```java
+// O(H) time
+// recursion
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        if (root == null) {
+            return null;
+        }
+        if (root.val == val) {
+            return root;
+        }
+        if (val < root.val) {
+            return searchBST(root.left, val);
+        }
+        return searchBST(root.right, val);
+    }
+}
+
+// iteration
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        if (root == null) {
+            return null;
+        }
+        while (root != null) {
+            if (root.val == val) {
+                return root;
+            } else if (root.val > val) {
+                root = root.left;
+            } else {
+                root = root.right;
+            }
+        }
+        return null;
+    }
+}
+```  
+
+### 701. Insert into a Binary Search Tree
+
+```java
+// recursion, O(H) time and space, O(logN) best case, O(N) worst case
+class Solution {
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        if (val < root.val) {
+            root.left = insertIntoBST(root.left, val);
+        } else {
+            root.right = insertIntoBST(root.right, val);
+        }
+        return root;
+    }
+}
+
+// iteration
+class Solution {
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            return root;
+        }
+        TreeNode runner = root;
+        while (runner != null) {
+            if (val < runner.val) {
+                if (runner.left != null) {
+                    runner = runner.left;
+                } else {
+                    runner.left = new TreeNode(val);
+                    break;
+                }
+            } else {
+                if (runner.right != null) {
+                    runner = runner.right;
+                } else {
+                    runner.right = new TreeNode(val);
+                    break;
+                }
+            }
+        }
+        return root;
+    }
+}
+```  
+
+### 450. Deletion in a BST
+
+```java
+// 3种情况
+// 1.节点为叶子节点，直接删除
+// 2.节点只有一个孩子节点，替换
+// 3.节点下面有多个节点，找到最近的successor或者precessor，替换
+// O(H) time and space, best case O(logN), worst case O(N)
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return null;
+        }
+        if (key < root.val) {
+            root.left = deleteNode(root.left, key);
+        } else if (key > root.val) {
+            root.right = deleteNode(root.right, key);
+        } else { // 找到需要删除的节点
+            // 处理没有子节点和只有一个子节点的情况
+            if (root.left == null) {
+                return root.right;
+            } else if (root.right == null) {
+                return root.left;
+            }
+            // 处理两个子节点
+            TreeNode succ = root.right;
+            while (succ.left != null) {
+                succ = succ.left;
+            }
+            root.val = succ.val; // 交换节点的值，此时再次递归调用函数处理右子树，删除succ
+            root.right = deleteNode(root.right, succ.val);
+        }
+        return root;
+    }
+}
+
+// iteration O(1) space
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null || root.val == key) {
+            return deleteRoot(root);
+        }
+        TreeNode runner = root;
+        while (true) {
+            if (runner.val > key) {
+                if (runner.left == null || runner.left.val == key) {
+                    runner.left = deleteRoot(runner.left);
+                    break;
+                }
+                runner = runner.left;
+            } else {
+                if (runner.right == null || runner.right.val == key) {
+                    runner.right = deleteRoot(runner.right);
+                    break;
+                }
+                runner = runner.right;
+            }
+        }
+        return root;
+    }
+
+    public TreeNode deleteRoot(TreeNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.right == null) {
+            return node.left;
+        }
+        TreeNode cur = node.right;
+        while (cur.left != null) {
+            cur = cur.left;
+        }
+        // 将node的左子树接到node的successor的左子树的位置
+        cur.left = node.left;
+        return node.right;
+    }
+}
+```  
+
+### 703. Kth Largest Element in a Stream
+
+```java
+// 使用最小堆，将size维护在k，每次从堆里poll出来的都是最小的元素
+// 时间复杂度 O(KLogN)，堆的插入和删除操作都是LogN的时间
+class KthLargest {
+
+    private PriorityQueue<Integer> pq;
+    private int kth;
+    public KthLargest(int k, int[] nums) {
+        kth = k;
+        pq = new PriorityQueue<>((a, b) -> a - b); // min heap
+        for (int i = 0; i < nums.length; i++) {
+            pq.offer(nums[i]);
+            if (pq.size() > kth) {
+                pq.poll();
+            }
+        }
+    }
+
+    public int add(int val) {
+        pq.offer(val);
+        if (pq.size() > kth) {
+            pq.poll();
+        }
+        return pq.peek();
+    }
+}
+```  
+
+### 96. Unique Binary Search Trees
 
 ```java
 // dp solution, calculate Catalan Number
@@ -783,7 +1288,7 @@ class Solution {
 }
 ```
 
-## 95. Unique Binary Search Trees II
+### 95. Unique Binary Search Trees II
 
 ```java
 // 思路：从1到n-1中选取作为root的点，将两边点分别construct
@@ -821,7 +1326,7 @@ class Solution {
 }
 ```
 
-## 426. Convert Binary Search Tree to Sorted Doubly Linked List
+### 426. Convert Binary Search Tree to Sorted Doubly Linked List
 
 ```java
 // 思路，用中序遍历，第一步更新头尾之间的指针，第二步更新头尾互指
@@ -851,6 +1356,33 @@ class Solution {
         inorder(node.right);
     }
 }
+```  
+
+### 220. Contains Duplicate III
+
+```java
+// 建立一个TreeSet，保持size为k, 时间复杂度 O(NLogK)
+class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        TreeSet<Long> set = new TreeSet<>();
+        int i = 0;
+        while (i < nums.length) {
+            Long floor = set.floor((long) nums[i]); // 小于等于nums[i]的最大值
+            Long ceiling = set.ceiling((long) nums[i]); // 大于等于nums[i]的最小值
+            if ((floor != null && nums[i] - floor <= t)
+               || (ceiling != null && ceiling - nums[i] <= t)) {
+                return true;
+            }
+            set.add((long) nums[i]);
+            i++;
+            if (set.size() > k) {
+                set.remove((long) nums[i - 1 - k]);
+            }
+        }
+        return false;
+    }
+}
+```  
 
 ***
 
