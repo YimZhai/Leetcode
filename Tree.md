@@ -1445,3 +1445,399 @@ class Codec {
 ***
 
 ## Trie Tree
+
+### 208. Implement Trie (Prefix Tree)
+
+```java
+class TrieNode {
+    boolean isEndOfWord;
+    TrieNode[] children;
+
+    public TrieNode() {
+        isEndOfWord = false;
+        children = new TrieNode[26];
+    }
+}
+
+class Trie {
+
+    private TrieNode root;
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        TrieNode runner = root;
+        for (char c : word.toCharArray()) {
+            if (runner.children[c - 'a'] == null) {
+                runner.children[c - 'a'] = new TrieNode();
+            }
+            runner = runner.children[c - 'a'];
+        }
+        runner.isEndOfWord = true;
+    }
+
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        TrieNode runner = root;
+        for (char c : word.toCharArray()) {
+            if (runner.children[c - 'a'] == null) {
+                return false;
+            }
+            runner = runner.children[c - 'a'];
+        }
+        // insert(apple), search(app), app is done, but app.isEndOfWord = false
+        return runner.isEndOfWord;
+    }
+
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        TrieNode runner = root;
+        for (char c : prefix.toCharArray()) {
+            if (runner.children[c - 'a'] == null) {
+                return false;
+            }
+            runner = runner.children[c - 'a'];
+        }
+        return true;
+    }
+}
+```  
+
+### 677. Map Sum Pairs
+
+```java
+class TrieNode {
+    int val;
+    TrieNode[] children;
+    public TrieNode(int val) {
+        this.val = val;
+        children = new TrieNode[256];
+    }
+
+    public void update(int val) {
+        this.val += val;
+    }
+
+    public void updateDuplicate(int oldVal, int newVal) {
+        this.val += newVal - oldVal;
+    }
+}
+class MapSum {
+
+    TrieNode root;
+    HashMap<String, Integer> map;
+    /** Initialize your data structure here. */
+    public MapSum() {
+        root = new TrieNode(0);
+        map = new HashMap<>();
+    }
+
+    public void insert(String key, int val) {
+        TrieNode runner = root;
+        if (map.containsKey(key)) {
+            for (char c : key.toCharArray()) {
+                runner = runner.children[c];
+                runner.updateDuplicate(map.get(key), val);
+            }
+        } else {
+            for (char c : key.toCharArray()) {
+                if (runner.children[c] == null) {
+                    runner.children[c] = new TrieNode(0);
+                }
+                runner = runner.children[c];
+                runner.update(val);
+            }
+            map.put(key, val);
+        }
+    }
+
+    public int sum(String prefix) {
+        int res = 0;
+        TrieNode runner = root;
+        for (char c : prefix.toCharArray()) {
+            if (runner.children[c] != null) {
+                runner = runner.children[c];
+                res = runner.val;
+            } else {
+                return 0;
+            }
+        }
+        return res;
+    }
+}
+```  
+
+### 648. Replace Words
+
+```java
+class TrieNode {
+    char val;
+    TrieNode[] children;
+    boolean isEnd;
+
+    public TrieNode(char val) {
+        this.val = val;
+        children = new TrieNode[26];
+        isEnd = false;
+    }
+}
+class Solution {
+    public String replaceWords(List<String> dict, String sentence) {
+        String[] words = sentence.split(" ");
+        TrieNode root = buildTrie(dict);
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            sb.append(replace(root, word));
+            sb.append(" ");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    public String replace(TrieNode root, String word) {
+        StringBuilder sb = new StringBuilder();
+        TrieNode runner = root;
+        for (char c : word.toCharArray()) {
+            if (runner.children[c - 'a'] == null) {
+                return word;
+            } else {
+                runner = runner.children[c - 'a'];
+                sb.append(runner.val);
+                if (runner.isEnd) {
+                    break;
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    public TrieNode buildTrie(List<String> dicts) {
+        TrieNode root = new TrieNode(' ');
+        for (String dict : dicts) {
+            TrieNode runner = root;
+            for (char c : dict.toCharArray()) {
+                if (runner.children[c - 'a'] == null) {
+                    runner.children[c - 'a'] = new TrieNode(c);
+                }
+                runner = runner.children[c - 'a'];
+            }
+            runner.isEnd = true;
+        }
+        return root;
+    }
+}
+```  
+
+### 421. Maximum XOR of Two Numbers in an Array
+
+```java
+class TrieNode {
+    TrieNode zero;
+    TrieNode one;
+}
+
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        // 建树
+        TrieNode root = new TrieNode();
+        for (int num : nums) {
+            TrieNode runner = root;
+            for (int i = 31; i >= 0; i--) {
+                int bit = (num >> i) & 1;
+                if (bit == 1) {
+                    if (runner.one == null) {
+                        runner.one = new TrieNode();
+                    }
+                    runner = runner.one;
+                } else {
+                    if (runner.zero == null) {
+                        runner.zero = new TrieNode();
+                    }
+                    runner = runner.zero;
+                }
+            }
+        }
+
+        int res = Integer.MIN_VALUE;
+        for (int num : nums) {
+            TrieNode runner = root;
+            int xor = 0;
+            for (int i = 31; i >= 0; i--) {
+                int bit = (num >> i) & 1;
+                if (bit == 1) {
+                    // 当前位为1，如果0的子树位置不为空，说明当前i位置可以取xor
+                    // 更新临时变量xor的值
+                    if (runner.zero != null) {
+                        runner = runner.zero;
+                        xor += 1 << i;
+                    } else {
+                        runner = runner.one;
+                    }
+                } else {
+                    // 此处同理
+                    if (runner.one != null) {
+                        runner = runner.one;
+                        xor += 1 << i;
+                    } else {
+                        runner = runner.zero;
+                    }
+                }
+                res = Math.max(res, xor);
+            }
+        }
+        return res;
+    }
+}
+```  
+
+### 642. Design Search Autocomplete System
+
+```java
+class TrieNode {
+    TrieNode[] children;
+    Map<String, Integer> sens;
+
+    public TrieNode() {
+        children = new TrieNode[128];
+        sens = new HashMap<>();
+    }
+}
+class AutocompleteSystem {
+
+    TrieNode root;
+    String numSign; // 记录所有输入
+    public AutocompleteSystem(String[] sentences, int[] times) {
+        root = new TrieNode();
+        numSign = "";
+        for (int i = 0; i < times.length; i++) {
+            buildTrie(sentences[i], times[i]);
+        }
+    }
+
+    public void buildTrie(String sentence, int times) {
+        TrieNode runner = root;
+        for (char c : sentence.toCharArray()) {
+            if (runner.children[c] == null) {
+                runner.children[c] = new TrieNode();
+            }
+            runner = runner.children[c];
+            runner.sens.put(sentence, runner.sens.getOrDefault(sentence, 0) + times);
+        }
+    }
+
+    public List<String> input(char c) {
+        if (c == '#') {
+            buildTrie(numSign, 1);
+            numSign = "";
+            return new ArrayList<>();
+        }
+        numSign += c;
+
+        TrieNode runner = root;
+        for (char ch : numSign.toCharArray()) {
+            if (runner.children[ch] == null) {
+                return new ArrayList<>();
+            }
+            runner = runner.children[ch];
+        }
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> {
+            if (a.getValue() != b.getValue()) {
+                return b.getValue() - a.getValue();
+            }
+            return a.getKey().compareTo(b.getKey());
+        });
+        pq.addAll(runner.sens.entrySet());
+        List<String> res = new ArrayList<>();
+        int k = 0;
+        while (k < 3 && !pq.isEmpty()) {
+            res.add(pq.poll().getKey());
+            k++;
+        }
+        return res;
+    }
+}
+```  
+
+### 425. Word Squares
+
+```java
+// 思路：首先我们遍历words，每次选取一点词放入list，根据放入的词进行搜索
+// 观察可以发现，放入第二个词的要求是这个次的起点必须是第一个词的第二个字符，第三个词是第一个词和第二个词的第三个字符拼接起来，以此类推
+// 搜索的过程也就变成了Trie tree中的startWith
+// 因为要找到所有符合情况的排列组合，想到了使用backtrack，第一层backtrack是每次加的第一个词，第二层是后面要加的词
+// 复杂度：N个词，每次词的长度为L，空间复杂度：O(NL)，时间：O(NL26^L),backtrack可能会遍历到trie的所有节点，每次搜索的时间是L
+class TrieNode {
+    TrieNode[] children;
+    List<String> lists;
+
+    public TrieNode() {
+        children = new TrieNode[26];
+        lists = new ArrayList<>();
+    }
+}
+class Solution {
+    public List<List<String>> wordSquares(String[] words) {
+        List<List<String>> res = new ArrayList<>();
+        TrieNode root = buildTrie(words);
+        List<String> list = new ArrayList<>();
+        for (String word : words) { // 先加进去一个词再开始backtrack
+            list.add(word);
+            backtrack(root, word, res, list);
+            list.remove(list.size() - 1);
+        }
+        return res;
+    }
+
+    public TrieNode buildTrie(String[] words) {
+        TrieNode root = new TrieNode();
+        for (String word : words) {
+            TrieNode runner = root;
+            for (char c : word.toCharArray()) {
+                if (runner.children[c - 'a'] == null) {
+                    runner.children[c - 'a'] = new TrieNode();
+                }
+                runner = runner.children[c - 'a'];
+                runner.lists.add(word);
+            }
+        }
+        return root;
+    }
+
+    public void backtrack(TrieNode root, String word, List<List<String>> res, List<String> list) {
+        if (list.size() == word.length()) {
+            res.add(new ArrayList(list));
+            return;
+        }
+        int index = list.size();
+        String str = ""; // 要查找的目标单词
+        for (String s : list) {
+            str += s.charAt(index);
+        }
+        List<String> lists = search(root, str);
+        for (String s : lists) {
+            list.add(s);
+            backtrack(root, s, res, list);
+            list.remove(list.size() - 1);
+        }
+    }
+
+    public List<String> search(TrieNode root, String s) {
+        List<String> res = new ArrayList<>();
+        TrieNode runner = root;
+        for (char c : s.toCharArray()) {
+            if (runner.children[c - 'a'] == null) {
+                return new ArrayList<>();
+            }
+            runner = runner.children[c - 'a'];
+        }
+        res.addAll(runner.lists);
+        return res;
+    }
+}
+```
