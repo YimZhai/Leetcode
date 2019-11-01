@@ -147,6 +147,87 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 }
 ```  
 
+## 445. Add Two Numbers II
+
+思路同上，使用两个stack来存储list的值, 后面相加的时候再pop就好了
+
+```java
+public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    Stack<Integer> s1 = new Stack<>();
+    Stack<Integer> s2 = new Stack<>();
+    while (l1 != null) {
+        s1.push(l1.val);
+        l1 = l1.next;
+    }
+    while (l2 != null) {
+        s2.push(l2.val);
+        l2 = l2.next;
+    }
+    int carry = 0;
+    ListNode node = null;
+    while (!s1.empty() || !s2.empty()) {
+        int x = s1.empty() ? 0 : s1.pop();
+        int y = s2.empty() ? 0 : s2.pop();
+        int sum = x + y + carry;
+        carry = sum / 10;
+        ListNode n = new ListNode(sum % 10);
+        n.next = node;
+        node = n;
+    }
+    if (carry > 0) {
+        ListNode head = new ListNode(carry);
+        head.next = node;
+        node = head;
+    }
+    return node;
+}
+```  
+
+## 148. Sort List
+
+Merge Sort, Recursion version, O(nlgn), O(n) space.
+
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        // use repeated doubling
+        ListNode slow = head;
+        ListNode fast = head;
+        ListNode pre = head;
+        while (fast != null && fast.next != null) { // in case of even or odd
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        pre.next = null; // 建立停止点，就是下一次递归时，sortList(head) 的停止点。
+        return merge(sortList(head), sortList(slow));
+    }
+
+    public ListNode merge(ListNode slow, ListNode fast) {
+        ListNode dummy = new ListNode(-1);
+        ListNode curr = dummy;
+        while (slow != null && fast != null) {
+            if (slow.val < fast.val) {
+                curr.next = slow;
+                slow = slow.next;
+            } else {
+                curr.next = fast;
+                fast = fast.next;
+            }
+            curr = curr.next;
+        }
+        if (slow != null) {
+            curr.next = slow;
+        }
+        if (fast != null) {
+            curr.next = fast;
+        }
+        return dummy.next;
+    }
+}
+```  
+
 ## 23. Merge K Sorted List
 
 1. Divide and Conquer, 比如合并6个链表，那么按照分治法，我们首先分别合并0和3，1和4，2和5.  这样下一次只需合并3个链表，我们再合并1和3，最后和2合并就可以了
@@ -233,6 +314,23 @@ public ListNode reverse(ListNode head) {
 }
 ```  
 
+### 141. Linked List Cycle
+
+Two Pointer, 一快一慢
+
+```java
+public boolean hasCycle(ListNode head) {
+    ListNode slow = head;
+    ListNode fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) return true;
+    }
+    return false;
+}
+```  
+
 ## 138. Copy List With Random Pointer
 
 O(n) Space, HashMap
@@ -290,3 +388,103 @@ public Node copyRandomList(Node head) {
     return copyHead;
 }
 ```
+
+### 146. LRU Cache
+
+思路，使用hashmap存储值，使用double linked list存储LRU
+
+```java
+class LRUCache {
+
+    // Double Linkedlist Node inner class
+    class DLinkedNode {
+        int key;
+        int value;
+        DLinkedNode pre;
+        DLinkedNode next;
+    }
+
+    // Always add the new node right after head;
+    private void addNode(DLinkedNode node) {
+        node.next = head.next;
+        node.pre = head;
+
+        head.next.pre = node;
+        head.next = node;
+    }
+
+    // Remove an existing node from the linked list.
+    private void removeNode(DLinkedNode node) {
+        node.pre.next = node.next;
+        node.next.pre = node.pre;
+    }
+
+    // Move certain node in between to the head.
+    private void moveToHead(DLinkedNode node) {
+        this.removeNode(node);
+        this.addNode(node);
+    }
+
+    // Pop the current tail
+    private DLinkedNode popTail() {
+        DLinkedNode res = tail.pre;
+        this.removeNode(res);
+        return res;
+    }
+
+    // Variables
+    private Map<Integer, DLinkedNode> cache = new HashMap<>();
+    private int count;
+    private int capacity;
+    private DLinkedNode head;
+    private DLinkedNode tail;
+
+    public LRUCache(int capacity) {
+        this.count = 0;
+        this.capacity = capacity;
+
+        // Establish double linked list
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+
+        head.pre = null;
+        head.next = tail;
+
+        tail.next = null;
+        tail.pre = head;
+    }
+
+    public int get(int key) {
+        DLinkedNode node = this.cache.get(key);
+        if (node == null) { // Key doesn't exist
+            return -1;
+        }
+        this.moveToHead(node); // update list
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        DLinkedNode node = this.cache.get(key);
+
+        if (node == null) { // key doesn't exist
+            // add new node
+            DLinkedNode newNode = new DLinkedNode();
+            newNode.key = key;
+            newNode.value = value;
+            this.addNode(newNode);
+            this.cache.put(key, newNode);
+            count++;
+            // if cache pass capacity
+            if (count > capacity) {
+                DLinkedNode tail = this.popTail();
+                this.cache.remove(tail.key);
+                count--;
+            }
+        } else { // key exist
+            // update value
+            node.value = value;
+            this.moveToHead(node);
+        }
+    }
+}
+```  

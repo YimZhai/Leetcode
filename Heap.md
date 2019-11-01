@@ -223,3 +223,102 @@ class Solution {
     }
 }
 ```  
+
+## 252. Meeting Room
+
+根据每段会议的开始时间sort数组，从第二个元素开始遍历，比较开始时间和上一个会议的结束时间，发现重合则返回false
+
+```java
+public class IntervalComparator implements Comparator<int[]> {
+    @Override
+    public int compare(int[] a, int[] b) {
+        return a[0] - b[0];
+    }
+}
+class Solution {
+    public boolean canAttendMeetings(int[][] intervals) {
+        int len = intervals.length;
+        if (len <= 1) {
+            return true;
+        }
+
+        Arrays.sort(intervals, new IntervalComparator());
+
+        for (int i = 1; i < len; i++) {
+            if (intervals[i][0] < intervals[i - 1][1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+## 253. Meeting Room II
+
+1. Priority Queue, 会议按照开始时间ascending, PQ按照结束时间ascending
+
+```java
+public int minMeetingRooms(int[][] intervals) {
+    int len = intervals.length;
+    if (intervals == null || len == 0) {
+        return 0;
+    }
+
+    // Sort the intervals by start time
+    Arrays.sort(intervals, new Comparator<int[]>() {
+        public int compare(int[] a, int[] b) { return a[0] - b[0]; }
+    });
+
+    // Use a min heap to track the minimum end time of merged intervals
+    PriorityQueue<int[]> heap =
+        new PriorityQueue<int[]>(intervals.length, new Comparator<int[]>() {
+        public int compare(int[] a, int[] b) { return a[1] - b[1]; }
+    });
+
+    // start with the first meeting
+    heap.offer(intervals[0]);
+
+    for (int i = 1; i < len; i++) {
+        // get the meeting which finish earliest.
+        int[] meeting = heap.poll();
+
+        // the meeting needs a new room
+        if (intervals[i][0] < meeting[1]) {
+            heap.offer(intervals[i]);
+        } else {
+            // no overlap, update current meeting.
+            meeting[1] = intervals[i][1];
+        }
+        // put the meeting back
+        heap.offer(meeting);
+    }
+    return heap.size();
+}
+```  
+
+2.同样的思路，使用两个数组解决
+
+```java
+public int minMeetingRooms(int[][] intervals) {
+    int len = intervals.length;
+    int[] start = new int[len];
+    int[] end = new int[len];
+    for (int i = 0; i < len; i++) {
+        start[i] = intervals[i][0];
+        end[i] = intervals[i][1];
+    }
+    Arrays.sort(start);
+    Arrays.sort(end);
+    int rooms = 0;
+    int endIndex = 0;
+    for (int i = 0; i < len; i++) {
+        if (start[i] < end[endIndex]) {
+            rooms++;
+        } else {
+            endIndex++;
+        }
+    }
+    return rooms;
+}
+```  

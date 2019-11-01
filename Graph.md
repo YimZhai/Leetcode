@@ -1128,6 +1128,59 @@ class Solution {
 }
 ```  
 
+## 139. Word Break
+
+BFS solution O(n^2)
+
+```java
+public boolean wordBreak(String s, List<String> wordDict) {
+    Set<String> dict = new HashSet(wordDict);
+    if (dict.contains(s)) {
+        return true;
+    }
+
+    Queue<Integer> q = new LinkedList<>(); // index queue
+    q.offer(0);
+    Set<Integer> visited = new HashSet<Integer>();
+    visited.add(0);
+    while (!q.isEmpty()) {
+        int idx = q.poll();
+        for (int i = idx + 1; i <= s.length(); i++) {
+            if (visited.contains(i)) {
+                continue;
+            }
+            if (dict.contains(s.substring(idx, i))) {
+                if (i == s.length()) {
+                    return true;
+                }
+                q.offer(i);
+                visited.add(i);
+            }
+        }
+    }
+    return false;
+}
+```  
+
+DP solution O(n^2) time and O(n) space
+
+```java
+public boolean wordBreak(String s, List<String> wordDict) {
+    Set<String> dict = new HashSet(wordDict);
+    boolean[] dp = new boolean[s.length() + 1];
+    dp[0] = true;
+    for (int i = 1; i <= s.length(); i++) {
+        for (int j = 0; j < i; j++) {
+            if (dp[j] && dict.contains(s.substring(j, i))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[s.length()];
+}
+```  
+
 ## 79. Word Search
 
 思路： DFS，遍历board，找到和word第一个字母相同时开始dfs。
@@ -1248,6 +1301,62 @@ class Solution {
 }
 ```  
 
+## 127. Word Ladder
+
+1. Bidirectional Searching, 用两个set，从两端开始搜索
+
+```java
+public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+    Set<String> dict = new HashSet(wordList);
+    if (!dict.contains(endWord)) { // 不包含endWord，直接返回0
+        return 0;
+    }
+
+    Set<String> beginSet = new HashSet<>();
+    Set<String> endSet = new HashSet<>();
+    beginSet.add(beginWord);
+    endSet.add(endWord);
+
+    int len = 1; // 路径长度
+    Set<String> visited = new HashSet<>();
+    visited.add(beginWord);
+    visited.add(endWord);
+
+    while (!beginSet.isEmpty() && !endSet.isEmpty()) {
+        if (beginSet.size() > endSet.size()) { // 确保beginSet是更短的那一条路
+            Set<String> set = beginSet;
+            beginSet = endSet;
+            endSet = set;
+        }
+
+        Set<String> tmp = new HashSet<>(); // 从beginWord开始到下一层所有节点可能
+        for (String word : beginSet) {
+            char[] chs = word.toCharArray();
+            for (int i = 0; i < chs.length; i++) { // 遍历字母表，生成新的单词
+                for (char c = 'a'; c <= 'z'; c++) {
+                    char old = chs[i];
+                    chs[i] = c;
+                    String newWord = String.valueOf(chs);
+
+                    if (endSet.contains(newWord)) { // endSet包含单词，说明找了一条路径
+                        return len + 1;
+                    }
+
+                    if (dict.contains(newWord) && !visited.contains(newWord)) { // 避免重复遍历
+                        tmp.add(newWord);
+                        visited.add(newWord);
+                    }
+                    chs[i] = old; // 还原单词
+                }
+            }
+        }
+        beginSet = tmp; // 更新下一层需要遍历的单词
+        len++;
+    }
+    return 0;
+}
+```  
+
 ## 1192. Critical Connections in a Network
 
 ```java
@@ -1308,4 +1417,148 @@ class Solution {
         }
     }
 }
+```  
+
+## 332. Reconstruct Itinerary
+
+Eulerian Path, 有向图寻找欧拉路径, 解决欧拉路径的算法，Hierholzer.  
+
+```java
+path = []
+DFS(u):
+    While (u存在未被访问的边e(u,v))
+        mark边e(u,v)为访问
+        DFS(v)
+    End
+    path.pushLeft(u)
 ```
+
+``` java
+class Solution {
+    Map<String, PriorityQueue<String>> flights; // edge start -> edge end
+    LinkedList<String> path;
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        flights = new HashMap<>();
+        path = new LinkedList<>();
+        for (int i = 0; i < tickets.size(); i++) { // 遍历所有边
+            flights.putIfAbsent(tickets.get(i).get(0), new PriorityQueue<>());
+            flights.get(tickets.get(i).get(0)).add(tickets.get(i).get(1));
+        }
+
+        dfs("JFK");
+        return path;
+    }
+
+    public void dfs(String departure) {
+        PriorityQueue<String> arrivals = flights.get(departure); // pq为升序排列，每次取到的都是lexical 小的结果
+        while (arrivals != null && !arrivals.isEmpty()) { // Hierholzer算法
+            dfs(arrivals.poll());
+        }
+        path.addFirst(departure);
+    }
+}
+```  
+
+## 547. Friend Circle
+
+```java
+class Solution {
+    public int findCircleNum(int[][] M) {
+        int circle = 0;
+        boolean[] visited = new boolean[M.length]; // 下标对应学生
+        for (int i = 0; i < M.length; i++) { // 遍历所有学生
+            if (!visited[i]) { // A学生还没有加入circle
+                dfs(M, visited, i);
+                circle++;
+            }
+        }
+        return circle;
+    }
+
+    public void dfs(int[][] m, boolean[] visited, int i) {
+        for (int j = 0; j < m.length; j++) { // 遍历A学生的朋友关系
+            if (m[i][j] == 1 && !visited[j]) { // 如果A和B有朋友关系, 并且B没在circle里，如果在会死循环
+                visited[j] = true; // B加入到circle
+                dfs(m, visited, j); // 遍历B的除去A的朋友
+            }
+        }
+    }
+}
+```  
+
+## 339. Nested List Weight Sum
+
+```java
+// recursion
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        return dfs(nestedList, 1);
+    }
+
+    public int dfs(List<NestedInteger> list, int depth) {
+        int sum = 0;
+        for (NestedInteger n : list) {
+            if (n.isInteger()) {
+                sum += depth * n.getInteger();
+            } else {
+                sum += dfs(n.getList(), depth + 1);
+            }
+        }
+        return sum;
+    }
+}
+```  
+
+```java
+// Iteration
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        int sum = 0;
+        int depth = 1;
+
+        Queue<NestedInteger> q = new LinkedList<>(nestedList);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                NestedInteger n = q.poll();
+                if (n.isInteger()) {
+                    sum += depth * n.getInteger();
+                } else {
+                    q.addAll(n.getList());
+                }
+            }
+            depth++;
+        }
+        return sum;
+    }
+}
+```  
+
+## 364. Nested List Weight Sum II
+
+```java
+// BFS
+public int depthSumInverse(List<NestedInteger> nestedList) {
+    int sum = 0;
+    int res = 0;
+    Deque<NestedInteger> dq = new ArrayDeque<>();
+    for (NestedInteger n : nestedList) {
+        dq.offerLast(n);
+    }
+
+    while (!dq.isEmpty()) {
+        int size = dq.size();
+        for (int i = 0; i < size; i++) {
+            NestedInteger n = dq.pollFirst();
+            if (n.isInteger()) {
+                sum += n.getInteger(); // 上一层的结果还在sum中，再加一次的时候相当于重复加了第一层
+            } else {
+                dq.addAll(n.getList());
+            }
+        }
+        res += sum;
+    }
+    return res;
+}
+```  

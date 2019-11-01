@@ -1,5 +1,93 @@
 # Questions
 
+## 706. Design HashMap
+
+最直接的思路，建立一个长度为1000000的数组，初始值全部为-1，下标作为key，下标对应的值作为value  
+缺点：很费空间  
+Some of the questions which can be asked to the interviewer before implementing the solution
+For simplicity, are the keys integers only?
+For collision resolution, can we use chaining?
+Do we have to worry about load factors?
+Can we assume inputs are valid or do we have to validate them?
+Can we assume this fits memory?
+
+```java
+class MyHashMap {
+
+    ListNode[] nodes = new ListNode[10000];
+    /** Initialize your data structure here. */
+    public MyHashMap() {
+
+    }
+
+    /** value will always be non-negative. */
+    public void put(int key, int value) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            nodes[i] = new ListNode(-1, -1);
+        }
+        ListNode prev = find(nodes[i], key);
+        if (prev.next == null) {
+            prev.next = new ListNode(key, value);
+        } else { // change the origin value
+            prev.next.val = value;
+        }
+    }
+
+    /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+    public int get(int key) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            return -1;
+        }
+        ListNode prev = find(nodes[i], key);
+        return prev.next == null ? -1 : prev.next.val;
+    }
+
+    /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+    public void remove(int key) {
+        int i = idx(key);
+        if (nodes[i] == null) {
+            return;
+        }
+        ListNode prev = find(nodes[i], key);
+        if (prev.next == null) {
+            return;
+        } else {
+            prev.next = prev.next.next;
+        }
+    }
+
+    public int idx(int key) {
+        return key % nodes.length;
+        // return Integer.hashcode(key) % nodes.length
+        // the point here is to use hashing algorithm (e.g. fmix64) to convert
+        // a non-uniform distribution dataset to a uniform distribution data,
+        // so that the collision rate can be lowered.
+    }
+
+    public ListNode find(ListNode bucket, int key) {
+        // find origin object
+        ListNode node = bucket, prev = null;
+        while (node != null && node.key != key) {
+            prev = node;
+            node = node.next;
+        }
+        return prev;
+    }
+
+    class ListNode {
+        int key, val;
+        ListNode next;
+
+        public ListNode(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+}
+```  
+
 ## 771. Jewels and Stones
 
 1. Traversal two String, put Jewels in set, and check if stones has jewels.
@@ -120,6 +208,32 @@ public int[] intersection(int[] nums1, int[] nums2) {
 }
 ```  
 
+## 350. Intersection of Two Arrays II
+
+原理同上，使用map代替set，如果map的值不为0，则重复值也继续添加
+
+```java
+public int[] intersect(int[] nums1, int[] nums2) {
+    List<Integer> list = new ArrayList<>();
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int num : nums1) {
+        map.put(num, map.getOrDefault(num, 0) + 1);
+    }
+
+    for (int num : nums2) {
+        if (map.containsKey(num) && map.get(num) > 0) {
+            map.put(num, map.get(num) - 1);
+            list.add(num);
+        }
+    }
+    int[] res = new int[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+        res[i] = list.get(i);
+    }
+    return res;
+}
+```
+
 ## 3. Longest Substring Without Repeating Characters
 
 1. 双指针， 一前一后，如果后不在set里，添加进去，更新后，更新len，否则，删除前，更新前
@@ -196,6 +310,50 @@ public String mostCommonWord(String paragraph, String[] banned) {
         }
     }
     return "";
+}
+```  
+
+## 242. Valid Anagram
+
+将字符串转为字符数组，然后逐一比较
+
+```java
+public boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) {
+        return false;
+    }
+
+    char[] chs = s.toCharArray();
+    char[] cht = t.toCharArray();
+    Arrays.sort(chs);
+    Arrays.sort(cht);
+    for (int i = 0; i < chs.length; i++) {
+        if (chs[i] != cht[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+```  
+
+None Sorting solution
+
+```java
+public boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) return false;
+    int[] cnt = new int[26];
+    for (char c : s.toCharArray()) {
+        cnt[c - 'a']++;
+    }
+    for (char c : t.toCharArray()) {
+        cnt[c - 'a']--;
+    }
+    for (int i : cnt) {
+        if (i != 0) {
+            return false;
+        }
+    }
+    return true;
 }
 ```  
 

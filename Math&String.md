@@ -231,6 +231,28 @@ public int romanToInt(String s) {
 }
 ```  
 
+## 829. Consecutive Numbers Sum
+
+```java
+class Solution {
+    public int consecutiveNumbersSum(int N) {
+        int res = 0;
+        int m = 1;
+        while (true) {
+            int mx = N - m * (m - 1) / 2;
+            if (mx <= 0) {
+                break;
+            }
+            if (mx % m == 0) {
+                res++;
+            }
+            m++;
+        }
+        return res;
+    }
+}
+```
+
 ## 202. Happy Number
 
 1. Floyed Cycle Detection, O(1) space
@@ -447,6 +469,46 @@ public String helper(int num) {
 }
 ```  
 
+## 224. Basic Calculator
+
+使用stack存放sign和中间结果
+
+```java
+public int calculate(String s) {
+    int len = s.length();
+    if (s == null || len == 0) {
+        return 0;
+    }
+    Stack<Integer> stack = new Stack<>();
+    int res = 0;
+    int sign = 1;
+    for (int i = 0; i < len; i++) {
+        if (Character.isDigit(s.charAt(i))) { // 找到数字
+            int sum = s.charAt(i) - '0';
+            while (i + 1 < len && Character.isDigit(s.charAt(i + 1))) {
+                sum = sum * 10 + s.charAt(i + 1) - '0';
+                i++;
+            }
+            res += sum * sign; // 计算出中间结果
+        } else if (s.charAt(i) == '+') {
+            sign = 1;
+        }
+        else if (s.charAt(i) == '-') {
+            sign = -1;
+        }
+        else if (s.charAt(i) == '(') { // 中间结果、符号放入栈，重置两个变量
+            stack.push(res);
+            stack.push(sign);
+            res = 0;
+            sign = 1;
+        } else if (s.charAt(i) == ')') {
+            res = res * stack.pop() + stack.pop();
+        }
+    }
+    return res;
+}
+```  
+
 ## 227. Basic Calculator II
 
 使用stack, 将每次计算出的数存在stack中
@@ -489,6 +551,33 @@ public int calculate(String s) {
         res += i;
     }
     return res;
+}
+```  
+
+### 69. Sqrt(x)
+
+基础办法, O(n)
+
+```java
+public int mySqrt(int x) {
+    if (x < 2) return x;
+    for (long i = 1; i <= x; i++) {
+        if (i * i > x) {
+            return (int)(i - 1);
+        }
+    }
+    return 0;
+}
+```
+
+牛顿法, O(logN)
+
+```java
+public int mySqrt(int x) {
+    long r = x;
+    while (r*r > x)
+        r = (r + x/r) / 2;
+    return (int) r;
 }
 ```  
 
@@ -587,6 +676,28 @@ public boolean isMatch(String s, String p) {
         }
     }
     return state[s.length()][p.length()];
+}
+```  
+
+## 12. Integer to Roman
+
+```java
+public String intToRoman(int num) {
+    if (num < 1 || num > 3999) {
+        return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    String[] romans = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+    int i = 0;
+    while (num > 0) {
+        while (num >= values[i]) {
+            sb.append(romans[i]);
+            num -= values[i];
+        }
+        i++;
+    }
+    return String.valueOf(sb);
 }
 ```  
 
@@ -712,7 +823,101 @@ class Solution {
         return Integer.bitCount(K - 1) % 2;
     }
 }
-```
+```  
+
+### 6. ZigZag Conversion
+
+定义一个flag控制方向，定义一个数组存值，最终遍历两边字符串，O(n) time, O(n) space
+
+```java
+public String convert(String s, int numRows) {
+    if (s == null || s.length() == 0) return "";
+    if (numRows == 1) return s;
+    char[] chs = s.toCharArray();
+    List<Character>[] zig = new ArrayList[numRows];
+    int idx = 0;
+    boolean flag = true;
+    for (int i = 0; i < s.length(); i++) {
+        if (zig[idx] == null) {
+            zig[idx] = new ArrayList<>();
+        }
+        zig[idx].add(chs[i]);
+        if (flag) {
+            idx++;
+        } else {
+            idx--;
+        }
+        if (idx == 0 || idx == numRows - 1) {
+            flag = !flag;
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < numRows; i++) {
+        if (zig[i] == null) continue;
+        for (char c : zig[i]) {
+            sb.append(c);
+        }
+    }
+    return String.valueOf(sb);
+}
+```  
+
+```java
+// 另一种办法，效率高一些
+public String convert(String s, int numRows) {
+    char[] chs = s.toCharArray();
+    int len = chs.length;
+    // declare StringBuffer array
+    StringBuilder[] sb = new StringBuilder[numRows];
+    // initialize array
+    for (int i = 0; i < numRows; i++) {
+        sb[i] = new StringBuilder();
+    }
+    int idx = 0;
+    while (idx < len) {
+        for (int i = 0; i < numRows && idx < len; i++) { // top down
+            sb[i].append(chs[idx++]);
+        }
+        for (int i = numRows - 2; i >= 1 && idx < len; i--) { // bottom up
+            sb[i].append(chs[idx++]);
+        }
+    }
+    for (int i = 1; i < numRows; i++) {
+        sb[0].append(sb[i]);
+    }
+    return sb[0].toString();
+}
+```  
+
+### 43. Multiply Strings
+
+第一个思路是装string转换为integer，发现存在很多越界情况。  
+不转换，直接通过string进行乘法操作
+
+```java
+public String multiply(String num1, String num2) {
+    int n1 = num1.length();
+    int n2 = num2.length();
+    int[] res = new int[n1 + n2];
+    for (int i = n1 - 1; i >= 0; i--) {
+        for (int j = n2 - 1; j >= 0; j--) {
+            int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+            int left = i + j; // 十位的下标
+            int right = i + j + 1; // 个位的下标
+            int sum = mul + res[right]; // 先计算是否有进位
+            res[left] += sum / 10; // 更新十位
+            res[right] = sum % 10; // 更新个位
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int p : res) {
+        if (!(sb.length() == 0 && p == 0)) { // avoid leading zero
+            sb.append(p);
+        }
+    }
+    return sb.length() == 0 ? "0" : sb.toString();
+}
+```  
 
 ## 125. Valid Palindrome
 
@@ -769,5 +974,152 @@ class Solution {
         }
         return true;
     }
+}
+```  
+
+## 647. Palindromic Substrings
+
+```java
+class Solution {
+    int count = 0;
+    public int countSubstrings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            helper(s, i, i);
+            helper(s, i, i + 1);
+        }
+        return count;
+    }
+
+    public void helper(String s, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            count++;
+            left--;
+            right++;
+        }
+    }
+}
+```
+
+## 387. First Unique Character in a String
+
+HashMap存储每个字母出现的次数，遍历两边，寻找第一个符合要求的字母
+
+```java
+public int firstUniqChar(String s) {
+    Map<Character, Integer> map = new HashMap<>();
+    for (char c : s.toCharArray()) {
+        map.put(c, map.getOrDefault(c, 0) + 1);
+    }
+    for (int i = 0; i < s.length(); i++) {
+        if (map.get(s.charAt(i)) == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+```  
+
+### 443. String Compression
+
+双指针，O(n) time, O(1) space
+
+```java
+public int compress(char[] chars) {
+    int cur = 0; // 赋值下标
+    int index = 0; // 遍历下标
+    int len = chars.length;
+    while (index < len) {
+        char curChar = chars[index];
+        int cnt = 0;
+        while (index < len && chars[index] == curChar) { // 字符相同一直遍历
+            index++;
+            cnt++;
+        }
+        chars[cur++] = curChar;
+        if (cnt != 1) { // 相同字符超过1个，需要更新数组
+            for (char c : Integer.toString(cnt).toCharArray()) {
+                chars[cur++] = c;
+            }
+        }
+    }
+    return cur;
+}
+```  
+
+## 67. Add Binary
+
+从最右边一位开始相加，使用一个变量记录是否进位, O(max(m, n)) time, O(max(m,n)), space
+
+```java
+public String addBinary(String a, String b) {
+    StringBuilder sb = new StringBuilder();
+    int i = a.length() - 1;
+    int j = b.length() - 1;
+    int carry = 0;
+    while (i >= 0 || j >= 0) {
+        int sum = carry;
+        if (i >= 0) {
+            sum += a.charAt(i--) - '0';
+        }
+        if (j >= 0) {
+            sum += b.charAt(j--) - '0';
+        }
+        sb.append(sum % 2);
+        carry = sum / 2;
+    }
+    if (carry != 0) {
+        sb.append(carry);
+    }
+    return sb.reverse().toString();
+}
+```  
+
+## 767. Reorganize String
+
+```java
+public String reorganizeString(String S) {
+    // Count occurance of each character
+    int[] hash = new int[26];
+    for (char c : S.toCharArray()) {
+        hash[c - 'a']++;
+    }
+
+    int len = S.length();
+    int max = 0;
+    int letter = 0;
+    // find the letter with the largest appearance
+    for (int i = 0; i < hash.length; i++) {
+        if (hash[i] > max) {
+            max = hash[i];
+            letter = i;
+        }
+    }
+    if (max > (len + 1) / 2) {
+        return "";
+    }
+    // put letter into even indexes.
+    char[] res = new char[len];
+    int index = 0;
+    while (hash[letter] > 0) {
+        res[index] = (char)(letter + 'a');
+        index += 2;
+        hash[letter]--;
+    }
+    // put the rest into res
+    for (int i = 0; i < hash.length; i++) {
+        while (hash[i] > 0) {
+            if (index >= len) {
+                index = 1;
+            }
+            res[index] = (char)(i + 'a');
+            index += 2;
+            hash[i]--;
+        }
+    }
+    return new String(res);
 }
 ```  

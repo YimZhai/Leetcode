@@ -268,6 +268,124 @@ class TwoSum {
 }
 ```  
 
+## 724. Find Pivot Index
+
+```java
+class Solution {
+    public int pivotIndex(int[] nums) {
+        if (nums.length < 3) {
+            return -1;
+        }
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        int left = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0) {
+                left += nums[i - 1];
+            }
+            int right = sum - nums[i] - left;
+            if (left == right) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+```  
+
+## 747. Largest Number At Least Twice of Others
+
+```java
+class Solution {
+    public int dominantIndex(int[] nums) {
+        if (nums.length == 1) {
+            return 0;
+        }
+        int res = 0;
+        int first = Integer.MIN_VALUE;
+        int second = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > first) {
+                second = first;
+                first = nums[i];
+                res = i;
+            } else if (nums[i] > second) {
+                second = nums[i];
+            }
+        }
+        return first >= second * 2 ? res : -1;
+    }
+}
+```  
+
+## 66. Plus One
+
+```java
+class Solution {
+    public int[] plusOne(int[] digits) {
+        int len = digits.length;
+        for (int i = len - 1; i >= 0; i--) {
+            if (digits[i] < 9) {
+                digits[i]++;
+                return digits;
+            }
+            digits[i] = 0;
+        }
+        // 处理999...的情况
+        int[] res = new int[len + 1];
+        res[0] = 1;
+        return res;
+    }
+}
+```  
+
+## 498. Diagonal Traverse
+
+```java
+class Solution {
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return new int[0];
+        }
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[] res = new int[row*col];
+        int r = 0;
+        int c = 0;
+        int d = 1; // 初始化向上走
+        for (int i = 0; i < res.length; i++) {
+            res[i] = matrix[r][c];
+            r -= d;
+            c += d;
+            // 当遇到右上或者左下角的时候，会同时满足其中两个if条件
+            // 如果先判断先判断是否 < 0, 会导致两个if条件同时进入
+            // 此时方向调转了两次，会出现越界的情况
+            if (r >= row) {
+                r = row - 1;
+                c += 2;
+                d = -d;
+            }
+            if (c >= col) {
+                c = col - 1;
+                r += 2;
+                d = -d;
+            }
+            if (r < 0) {
+                r = 0;
+                d = -d;
+            }
+            if (c < 0) {
+                c = 0;
+                d = -d;
+            }
+        }
+        return res;
+    }
+}
+```
+
 ## 268. Missing Number
 
 1. 求和相减, 为了防止overflow, 减的操作提前执行。
@@ -568,7 +686,71 @@ public int search(int[] nums, int target) {
 }
 ```  
 
-## 283. Product of Array Except Self
+### 189. Rotate Array
+
+extra space，目标数组的下标通过取余的方式算
+
+```java
+public void rotate(int[] nums, int k) {
+    int len = nums.length;
+    int[] res = new int[len];
+    for (int i = 0; i < len; i++) {
+        res[(i + k) % len] = nums[i];
+    }
+    for (int i = 0; i < len; i++) {
+        nums[i] = res[i];
+    }
+}
+```  
+
+O(1) space solution
+
+```java
+lass Solution {
+    public void rotate(int[] nums, int k) {
+        k %= nums.length;
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    }
+
+    private void reverse(int[] nums, int left, int right) {
+        while (left < right) {
+            int tmp = nums[left];
+            nums[left] = nums[right];
+            nums[right] = tmp;
+            left++;
+            right--;
+        }
+    }
+}
+```  
+
+## 1007. Minimum Domino Rotations For Equal Row
+
+```java
+public int minDominoRotations(int[] A, int[] B) {
+    int len = A.length;
+    int[] cntA = new int[7];
+    int[] cntB = new int[7];
+    int[] same = new int[7];
+    for (int i = 0; i < len; i++) {
+        cntA[A[i]]++;
+        cntB[B[i]]++;
+        if (A[i] == B[i]) {
+            same[A[i]]++;
+        }
+    }
+    for (int i = 0; i < 7; i++) {
+        if (cntA[i] + cntB[i] - same[i] >= len) {
+            return Math.min(cntA[i], cntB[i]) - same[i];
+        }
+    }
+    return -1;
+}
+```
+
+## 238. Product of Array Except Self
 
 1. O(n) time, O(1) space, left -> right计算每个点左边的数的乘积,  
 right -> left计算每个点右边数的乘积。
@@ -586,6 +768,96 @@ public int[] productExceptSelf(int[] nums) {
         r *= nums[i];
     }
     return res;
+}
+```  
+
+## 315. Count of Smaller Numbers After Itself
+
+1. Brute Force, O(n^2), 每个点遍历一遍后面所有节点，统计个数
+
+```java
+public List<Integer> countSmaller(int[] nums) {
+    if (nums.length == 0) {
+        return new ArrayList<Integer>();
+    }
+    Integer[] cnts = new Integer[nums.length];
+    for (int i = 0; i < cnts.length; i++) {
+        int cnt = 0;
+        for (int j = i + 1; j < cnts.length; j++) {
+            if (nums[j] < nums[i]) {
+                cnt++;
+            }
+        }
+        cnts[i] = cnt;
+    }
+    cnts[cnts.length - 1] = 0;
+    return Arrays.asList(cnts);
+}
+```  
+
+1. Merge Sort, O(nlgn), 保留原数组，根据原数组的大小sort他们的index
+
+```java
+class Solution {
+    int[] count;
+    public List<Integer> countSmaller(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        int[] indexes = new int[nums.length];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i;
+        }
+        count = new int[nums.length];
+        mergeSort(nums, indexes, 0, nums.length - 1);
+        for (int i = 0; i < count.length; i++) {
+            res.add(count[i]);
+        }
+        return res;
+    }
+
+    public void mergeSort(int[] nums, int[] indexes, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int mid = (left + right) / 2;
+        mergeSort(nums, indexes, left, mid);
+        mergeSort(nums, indexes, mid + 1, right);
+        merge(nums, indexes, left, mid, right);
+    }
+
+    public void merge(int[] nums, int[] indexes, int left, int mid, int right) {
+        int[] tmp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+        // 右半sort部分小于左半部分的数字的count
+        int rightCnt = 0;
+        while (i <= mid && j <= right) {
+            // indexes排序，根据nums[index]的大小
+            if (nums[indexes[i]] > nums[indexes[j]]) { // 如果右边小,右边的cnt++
+                tmp[k] = indexes[j];
+                rightCnt++;
+                j++;
+            } else { // 如果左边小右边大，更新左边的count值
+                tmp[k] = indexes[i];
+                count[indexes[i]] += rightCnt;
+                i++;
+            }
+            k++;
+        }
+        while (i <= mid) {
+            tmp[k] = indexes[i];
+            count[indexes[i]] += rightCnt;
+            i++;
+            k++;
+        }
+        while (j <= right) {
+            tmp[k++] = indexes[j++];
+        }
+        for (int p = 0; p < tmp.length; p++) {
+            indexes[p + left] = tmp[p];
+        }
+    }
 }
 ```  
 
@@ -699,41 +971,40 @@ private void reverse(int[] nums, int start) {
 
 ## 54. Spiral Matrix
 
-1. Layer by Layer
-![define layer](54_spiralmatrix.png)
-
 ```java
-public List<Integer> spiralOrder(int[][] matrix) {
-    List<Integer> list = new ArrayList<>();
-    if (matrix.length == 0) {
-        return list;
-    }
-
-    int r1 = 0;
-    int r2 = matrix.length - 1;
-    int c1 = 0;
-    int c2 = matrix[0].length - 1;
-    while (r1 <= r2 && c1 <= c2) {
-        for (int c = c1; c <= c2; c++) {
-            list.add(matrix[r1][c]);
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> res = new ArrayList<>();
+        if (matrix.length == 0) {
+            return res;
         }
-        for (int r = r1 + 1; r <= r2; r++) {
-            list.add(matrix[r][c2]);
-        }
-        if (r1 < r2 && c1 < c2) {
-            for (int c = c2 - 1; c > c1; c--) {
-                list.add(matrix[r2][c]);
+        int r1 = 0;
+        int c1 = 0;
+        int r2 = matrix.length - 1;
+        int c2 = matrix[0].length - 1;
+        while (r1 <= r2 && c1 <= c2) {
+            for (int c = c1; c <= c2; c++) {
+                res.add(matrix[r1][c]);
             }
-            for (int r = r2; r > r1; r--) {
-                list.add(matrix[r][c1]);
+            r1++;
+            for (int r = r1; r <= r2; r++) {
+                res.add(matrix[r][c2]);
             }
+            c2--;
+            if (r1 > r2 || c1 > c2) {
+                break;
+            }
+            for (int c = c2; c >= c1; c--) {
+                res.add(matrix[r2][c]);
+            }
+            r2--;
+            for (int r = r2; r >= r1; r--) {
+                res.add(matrix[r][c1]);
+            }
+            c1++;
         }
-        r1++;
-        r2--;
-        c1++;
-        c2--;
+        return res;
     }
-    return list;
 }
 ```  
 
