@@ -200,6 +200,105 @@ class Solution {
         helper(s, left + 1, right - 1);
     }
 }
+```  
+
+## 151. Reverse Words in a String
+
+```java
+// just for reference
+class Solution {
+    public String reverseWords(String s) {
+    if (s == null) return null;
+    char[] a = s.toCharArray();
+    int n = a.length;
+    // reverse the whole string
+    reverse(a, 0, n - 1);
+    // reverse each word
+    reverseWords(a, n);
+    // clean up spaces
+    return cleanSpaces(a, n);
+  }
+  
+  void reverseWords(char[] a, int n) {
+    int i = 0, j = 0;
+    while (i < n) {
+      while (i < j || i < n && a[i] == ' ') i++; // skip spaces
+      while (j < i || j < n && a[j] != ' ') j++; // skip non spaces
+      reverse(a, i, j - 1);                      // reverse the word
+    }
+  }
+  
+  // trim leading, trailing and multiple spaces
+  String cleanSpaces(char[] a, int n) {
+    int i = 0, j = 0;
+    while (j < n) {
+      while (j < n && a[j] == ' ') j++;             // skip spaces
+      while (j < n && a[j] != ' ') a[i++] = a[j++]; // keep non spaces
+      while (j < n && a[j] == ' ') j++;             // skip spaces
+      if (j < n) a[i++] = ' ';                      // keep only one space
+    }
+  
+    return new String(a).substring(0, i);
+  }
+
+  private void reverse(char[] a, int i, int j) {
+    while (i < j) {
+      char t = a[i];
+      a[i++] = a[j];
+      a[j--] = t;
+    }
+  }
+}
+```  
+
+## 186. Reverse Words in a String II
+
+```java
+// 先reverse整个array，再分别reverse每个词
+class Solution {
+    public void reverseWords(char[] s) {
+        // first reverse the whole string
+        reverse(s, 0, s.length - 1);
+
+        int right = 0;
+        while (right < s.length) {
+            int left = right;
+            // find the right index of each word
+            while (right < s.length && s[right] != ' ') {
+                right++;
+            }
+            reverse(s, left, right - 1); // reverse each word
+            right++;
+        }
+    }
+
+    private void reverse(char[] s, int left, int right) {
+        while (left < right) {
+            char tmp = s[left];
+            s[left] = s[right];
+            s[right] = tmp;
+            left++;
+            right--;
+        }
+    }
+}
+```  
+
+## 557. Reverse Words in a String III
+
+```java
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        int i = 0;
+        for (int j = 0; j < nums.length; j++) {
+            if (nums[j] != nums[i]) {
+                i++;
+                nums[i] = nums[j];
+            }
+        }
+        return i + 1;
+    }
+}
 ```
 
 ## 13. Roman to Integer
@@ -310,6 +409,80 @@ public boolean isHappy(int n) {
     }
     return false;
 }
+```  
+
+## 28. Implement strStr()
+
+```java
+// Traditional, O(N^2) worset case, O(1) space
+class Solution {
+    public int strStr(String haystack, String needle) {
+        if (needle.length() == 0) {
+            return 0;
+        }
+        if (haystack.length() == 0 || haystack.length() < needle.length()) {
+            return -1;
+        }
+        for (int i = 0; i < haystack.length() - needle.length() + 1; i++) {
+            int j;
+            for (j = 0; j < needle.length(); j++) {
+                if (haystack.charAt(i + j) != needle.charAt(j)) {
+                    break;
+                }
+            }
+            if (j == needle.length()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+
+// faster version
+class Solution {
+    public int strStr(String haystack, String needle) {
+        int n = needle.length();
+        int m = haystack.length();
+        if (n == 0) {
+            return 0;
+        }
+        if (n > m) {
+            return -1;
+        }
+        for (int i = 0; i <= m - n; i++) {
+            if (haystack.charAt(i) == needle.charAt(0)) {
+                if (haystack.substring(i, i + n).equals(needle)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+}
+```  
+
+## 14. Longest Common Prefix
+
+```java
+// shorter version
+// O(NM), N is the length of strs, M is the average length of each str
+class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+        String pre = strs[0];
+        for (int i = 1; i < strs.length; i++) {
+            // 若pre不是当前词的前缀，每次删除pre的最后一个字符
+            // 直到pre成为当前词的前缀
+            while (strs[i].indexOf(pre) != 0) {
+                pre = pre.substring(0, pre.length() - 1);
+            }
+        }
+        return pre;
+    }
+}
+// Also can use Trie tree for this problem
 ```  
 
 ## 415. Add Strings
@@ -1052,9 +1225,8 @@ public int compress(char[] chars) {
 
 ## 67. Add Binary
 
-从最右边一位开始相加，使用一个变量记录是否进位, O(max(m, n)) time, O(max(m,n)), space
-
 ```java
+// 从最右边一位开始相加，使用一个变量记录是否进位, O(max(m, n)) time, O(max(m,n)), space
 public String addBinary(String a, String b) {
     StringBuilder sb = new StringBuilder();
     int i = a.length() - 1;

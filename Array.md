@@ -39,6 +39,22 @@ public int maxSubArray(int[] nums) {
 }
 ```  
 
+## 561. Array Partition I
+
+```java
+class Solution {
+    public int arrayPairSum(int[] nums) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int sum = 0;
+        for (int i = 0; i < n - 1; i += 2) {
+            sum += nums[i];
+        }
+        return sum;
+    }
+}
+```  
+
 ## 121. Best time to buy and sell stock
 
 1. 两个值，分别记录最大和最小，O(n)遍历一遍，如果price[i] < low更新low, 否则更新max
@@ -180,9 +196,8 @@ class Solution {
 
 ## 283. Move Zeroes
 
-1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
-
 ```java
+// 1. 双指针，更新右指针，只有在右值不为0的时候交换左右值，同时更新左指针
 public void moveZeroes(int[] nums) {
     int l = 0;
     int r = 0;
@@ -200,9 +215,8 @@ public void moveZeroes(int[] nums) {
 
 ## 167. Two Sum II - Input array is sorted
 
-1. 双指针，一左一右
-
 ```java
+// 1. 双指针，一左一右
 public int[] twoSum(int[] numbers, int target) {
     if (numbers.length < 2) {
         return new int[2];
@@ -264,6 +278,70 @@ class TwoSum {
             }
         }
         return false;
+    }
+}
+```  
+
+## 27. Remove Element
+
+```java
+// O(N)
+class Solution {
+    public int removeElement(int[] nums, int val) {
+        int i = 0;
+        for (int j = 0; j < nums.length; j++) {
+            if (nums[j] != val) {
+                nums[i] = nums[j]; // 直接更新，不需要考虑i之后的元素
+                i++;
+            }
+        }
+        return i;
+    }
+}
+```  
+
+## 485. Max Consecutive Ones
+
+```java
+// O(N)
+class Solution {
+    public int findMaxConsecutiveOnes(int[] nums) {
+        int res = 0;
+        int cnt = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 1) {
+                cnt++;
+                res = Math.max(res, cnt);
+            } else {
+                cnt = 0;
+            }
+        }
+        return res;
+    }
+}
+```  
+
+## 209. Minimum Size Subarray Sum
+
+```java
+// 双指针，快的指针累加每个值，超过目标值后，慢指针更新，同时更新结果
+// O(N)
+class Solution {
+    public int minSubArrayLen(int s, int[] nums) {
+        int j = 0;
+        int sum = 0;
+        int i = 0;
+        int res = Integer.MAX_VALUE;
+        while (j < nums.length) {
+            sum += nums[j];
+            j++;
+            while (sum >= s) {
+                res = Math.min(res, j - i);
+                sum -= nums[i];
+                i++;
+            }
+        }
+        return res == Integer.MAX_VALUE ? 0 : res;
     }
 }
 ```  
@@ -341,6 +419,31 @@ class Solution {
 }
 ```  
 
+## 374 Guess Number Higher or Lower
+
+```java
+public class Solution extends GuessGame {
+    public int guessNumber(int n) {
+        int lo = 1;
+        int hi = n;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            int val = guess(mid);
+            if (val == 0) {
+                return mid;
+            } else if (val < 0) {
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return -1;
+    }
+}
+```  
+
+## 375 Guess Number Higher or Lower II
+
 ## 498. Diagonal Traverse
 
 ```java
@@ -402,9 +505,8 @@ public int missingNumber(int[] nums) {
 
 ## 26. Remove Duplicates from Sorted Array
 
-1. Two Pointer, 如果右值不等于左值，左值右移一位，更新左值
-
 ```java
+// Two Pointer, 如果右值不等于左值，左值右移一位，更新左值
 public int removeDuplicates(int[] nums) {
     int l = 0;
     for (int r = 1; r < nums.length; r++) {
@@ -470,7 +572,7 @@ class Solution {
         return false;
     }
 }
-```
+```  
 
 ## 977. Squares of Sorted Array
 
@@ -655,7 +757,29 @@ private class IntervalsComparator implements Comparator<int[]> {
         return a[0] - b[0];
     }
 }
-```
+```  
+
+## 704. Binary Search
+
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo <= hi) {
+            int mid = (lo + hi) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return -1;
+    }
+}
+```  
 
 ## 33. Search in Rotated Sorted Array
 
@@ -688,9 +812,8 @@ public int search(int[] nums, int target) {
 
 ### 189. Rotate Array
 
-extra space，目标数组的下标通过取余的方式算
-
 ```java
+extra space，目标数组的下标通过取余的方式算
 public void rotate(int[] nums, int k) {
     int len = nums.length;
     int[] res = new int[len];
