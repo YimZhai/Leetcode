@@ -277,7 +277,13 @@ class Solution {
         dfs(grid, i, j - 1, m ,n);
     }
 }
-```
+```  
+
+## 305. Number of Islands II
+
+```java
+
+```  
 
 ## 752. Open the Lock
 
@@ -1084,7 +1090,50 @@ class Solution {
         rev_diag[c - r + n - 1] = val;
     }
 }
-```
+```  
+
+## 301. Remove Invalid Parentheses
+
+```java
+class Solution {
+    public List<String> removeInvalidParentheses(String s) {
+        List<String> res = new ArrayList<>();
+        dfs(res, s, 0, 0, '(', ')');
+        return res;
+    }
+
+    private void dfs(List<String> res, String s, int iStart, int jStart, char open, char close) {
+        // 计算'('和')'的数量
+        int numOpen = 0, numClose = 0;
+        // 我们从iStart开始遍历, 也是在删除多余')'后开始遍历的起点
+        for (int i = iStart; i < s.length(); i++) {
+            // 正向操作时，只处理')'多余的情况
+            if (s.charAt(i) == open) numOpen++;
+            if (s.charAt(i) == close) numClose++;
+            if (numClose > numOpen) {
+                // 移除多余的右括号, 可能有多种移除的方案，因此要遍历所有的右括号, 此时要移除的右括号一定在i的左边
+                for (int j = jStart; j <= i; j++) {
+                    // 移除时要考虑相邻的右括号重复的情况, (j == jStart)为删除第一个')'的情况
+                    // s.charAt(j - 1) != close 考虑当前为')'同时前一个不能为')'
+                    if (s.charAt(j) == close && (j == jStart || s.charAt(j - 1) != close)) {
+                        // 删除下标为j的右括号后，判断是否valid, iStart = i因为该字符串到i的位置都已经判断过为valid
+                        // jStart = j表示跳过了前一层循环结束时的末尾字符
+                        dfs(res, s.substring(0, j) + s.substring(j + 1, s.length()), i, j, open, close);
+                    }
+                }
+                return; // 递归操作处理后面的字符
+            }
+        }
+        // 正向检查过一遍，接下来倒过来检查是否有多余的'('
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (open == '(') { // 如果是正向到了这步，说明要检查反向
+            dfs(res, reversed, 0, 0, ')', '(');
+        } else { // 如果是反向到了这步，则把反向翻转过来，添加到结果中
+            res.add(reversed);
+        }
+    }
+}
+```  
 
 ## 489. Robot Room Cleaner
 
@@ -1562,3 +1611,50 @@ public int depthSumInverse(List<NestedInteger> nestedList) {
     return res;
 }
 ```  
+
+## 743. Network Delay Time
+
+```java
+// HashMap keep relationship between source and target and its distance
+// Use PriorityQueue to get the shortest distance to get to each node
+public int networkDelayTime(int[][] times, int N, int K) {
+    // source -> (target -> time)
+    Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+    for (int[] time : times) { // O(M)
+        map.putIfAbsent(time[0], new HashMap());
+        map.get(time[0]).put(time[1], time[2]);
+    }
+
+    // sort int[] in pq based on distance
+    Queue<int[]> pq = new PriorityQueue<>((a,b) -> (a[0] - b[0]));
+
+    // Add starting node [distance, to reach node]
+    pq.add(new int[]{0, K});
+
+    // check if the node has been visited
+    boolean[] visited = new boolean[N + 1];
+
+    int distance = 0;
+
+    while(!pq.isEmpty()){
+        // one node could have multiple path with multiple distance
+        // pq will always give the one with shortest distance
+        int[] cur = pq.remove();
+        int curNode = cur[1];
+        int curDist = cur[0];
+        if (visited[curNode]) continue;
+        visited[curNode] = true;
+        distance = curDist;
+        N--;
+        // if curNode is the source node of an edge
+        if(map.containsKey(curNode)){
+            // traversal all the target node of curNode
+            for(int next : map.get(curNode).keySet()){
+                // update all the target node with updated distance
+                pq.add(new int[]{curDist + map.get(curNode).get(next), next});
+            }
+        }
+    }
+    return N == 0 ? distance : -1;
+}
+```

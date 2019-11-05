@@ -503,6 +503,50 @@ public int missingNumber(int[] nums) {
 }
 ```  
 
+## 41. First Missing Integer
+
+O(n) time and space 方法，很直观，用一个set存储出现过的值, 同时记录最大值, 然后从1开始遍历
+
+```java
+public int firstMissingPositive(int[] nums) {
+    int max = 0;
+    Set<Integer> set = new HashSet<>();
+    for (int num : nums) {
+        max = Math.max(max, num);
+        set.add(num);
+    }
+    for (int i = 1; i <= max; i++) {
+        if (!set.contains(i)) {
+            return i;
+        }
+    }
+    return max + 1;
+}
+```  
+
+O(n) time and O(1) space
+
+```java
+public int firstMissingPositive(int[] nums) {
+    int n = nums.length;
+    for (int i = 0; i < n; i++) {
+        // nums[i] 需要在数组的范围内, 同时nums[i]不在应该在的位置上
+        while (nums[i] > 0 && nums[i] < n && nums[i] != nums[nums[i] - 1]) {
+            int tmp = nums[i];
+            nums[i] = nums[nums[i] - 1];
+            nums[tmp - 1] = tmp;
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        // 如果该值和下标不对应则返回
+        if (nums[i] != i + 1) {
+            return i + 1;
+        }
+    }
+    return n + 1;
+}
+```  
+
 ## 26. Remove Duplicates from Sorted Array
 
 ```java
@@ -783,30 +827,33 @@ class Solution {
 
 ## 33. Search in Rotated Sorted Array
 
-1. Binary Search, 判断中心点在哪个区间, 判断是否在线性的区间内
-
 ```java
-public int search(int[] nums, int target) {
-    int len = nums.length, left = 0, right = len - 1;
-    if (left > right)
-        return -1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] == target)
-            return mid;
-        if (nums[left] <= nums[mid]) {
-            if (nums[left] <= target && target < nums[mid])
-                right = mid - 1;
-            else
-                left = mid + 1;
-        } else {
-            if (nums[mid] < target && target <= nums[right])
-                left = mid + 1;
-            else
-                right = mid - 1;
+// Binary Search, 判断中心点在哪个区间, 判断是否在线性的区间内
+class Solution {
+    public int search(int[] nums, int target) {
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo <= hi) {
+            int mid = (hi + lo) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[lo] <= nums[mid]) {
+                if (nums[lo] <= target && target < nums[mid]) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[hi]) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
         }
+        return -1;
     }
-    return -1;
 }
 ```  
 
@@ -848,6 +895,85 @@ lass Solution {
     }
 }
 ```  
+
+## 278. First Bad Version
+
+```java
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+        int lo = 1;
+        int hi = n;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (isBadVersion(mid)) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        if (isBadVersion(lo)) {
+            return lo;
+        } else {
+            return hi;
+        }
+    }
+}
+```  
+
+## 162. Find Peak Element
+
+```java
+class Solution {
+    public int findPeakElement(int[] nums) {
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] > nums[mid + 1]) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+}
+```  
+
+## 153. Find Minimum in Rotated Sorted Array
+
+```java
+class Solution {
+    public int findMin(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int lo = 0;
+        int hi = nums.length - 1;
+        if (nums[hi] > nums[lo]) {
+            return nums[lo];
+        }
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            System.out.println(mid);
+            if (nums[mid] > nums[mid + 1]) {
+                return nums[mid + 1];
+            }
+            if (nums[mid - 1] > nums[mid]) {
+                return nums[mid];
+            }
+            if (nums[mid] > nums[0]) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return -1;
+    }
+}
+```  
+
+## 154. Find Minimum in Rotated Sorted Array II
 
 ## 1007. Minimum Domino Rotations For Equal Row
 
@@ -1349,6 +1475,91 @@ public int pickIndex() {
 }
 ```  
 
+## 55. Jump Game
+
+```java
+// Greedy
+class Solution {
+    public boolean canJump(int[] nums) {
+        int max = 0; // 当前可以走到最大下标
+        for (int i = 0; i < nums.length; i++) {
+            if (i > max) {
+                return false;
+            }
+            max = Math.max(max, nums[i] + i);
+        }
+        return true;
+    }
+}
+```  
+
+## 45. Jump Game II
+
+```java
+class Solution {
+    public int jump(int[] nums) {
+        // index level
+        // 2
+        // 3, 1
+        // 1, 4
+        // ...
+        if (nums.length < 2) {
+            return 0;
+        }
+        int curMax = 0;
+        int step = 0;
+        int i = 0;
+        while (i <= curMax) {
+            step++;
+            // rightMost, 每一层可以到达的最远距离
+            int rightMost = curMax;
+            for (; i <= curMax; i++) {
+                rightMost = Math.max(rightMost, nums[i] + i);
+                if (rightMost >= nums.length - 1) {
+                    return step;
+                }
+            }
+            curMax = rightMost;
+        }
+        return -1;
+    }
+}
+```  
+
+## 735. Asteroid Collision
+
+```java
+// 新建一个list，开始遍历原始数组，从左到右，对遇到元素进行判断
+// 是否大于0，和之前list最后的元素数值的比较
+class Solution {
+    public int[] asteroidCollision(int[] asteroids) {
+        LinkedList<Integer> list = new LinkedList<>();
+        for (int a : asteroids) {
+            if (a > 0) {
+                list.add(a);
+            } else {
+                // 新进入的行星向左移动，摧毁所有比他小的行星
+                while (!list.isEmpty() && list.peekLast() > 0 && list.peekLast() + a < 0) {
+                    list.pollLast();
+                }
+                // 两个行星大小一样
+                if (!list.isEmpty() && list.peekLast() + a == 0) {
+                    list.pollLast();
+                } else if (list.isEmpty() || list.peekLast() < 0) {
+                    // 与之前的行星不会发生碰撞
+                    list.add(a);
+                }
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+}
+```  
+
 ## 1231. Divide Chocolate
 
 Binary Search, left, mid, right表示可以切成的长度，找到符合范围的这个长度的最大值  
@@ -1394,6 +1605,57 @@ class Solution {
 // 直观的思路，两个指针从左向右扫，O(N^2)时间
 // 优化，使用stack，时间降低到 O(N)
 class Solution {
+   public int largestRectangleArea(int[] heights) {
+        int len = heights.length;
+        int maxArea = 0;
+        // 建立stack只存储比当前stack中最大高度大的bar的index
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i <= len;) {
+            int height = (i == len) ? 0 : heights[i];
+            // 将0加入stack应对[1]的情况
+            // 只有在新的高度入栈的时候才向右移动游标
+            if (stack.empty() || height > heights[stack.peek()]) {
+                stack.push(i);
+                i++;
+            } else {
+                // 此时i到了目前最大高度的右边第一个小于左边的值
+                int curMaxHeight = heights[stack.pop()]; // 获取当前的最大高度
+                int right = i - 1; // 右边界
+                int left = stack.empty() ? 0 : stack.peek() + 1; // 左边界
+                int width = right - left + 1;
+                maxArea = Math.max(maxArea, curMaxHeight * width);
+            }
+        }
+        return maxArea;
+    }
+}
+```  
+
+## 85. Maximal Rectangle
+
+```java
+// 思路同上，分层遍历二维数组，使用一个数组，记录每个col的高度
+// 每遍历完一层，调用上一题的函数，更新返回结果
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int res = 0;
+        int[] height = new int[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '0') {
+                    height[j] = 0;
+                } else {
+                    height[j]++;
+                }
+            }
+            res = Math.max(res, largestRectangleArea(height));
+        }
+        return res;
+    }
+
     public int largestRectangleArea(int[] heights) {
         int len = heights.length;
         int maxArea = 0;
@@ -1418,4 +1680,4 @@ class Solution {
         return maxArea;
     }
 }
-```
+```  

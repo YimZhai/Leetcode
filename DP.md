@@ -197,4 +197,129 @@ public int numDecodings(String s) {
     return dp[s.length()];
     // return w1;
 }
+```  
+
+## 322. Coin Change
+
+DP solution, think in bottom-up manner. Suppose we have already computed all the minimum counts up to sum, what would be the minimum count for sum+1?
+
+```java
+public int coinChange(int[] coins, int amount) {
+    if (amount == 0) return 0;
+    int[] dp = new int[amount + 1];
+    int sum = 1;
+    while (sum <= amount) {
+        int min = -1;
+        for (int coin : coins) { // 寻找可以组合成amount的组合
+            if (sum >= coin && dp[sum - coin] != -1) { // amount还有剩余并且剩余的可以组合起来(!= -1)
+                int tmp = dp[sum - coin] + 1; // 所需硬币数量+1
+                if (min < 0 || tmp < min) { // 只有在min还未更新或者tmp<min下才更新min
+                    min = tmp;
+                }
+            }
+        }
+        dp[sum] = min; // 更新sum所需的最少硬币
+        sum++;
+    }
+    return dp[amount];
+}
+```  
+
+## 221. Maximal Square
+
+dp[i][j] 代表在以i, j这一格为右下角的正方形边长。如果这一格的值也是1，那这个正方形的边长就是他的上面，左手边，和斜上的值的最小边长 +1。因为如果有一边短了缺了，都构成不了正方形。
+
+```java
+public int maximalSquare(char[][] matrix) {
+    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+        return 0;
+    }
+    int res = 0;
+    int n = matrix.length;
+    int m = matrix[0].length;
+    // dp[i][j] represent right lower of the square the length of the square
+    int[][] dp = new int[n + 1][m + 1];
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (matrix[i - 1][j - 1] == '1') {
+                dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1;
+                res = Math.max(dp[i][j], res);
+            }
+        }
+    }
+    return res * res;
+}
+```  
+
+## 198. House Robber
+
+Recursion with memo, O(n) time and space
+
+```java
+class Solution {
+    int[] memo;
+    public int rob(int[] nums) {
+        memo = new int[nums.length + 1];
+        Arrays.fill(memo, -1);
+        return helper(nums, nums.length - 1);
+    }
+
+    private int helper(int[] nums, int i) {
+        if (i < 0) {
+            return 0;
+        }
+        if (memo[i] >= 0) {
+            return memo[i];
+        }
+        int res = Math.max(helper(nums, i - 2) + nums[i], helper(nums, i - 1));
+        memo[i] = res;
+        return res;
+    }
+}
 ```
+
+DP solution
+
+```java
+public int rob(int[] nums) {
+    if (nums.length == 0) return 0;
+    int[] memo = new int[nums.length + 1];
+    memo[0] = 0;
+    memo[1] = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+        int val = nums[i];
+        // memo[i]，不抢当前的房子
+        // memo[i - 1] + val，抢当前的房子加上向前两个房子的抢钱总额
+        memo[i + 1] = Math.max(memo[i - 1] + val, memo[i]);
+    }
+    return memo[nums.length];
+}
+```  
+
+## 1048. Longest String Chain
+
+```java
+// 对数组按照长度排序
+// 遍历每一个词，将该词删掉一个字符后的所有情况进行检查
+// 如果删除字符后的词出现过，更新该字符对应map里的值
+// 每次检查后更新返回值
+class Solution {
+    public int longestStrChain(String[] words) {
+        Map<String, Integer> map = new HashMap<>();
+        // 按照字符串长度排序
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int res = 0;
+        for (String word : words) {
+            int len = 0;
+            for (int i = 0; i < word.length(); i++) {
+                // 每次检查去掉字符后的字符串
+                String prev = word.substring(0, i) + word.substring(i + 1);
+                len = Math.max(len, map.getOrDefault(prev, 0) + 1);
+            }
+            map.put(word, len);
+            res = Math.max(res, len);
+        }
+        return res;
+    }
+}
+```  

@@ -350,7 +350,27 @@ class Solution {
         return res;
     }
 }
-```
+```  
+
+## 204. Count Primes
+
+```java
+public int countPrimes(int n) {
+    boolean[] prime = new boolean[n + 1];
+    int cnt = 0;
+    // 从2开始，将所有质数的的倍数的值标记为true
+    // 未被标记的则为质数, 如果n <= 2则返回0
+    for (int i = 2; i < n; i++) {
+        if (prime[i] == false) {
+            cnt++;
+            for (int j = 2; i * j < n; j++) {
+                prime[i * j] = true;
+            }
+        }
+    }
+    return cnt;
+}
+```  
 
 ## 202. Happy Number
 
@@ -642,6 +662,32 @@ public String helper(int num) {
 }
 ```  
 
+## 953. Verify an Alien Dictionary
+
+```java
+public boolean isAlienSorted(String[] words, String order) {
+    if (words.length == 1) return true;
+    for (int i = 1; i < words.length; i++) { // O(n)判断相邻的两个词
+        int j = 0;
+        boolean checked = true; // 是否需要额外检查
+        int len = Math.min(words[i].length(), words[i - 1].length());
+        while (j < len) {
+            if (order.indexOf(words[i].charAt(j)) > order.indexOf(words[i - 1].charAt(j))) { // 符合要求，不需要额外检查
+                checked = false;
+                break;
+            } else if (order.indexOf(words[i].charAt(j)) < order.indexOf(words[i - 1].charAt(j))) { // 顺序错误返回false
+                return false;
+            }
+            j++;
+        }
+        if (checked && words[i - 1].length() > words[i].length()) { // 字母顺序都一样，需要额外检查长度
+            return false;
+        }
+    }
+    return true;
+}
+```  
+
 ## 224. Basic Calculator
 
 使用stack存放sign和中间结果
@@ -766,7 +812,7 @@ public int myAtoi(String str) {
 
     //2. Remove Spaces
     while(index < str.length() && str.charAt(index) == ' ') {
-        index ++;
+        index++;
     }
 
     // handle " "
@@ -792,7 +838,7 @@ public int myAtoi(String str) {
             return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
         }
         total = 10 * total + digit;
-        index ++;
+        index++;
     }
     return total * sign;
 }
@@ -1293,5 +1339,46 @@ public String reorganizeString(String S) {
         }
     }
     return new String(res);
+}
+```  
+
+## 166. Fraction to Recurring Decimal
+
+```java
+class Solution {
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder res = new StringBuilder();
+        res.append((long)numerator * (long)denominator > 0 ? "" : "-");
+        long num = Math.abs((long) numerator);
+        long den = Math.abs((long) denominator);
+        // 整数部分 2 / 3
+        res.append(num / den); // 0
+        num %= den; // num: 2
+        if (num == 0) {
+            return res.toString();
+        }
+        // 小数部分
+        res.append(".");
+        // number -> index
+        Map<Long, Integer> map = new HashMap<>();
+        map.put(num, res.length());
+        while (num != 0) {
+            num *= 10; // 20 20
+            res.append(num / den); // 6 6
+            num %= den; // 2
+            if (map.containsKey(num)) {
+                int index = map.get(num);
+                res.insert(index, "(");
+                res.append(")");
+                break;
+            } else { // 6 -> 3
+                map.put(num, res.length());
+            }
+        }
+        return res.toString();
+    }
 }
 ```  
