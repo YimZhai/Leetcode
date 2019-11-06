@@ -1599,6 +1599,43 @@ class Solution {
 }
 ```  
 
+## 957. Prison Cells After N Days
+
+```java
+class Solution {
+    public int[] prisonAfterNDays(int[] cells, int N) {
+        int[] first = new int[8];
+        for (int i = 1; i < 7; i++) {
+            if (cells[i - 1] == cells[i + 1]) {
+                first[i] = 1;
+            } else {
+                first[i] = 0;
+            }
+        }
+        cells = first.clone();
+        N--;
+        int cycle = 1;
+        while (N > 0) {
+            N--;
+            int[] next = new int[8];
+            for (int i = 1; i < 7; i++) {
+                if (cells[i - 1] == cells[i + 1]) {
+                    next[i] = 1;
+                } else {
+                    next[i] = 0;
+                }
+            }
+            if (Arrays.equals(next, first)) {
+                N %= cycle;
+            }
+            cells = next.clone();
+            cycle++;
+        }
+        return cells;
+    }
+}
+```  
+
 ## 84. Largest Rectangle in Histogram
 
 ```java

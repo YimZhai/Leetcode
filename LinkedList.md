@@ -30,7 +30,134 @@ class Solution {
         return node;
     }
 }
-```
+```  
+
+## 92. Reverse Linked List II
+
+```java
+// reverse order
+// [1, 2, 3, 4, 5], 2, 4
+// [1, 3, 2, 4, 5] -> [1, 4, 3, 2, 5]
+class Solution {
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        ListNode dummy = new ListNode(0);
+        ListNode pre = dummy;
+        pre.next = head;
+        for (int i = 0; i < m - 1; i++) {
+            pre = pre.next;
+        }
+        ListNode cur = pre.next;
+        for (int i = m; i < n; i++) {
+            ListNode node = cur.next;
+            cur.next = node.next;
+            node.next = pre.next;
+            pre.next = node;
+        }
+        return dummy.next;
+    }
+}
+```  
+
+## 83. Remove Duplicates from Sorted List
+
+```java
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode cur = head;
+        while (cur != null && cur.next != null) {
+            if (cur.next.val == cur.val) {
+                cur.next = cur.next.next;  
+            } else {
+                cur = cur.next;
+            }
+        }
+        return head;
+    }
+}
+```  
+
+## 82. Remove Duplicates from Sorted List II
+
+```java
+// iteration
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        ListNode pre = dummy;
+        ListNode cur = head;
+        pre.next = cur;
+        while (cur != null) {
+            while (cur.next != null && cur.next.val == cur.val) {
+                cur = cur.next; // 到达最后一个重复的node
+            }
+            if (pre.next != cur) {
+                pre.next = cur.next;
+                cur = cur.next;
+            } else {
+                pre = pre.next;
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+}
+// recursion
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        if (head.next != null && head.next.val == head.val) {
+            while (head.next != null && head.next.val == head.val) {
+                head = head.next;
+            }
+            return deleteDuplicates(head.next);
+        } else {
+            head.next = deleteDuplicates(head.next);
+        }
+        return head;
+    }
+}
+```  
+
+## 203. Remove Linked List Elements
+
+```java
+class Solution {
+    public ListNode removeElements(ListNode head, int val) {
+        ListNode dummy = new ListNode(-1);
+        ListNode pre = dummy;
+        ListNode cur = head;
+        pre.next = cur;
+        while (cur != null) {
+            if (cur.val != val) {
+                pre = pre.next;
+                cur = cur.next;
+            } else {
+                pre.next = cur.next;
+                cur = pre.next;
+            }
+        }
+        return dummy.next;
+    }
+}
+```  
+
+## 876. Middle of the Linked List
+
+```java
+class Solution {
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+}
+```  
 
 ## 24. Swap Nodes in Pairs
 
@@ -121,9 +248,8 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
 ## 2. Add Two Numbers
 
-1. 定义carry记录进位
-
 ```java
+// 定义carry记录进位
 public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     ListNode head = new ListNode(0);
     ListNode p = l1;
@@ -180,6 +306,76 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         node = head;
     }
     return node;
+}
+```  
+
+## 143. Reorder List
+
+```java
+// 这道链表重排序问题可以拆分为以下三个小问题：
+// 1. 使用快慢指针来找到链表的中点，并将链表从中点处断开，形成两个独立的链表。
+// 2. 将第二个链翻转。
+// 3. 将第二个链表的元素间隔地插入第一个链表中。
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null) {
+            return;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        } // slow到达了 1,2,3,4的2，1,2,3,4,5的3
+        ListNode second = slow.next;
+        slow.next = null;
+        ListNode pre = null;
+        while (second != null) {
+            ListNode node = second.next;
+            second.next = pre;
+            pre = second;
+            second = node;
+        }
+        ListNode first = head;
+        ListNode dummy = first;
+        while (first != null && pre != null) {
+            ListNode tmp = first.next;
+            first.next = pre;
+            pre = pre.next;
+            first.next.next = tmp;
+            first = tmp;
+        }
+    }
+}
+```  
+
+## 430. Flatten a Multilevel Doubly Linked List
+
+```java
+// 思路：每到一个子节点不为空的节点时，将该节点的next存入stack，当该节点下一层的节点遍历完后
+// 再将next节点pop出来
+class Solution {
+    public Node flatten(Node head) {
+        Stack<Node> s = new Stack<>();
+        Node cur = head;
+        while (cur != null) {
+            if (cur.child != null) {
+                s.push(cur.next);
+                cur.next = cur.child;
+                cur.child = null;
+                if (cur.next != null) {
+                    cur.next.prev = cur;
+                }
+            } else if (cur.next == null && !s.empty()) {
+                cur.next = s.pop();
+                if (cur.next != null) {
+                    cur.next.prev = cur;
+                }
+            }
+            cur = cur.next;
+        }
+        return head;
+    }
 }
 ```  
 
@@ -314,7 +510,7 @@ public ListNode reverse(ListNode head) {
 }
 ```  
 
-### 141. Linked List Cycle
+## 141. Linked List Cycle
 
 Two Pointer, 一快一慢
 
@@ -389,7 +585,7 @@ public Node copyRandomList(Node head) {
 }
 ```
 
-### 146. LRU Cache
+## 146. LRU Cache
 
 思路，使用hashmap存储值，使用double linked list存储LRU
 
@@ -485,6 +681,42 @@ class LRUCache {
             node.value = value;
             this.moveToHead(node);
         }
+    }
+}
+```  
+
+## 25. Reverse Nodes in k-Group
+
+```java
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null) return head;
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode prev = dummy;
+        while (prev != null) {
+            prev = reverse(prev, k);
+        }
+        return dummy.next;
+    }
+
+    public ListNode reverse(ListNode prev, int k) {
+        ListNode last = prev;
+        for (int i = 0; i <= k; i++) {
+            last = last.next;
+            // i != k to prevent [1, 2, 3], k = 3, not enough element to reverse
+            if (i != k && last == null) return null;
+        }
+        ListNode tail = prev.next; // tail become the last element after reverse
+        ListNode cur = prev.next.next;
+        while (cur != last) {
+            ListNode next = cur.next;
+            cur.next = prev.next;
+            prev.next = cur;
+            tail.next = next;
+            cur = next;
+        }
+        return tail;
     }
 }
 ```  
