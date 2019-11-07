@@ -602,6 +602,7 @@ public int[] findOrder(int numCourses, int[][] prerequisites) {
 
     return index == numCourses ? res : new int[0];
 }
+```  
 
 ## 997. Find the Town Judge
 

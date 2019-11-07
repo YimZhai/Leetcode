@@ -490,7 +490,7 @@ class Solution {
         return true;
     }
 }
-```
+```  
 
 ## 380. Insert Delete GetRandom O(1)
 
@@ -748,6 +748,64 @@ class TimeMap {
             }
             return "";
         }
+    }
+}
+```  
+
+## 1181. Before and After Puzzle
+
+```java
+class Solution {
+    public List<String> beforeAndAfterPuzzles(String[] phrases) {
+        // first word -> correspond index
+        HashMap<String, List<Integer>> map = new HashMap<>();
+        int i = 0;
+        for (String phrase : phrases) {
+            String first = phrase.split(" ")[0];
+            map.putIfAbsent(first, new ArrayList<>());
+            map.get(first).add(i);
+            i++;
+        }
+        i = 0;
+        HashSet<String> set = new HashSet<>();
+        for (String phrase : phrases) {
+            int index = phrase.lastIndexOf(" ");
+            String last = index < 0 ? phrase : phrase.substring(index + 1);
+            if (map.containsKey(last)) {
+                for (int j : map.get(last)) {
+                    if (j == i) {
+                        continue;
+                    }
+                    set.add(phrase + phrases[j].substring(last.length()));
+                }
+            }
+            i++;
+        }
+        List<String> res = new ArrayList<>(set);
+        Collections.sort(res);
+        return res;
+    }
+}
+```  
+
+## 535. Encode and Decode TinyURL
+
+```java
+public class Codec {
+
+    HashMap<Integer, String> map = new HashMap<>();
+    final String HOST = "http://tinyurl.com/";
+    // Encodes a URL to a shortened URL.
+    public String encode(String longUrl) {
+        int key = longUrl.hashCode();
+        map.put(key, longUrl);
+        return HOST + key;
+    }
+
+    // Decodes a shortened URL to its original URL.
+    public String decode(String shortUrl) {
+        int key = Integer.parseInt(shortUrl.replace(HOST, ""));
+        return map.get(key);
     }
 }
 ```  

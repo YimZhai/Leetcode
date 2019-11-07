@@ -1296,6 +1296,64 @@ public String addBinary(String a, String b) {
 }
 ```  
 
+## 1047. Remove All Adjacent Duplicates In String
+
+```java
+// use stack
+class Solution {
+    public String removeDuplicates(String S) {
+        Stack<Character> s = new Stack<>();
+        char[] chs = S.toCharArray();
+        for (char c : chs) {
+            if (s.empty() || s.peek() != c) {
+                s.push(c);
+            } else {
+                s.pop();
+            }
+        }
+        char[] res = new char[s.size()];
+        for (int i = s.size() - 1; i >= 0; i--) {
+            res[i] = s.pop();
+        }
+        return new String(res);
+    }
+}
+```  
+
+## 1209. Remove All Adjacent Duplicates in String II
+
+```java
+// 用两个stack, 一个存字符，一个存当前字符的个数O(N) time and space
+// 优化方案，建立一个class，存储char和对应count，使用LinkedList代替stack
+class Solution {
+    public String removeDuplicates(String s, int k) {
+        Stack<Character> sChar = new Stack<>();
+        Stack<Integer> sCnt = new Stack<>();
+        for (char c : s.toCharArray()) {
+            // 如果stack里存在相邻相同元素
+            // 更新对应的cnt
+            if (!sChar.empty() && sChar.peek() == c) {
+                sCnt.push(sCnt.peek() + 1);
+            } else {
+                sCnt.push(1);
+            }
+            sChar.push(c);
+            if (sCnt.peek() == k) {
+                for (int i = 1; i <= k; i++) {
+                    sChar.pop();
+                    sCnt.pop();
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!sChar.empty()) {
+            sb.append(sChar.pop());
+        }
+        return sb.reverse().toString();
+    }
+}
+```  
+
 ## 767. Reorganize String
 
 ```java

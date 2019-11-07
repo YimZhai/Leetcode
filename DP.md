@@ -323,3 +323,65 @@ class Solution {
     }
 }
 ```  
+
+## 312. Burst Balloons
+
+```java
+// Divide & Conquer
+class Solution {
+    public int maxCoins(int[] nums) {
+        int len = nums.length;
+        int[] balloons = new int[len + 2];
+        balloons[0] = 1;
+        balloons[len + 1] = 1;
+        for (int i = 1; i < len + 1; i++) { // 将数组的两端填充上1
+            balloons[i] = nums[i - 1];
+        }
+
+        int[][] dp = new int[len + 2][len + 2];
+        helper(balloons, dp, 1, len);
+        return dp[1][len];
+    }
+
+    private int helper(int[] nums, int[][] dp, int start, int end) {
+        if (start > end) {
+            return 0;
+        }
+        if (dp[start][end] > 0) {
+            return dp[start][end];
+        }
+        for (int i = start; i <= end; i++) {
+            int value = nums[start - 1] * nums[i] * nums[end + 1]
+                + helper(nums, dp, start, i - 1) + helper(nums, dp, i + 1, end);
+            dp[start][end] = Math.max(dp[start][end], value);
+        }
+        return dp[start][end];
+    }
+}
+
+// DP
+// Time Complexity: O(N^3)
+// Space Complexity: O(N^2)
+class Solution {
+    public int maxCoins(int[] nums) {
+        int len = nums.length;
+        int[] balloons = new int[len + 2];
+        balloons[0] = 1;
+        balloons[len + 1] = 1;
+        for (int i = 1; i < len + 1; i++) {
+            balloons[i] = nums[i - 1];
+        }
+
+        int[][] dp = new int[len + 2][len + 2];
+        for (int n = 1; n <= len; n++) { // 打爆气球的个数
+            for (int i = 1; i <= len - n + 1; i++) {
+                int j = i + n - 1;
+                for (int k = i; k <= j; k++) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i][k - 1] + dp[k + 1][j] + balloons[i - 1]*balloons[k]*balloons[j + 1]);
+                }
+            }
+        }
+        return dp[1][len];
+    }
+}
+```  

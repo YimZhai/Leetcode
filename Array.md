@@ -1718,3 +1718,59 @@ class Solution {
     }
 }
 ```  
+
+## 300. Longest Increasing Subsequence
+
+```java
+// DP, O(N^2)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        int res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+    }
+}
+
+// O(NLogN) solution
+// Binary Search
+// 用一个数组，存储以下标+1为长度情况下的递增序列的最小尾值
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int len = 0;
+        for (int num : nums) {
+            // i, j 代表二分查找的lo, hi
+            int i = 0;
+            int j = len;
+            // 二分法找到x在tail中的位置
+            // 如果x大于所有tail的值，加到最后一个
+            // 如果不是，用x值替代 符合tail[i] < x <= tail[i + 1]条件下，
+            // tail[i + 1]的值
+            while (i != j) {
+                int m = (i + j) / 2;
+                if (tails[m] < num) {
+                    i = m + 1;
+                } else {
+                    j = m;
+                }
+            }
+            tails[i] = num;
+            // i == len意味着x大于所有tail的值，x被添加到了tail的末尾
+            // 此时要更新len，用于下一轮的比较
+            if (i == len) {
+                len++;
+            }
+        }
+        return len;
+    }
+}
+```  
