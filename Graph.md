@@ -1136,6 +1136,76 @@ class Solution {
 }
 ```  
 
+## 32. Longest Valid Parentheses
+
+```java
+// 思路，遍历一遍String，如果遇到（ 加到stack，如果遇到），判断stack是否为空
+// stack空则直接加到stack，如果不为空，判断peek是否为（，如果是则pop更新res
+// 否则入栈，每次入栈的元素是当前符号的下标
+class Solution {
+    public int longestValidParentheses(String s) {
+        int res = 0;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(i);
+            } else {
+                if (stack.empty()) {
+                    stack.push(i);
+                } else {
+                    if (s.charAt(stack.peek()) == '(') {
+                        stack.pop();
+                        res = Math.max(i - (stack.empty() ? -1 : stack.peek()), res);
+                    } else {
+                        stack.push(i);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+}
+
+// DP solution
+/*
+If s[i] is '(', set longest[i] to 0,because any string end with '(' cannot be a valid one.
+Else if s[i] is ')'
+    If s[i-1] is '(', longest[i] = longest[i-2] + 2
+    Else if s[i-1] is ')' and s[i-longest[i-1]-1] == '(', longest[i] = longest[i-1] + 2 + longest[i-longest[i-1]-2]
+
+For example, input "()(())", at i = 5, longest array is [0,2,0,0,2,0], longest[5] = longest[4] + 2 + longest[1] = 6.
+*/
+class Solution {
+    public int longestValidParentheses(String s) {
+        int[] dp = new int[s.length()];
+        int res = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                dp[i] = 0;
+            } else {
+                if (s.charAt(i - 1) == '(') {
+                    if (i - 2 >= 0) {
+                        dp[i] = dp[i - 2] + 2;
+                    } else {
+                        dp[i] = 2;
+                    }
+                    res = Math.max(dp[i], res);
+                } else {
+                    if (i - dp[i - 1] - 1 >= 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
+                        dp[i] = dp[i - 1] + 2;
+                        if (i - dp[i - 1] - 2 >= 0) {
+                            dp[i] = dp[i] + dp[i - dp[i - 1] - 2];
+                        }
+                        res = Math.max(dp[i], res);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+}
+```  
+
 ## 489. Robot Room Cleaner
 
 ```java

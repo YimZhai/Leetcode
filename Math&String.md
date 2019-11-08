@@ -84,9 +84,8 @@ class Solution {
 
 ## 20. Valid Parentheses
 
-使用stack, 遍历的时候将对称的parentheses放入stack，不存在的时候pop，最后检查stack是否为空
-
 ```java
+// 使用stack, 遍历的时候将对称的parentheses放入stack，不存在的时候pop，最后检查stack是否为空
 public boolean isValid(String s) {
     Stack<Character> stack = new Stack<>();
     char[] chs = s.toCharArray();

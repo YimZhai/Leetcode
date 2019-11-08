@@ -9,15 +9,15 @@
 class Solution {
     public List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        dfs(root, res);
+        helper(root, res);
         return res;
     }
 
-    private void dfs(TreeNode node, List<Integer> res) {
+    private void helper(TreeNode node, List<Integer> res) {
         if (node == null) return;
         res.add(node.val);
-        dfs(node.left, res);
-        dfs(node.right, res);
+        helper(node.left, res);
+        helper(node.right, res);
     }
 }
 
@@ -48,15 +48,15 @@ class Solution {
 class Solution {
     public List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        dfs(root, res);
+        helper(root, res);
         return res;
     }
 
-    private void dfs(TreeNode node, List<Integer> res) {
+    private void helper(TreeNode node, List<Integer> res) {
         if (node == null) return;
-        dfs(node.left, res);
+        helper(node.left, res);
         res.add(node.val);
-        dfs(node.right, res);
+        helper(node.right, res);
     }
 }
 
@@ -86,14 +86,14 @@ class Solution {
 class Solution {
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        dfs(root, res);
+        helper(root, res);
         return res;
     }
 
-    private void dfs(TreeNode node, List<Integer> res) {
+    private void helper(TreeNode node, List<Integer> res) {
         if (node == null) return;
-        dfs(node.left, res);
-        dfs(node.right, res);
+        helper(node.left, res);
+        helper(node.right, res);
         res.add(node.val);
     }
 }
@@ -861,6 +861,31 @@ class Solution {
         } else { // 分别在左右子树，直接返回root
             return root;
         }
+    }
+}
+```  
+
+### 1130. Minimum Cost Tree From Leaf Values
+
+```java
+// 在建树的过程中，每比较一次(a,b)的最小值，都要花费a*b，所以问题转化为了移除数组元素直到剩余一个的最小花费
+// 当a <= b，我们要移除a，同时我要让b尽可能小
+class Solution {
+    public int mctFromLeafValues(int[] arr) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(Integer.MAX_VALUE);
+        int res = 0;
+        for (int a : arr) {
+            while (a >= stack.peek()) {
+                int mid = stack.pop();
+                res += mid * Math.min(stack.peek(), a);
+            }
+            stack.push(a);
+        }
+        while (stack.size() > 2) {
+            res += stack.pop() * stack.peek();
+        }
+        return res;
     }
 }
 ```  

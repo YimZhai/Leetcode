@@ -33,6 +33,82 @@ public int leastInterval(char[] tasks, int n) {
 }
 ```  
 
+## 348. Design Tic-Tac-Toe
+
+```java
+// 思路，建立一个二维数组，每进行一次判断是否胜利
+class TicTacToe {
+
+    int[][] board;
+    /** Initialize your data structure here. */
+    public TicTacToe(int n) {
+        board = new int[n][n];
+    }
+`
+    /** Player {player} makes a move at ({row}, {col}).
+        @param row The row of the board.
+        @param col The column of the board.
+        @param player The player, can be either 1 or 2.
+        @return The current winning condition, can be either:
+                0: No one wins.
+                1: Player 1 wins.
+                2: Player 2 wins. */
+    public int move(int row, int col, int player) {
+        if (board[row][col] == 0) {
+            board[row][col] = player;
+        } else {
+            return 0;
+        }
+        if (row == col && checkDiagonal(player)) {
+            return player;
+        }
+        if (row + col == board.length - 1 && checkRevDiagonal(player)) {
+            return player;
+        }
+        if (checkRow(row, player) || checkCol(col, player)) {
+            return player;
+        }
+        return 0;
+    }
+
+    private boolean checkDiagonal(int p) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][i] != p) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkRevDiagonal(int p) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][board.length - 1 - i] != p) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkRow(int r, int p) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[r][i] != p) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkCol(int c, int p) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][c] != p) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```  
+
 ## 362. Design Hit Counter
 
 输入的timestamp是单位为秒的时间, 5分钟也就是timestamp 300，使用一个队列来记录

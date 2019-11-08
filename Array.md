@@ -21,9 +21,8 @@ public int[] twoSum(int[] nums, int target) {
 
 ## 53. Maximum Subarray
 
-1. 如果sum小于0， 不管下一个数是正是负，肯定会比这个数加上sum的值大
-
 ```java
+// 如果sum小于0， 不管下一个数是正是负，肯定会比这个数加上sum的值大
 public int maxSubArray(int[] nums) {
     int sum = Integer.MIN_VALUE;
     int max = Integer.MIN_VALUE;
@@ -36,6 +35,30 @@ public int maxSubArray(int[] nums) {
         max = Math.max(max, sum);
     }
     return max;
+}
+```  
+
+## 152. Maximum Product Subarray
+
+```java
+// 用两个数组，分别存当前[0, i]的子数组，包括nums[i]时的最大值和最小值,
+// 每到i的位置时，当前位置的最大值和最小值肯定来自于max[i-1]*nums[i], min[i-1]*nums[i], nums[i]其中之一
+// O(N)时间和空间
+class Solution {
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        int[] m = new int[n];
+        int[] s = new int[n];
+        int res= nums[0];
+        m[0] = nums[0];
+        s[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            m[i] = Math.max(Math.max(m[i - 1] * nums[i], s[i - 1] * nums[i]), nums[i]);
+            s[i] = Math.min(Math.min(m[i - 1] * nums[i], s[i - 1] * nums[i]), nums[i]);
+            res = Math.max(res, m[i]);
+        }
+        return res;
+    }
 }
 ```  
 
