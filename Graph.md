@@ -1728,4 +1728,9 @@ public int networkDelayTime(int[][] times, int N, int K) {
     }
     return N == 0 ? distance : -1;
 }
-```
+```  
+
+## 787. Cheapest Flights Within K Stops
+
+```java
+```  

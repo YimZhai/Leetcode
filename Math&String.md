@@ -506,9 +506,8 @@ class Solution {
 
 ## 415. Add Strings
 
-用StringBuilder，从末位开始向前叠加，使用carry记录进位
-
 ```java
+// 用StringBuilder，从末位开始向前叠加，使用carry记录进位
 public String addStrings(String num1, String num2) {
     int i = num1.length() - 1;
     int j = num2.length() - 1;
