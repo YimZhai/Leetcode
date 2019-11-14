@@ -1733,4 +1733,32 @@ public int networkDelayTime(int[][] times, int N, int K) {
 ## 787. Cheapest Flights Within K Stops
 
 ```java
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+        // 建立邻接链表 src -> (tar -> price)
+        HashMap<Integer, HashMap<Integer, Integer>> map = new HashMap<>();
+        for (int[] flight : flights) {
+            map.putIfAbsent(flight[0], new HashMap<>());
+            map.get(flight[0]).put(flight[1], flight[2]);
+        }
+        Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, src, K + 1});
+        while (!pq.isEmpty()) {
+            int[] top = pq.poll();
+            int price = top[0];
+            int city = top[1];
+            int stop = top[2];
+            if (city == dst) {
+                return price;
+            }
+            if (stop > 0) {
+                Map<Integer, Integer> tar = map.getOrDefault(city, new HashMap<>());
+                for (int adj : tar.keySet()) {
+                    pq.offer(new int[]{price + tar.get(adj), adj, stop - 1});
+                }
+            }
+        }
+        return -1;
+    }
+}
 ```  

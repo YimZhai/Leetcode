@@ -1,4 +1,4 @@
-# Questions
+#Questions
 
 ## 1. Two Sum
 
@@ -1811,3 +1811,32 @@ class Solution {
     }
 }
 ```  
+
+## 1002. Find Common Characters
+
+```java
+class Solution {
+    public List<String> commonChars(String[] A) {
+        List<String> res = new ArrayList<>();
+        int[] count = new int[26];
+        Arrays.fill(count, Integer.MAX_VALUE);
+        for (String a : A) {
+            int[] cnt = new int[26];
+            for (char c : a.toCharArray()) {
+                cnt[c - 'a']++;
+            }
+            for (int i = 0; i < 26; i++) {
+                count[i] = Math.min(count[i], cnt[i]);
+            }
+        }
+        for (char c = 'a'; c <= 'z'; c++) {
+            while (count[c - 'a'] > 0) {
+                res.add(String.valueOf(c));
+                count[c - 'a']--;
+            }
+        }
+        return res;
+    }
+}
+```  
+
