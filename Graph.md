@@ -1733,6 +1733,8 @@ public int networkDelayTime(int[][] times, int N, int K) {
 ## 787. Cheapest Flights Within K Stops
 
 ```java
+// time: O(NKLogN)
+// space: O(N)
 class Solution {
     public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
         // 建立邻接链表 src -> (tar -> price)

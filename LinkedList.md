@@ -527,6 +527,34 @@ public boolean hasCycle(ListNode head) {
 }
 ```  
 
+## 142. Linked List Cycle II
+
+```java
+// O(N) time complexity
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (true) {
+            if (fast == null || fast.next == null) {
+                return null;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                break;
+            }
+        }
+        ListNode find = head;
+        while (slow != find) {
+            slow = slow.next;
+            find = find.next;
+        }
+        return find;
+    }
+}
+```  
+
 ## 138. Copy List With Random Pointer
 
 O(n) Space, HashMap

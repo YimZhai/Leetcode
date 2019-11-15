@@ -1840,3 +1840,50 @@ class Solution {
 }
 ```  
 
+## 287. Find the Duplicate Number
+
+```java
+// Binary Search, O(NLogN)
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int lo = 1;
+        int hi = nums.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            int cnt = 0;
+            for (int num : nums) {
+                if (num <= mid) {
+                    cnt++;
+                }
+            }
+            if (cnt <= mid) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return hi;
+    }
+}
+// Floyd Cycle, O(N) time
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int slow = nums[0];
+        int fast = nums[0];
+        // find intersection
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+        // find loop entrance
+        int p1 = slow;
+        int p2 = nums[0];
+        while (p1 != p2) {
+            p1 = nums[p1];
+            p2 = nums[p2];
+        }
+        return p1;
+    }
+}
+```  
+
