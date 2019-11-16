@@ -719,7 +719,38 @@ class Solution {
         return (i * N + j) * 4 + k;
     }
 }
-```
+```  
+
+## 93. Restore IP Addresses
+
+```java
+// dfs solution
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> res = new ArrayList<>();
+        helper(res, "", s, 4);
+        return res;
+    }
+    // k, 剩余需要拼接的段数
+    public void helper(List<String> res, String sb, String s, int k) {
+        // 如果没有剩余拼接的或者没有可以拼接的string，返回
+        if (s.isEmpty() || k == 0) {
+            if (s.isEmpty() && k == 0) {
+                // 忽略leading “.”
+                res.add(sb.substring(1));
+            }
+            return;
+        }
+        // avoid leading zero
+        for (int i = 1; i <= (s.charAt(0) == '0' ? 1 : 3) && i <= s.length(); i++) {
+            String part = s.substring(0, i);
+            if (Integer.valueOf(part) <= 255) {
+                helper(res, sb + "." + part, s.substring(i), k - 1);
+            }
+        }
+    }
+}
+```  
 
 ## 399. Evaluate Division
 

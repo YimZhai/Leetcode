@@ -1,4 +1,4 @@
-#Questions
+# Questions
 
 ## 1. Two Sum
 
@@ -16,6 +16,32 @@ public int[] twoSum(int[] nums, int target) {
         map.put(nums[i], i);
     }
     return new int[] {};
+}
+```  
+
+## 525. Contiguous Array
+
+```java
+// 使用一个HashMap存储累价值和对应的下标
+// 在遍历的过程中，遇到0，-1，遇到1，+1
+// 时间复杂度：O(N)，空间O(N)
+class Solution {
+    public int findMaxLength(int[] nums) {
+        int sum = 0;
+        int res = 0;
+        // sum -> index
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += (nums[i] == 0) ? -1 : 1;
+            if (map.containsKey(sum)) {
+                res = Math.max(res, i - map.get(sum));
+            } else {
+                map.put(sum, i);
+            }
+        }
+        return res;
+    }
 }
 ```  
 
@@ -651,6 +677,32 @@ class Solution {
             }
         }
         return false;
+    }
+}
+```  
+
+## 48 Rotate Image
+
+```java
+// 先沿右上对角线反转，再沿着水平中线反转
+// time complexity: O(N^2)
+class Solution {
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[n - 1 - j][n - 1 - i];
+                matrix[n - 1 - j][n - 1 - i] = tmp;
+            }
+        }
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = 0; j < n; j++) {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[n - 1 - i][j];
+                matrix[n - 1 - i][j] = tmp;
+            }
+        }
     }
 }
 ```  
@@ -1886,4 +1938,3 @@ class Solution {
     }
 }
 ```  
-
